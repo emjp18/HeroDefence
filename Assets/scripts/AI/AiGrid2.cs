@@ -4,13 +4,20 @@ using System.Data;
 using System.Drawing;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 using static Unity.VisualScripting.Metadata;
-
+public struct RectangleFloat
+{
+    public float X;
+    public float Y;
+    public float Width;
+    public float Height;
+}
 public struct QUAD_NODE
 {
     public QUAD_NODE[] children;
-    public Rectangle bounds;
+    public RectangleFloat bounds;
     public bool leaf;
     public List<Vector2Int> gridIndices;
 }
@@ -19,7 +26,7 @@ public class AiGrid2 : MonoBehaviour
     float z = 100;
     //[SerializeField] int collisionLayerInteger;
     //LayerMask collisionLayer = new LayerMask();
-    Collider2D[] colliderResult = new Collider2D[2];
+    Collider2D[] colliderResult = new Collider2D[10];
     ContactFilter2D contactFilter = new ContactFilter2D();
     //Needs to be uniform for the sake of the quad tree
     [SerializeField] int rows = 10;
@@ -48,6 +55,53 @@ public class AiGrid2 : MonoBehaviour
             DrawDebugLine(node);
         }
     }
+    public bool SetTargetToValidCell(ref Vector2 target)
+    {
+        Vector2Int temp = Vector2Int.zero;
+        bool result = false;
+        GetAIGridIndex(target, root, ref temp, ref result);
+        if (customGrid[temp.x,temp.y].obstacle)
+        {
+            target.x += cellSize;
+            if(SetTargetToValidCell(ref target))
+            {
+                return true;
+            }
+            target.x -= cellSize*2;
+            if (SetTargetToValidCell(ref target))
+            {
+                return true;
+            }
+            target.x += cellSize;
+            target.y -= cellSize;
+            if (SetTargetToValidCell(ref target))
+            {
+                return true;
+            }
+            target.y += cellSize*2;
+            if (SetTargetToValidCell(ref target))
+            {
+                return true;
+            }
+            bool res = SetTargetToValidCell(ref target);
+            if (res)
+                return true;
+            target.y -= cellSize * 2;
+            res = SetTargetToValidCell(ref target);
+            if (res)
+                return true;
+            target.y += cellSize;
+            target.x += cellSize;
+            res = SetTargetToValidCell(ref target);
+            if (res)
+                return true;
+            target.x -= cellSize*2;
+            res = SetTargetToValidCell(ref target);
+            return res;
+        }
+        return true;
+    }
+    public float GetCellSize() { return cellSize; }
     void DrawDebugBounds(Bounds b)
     {
         UnityEngine.Color c = UnityEngine.Color.magenta;
@@ -145,25 +199,30 @@ public class AiGrid2 : MonoBehaviour
         colliderBox.size = new Vector2(cellSize, cellSize);
         GenerateGrid();
         int w = rows;
-        while(w % 4 != 0)
+        while (w % 4 != 0)
         {
             w += 1;
         }
-        
+        //
         root = new QUAD_NODE();
         //x and y is upper left corner
         Vector2 c = gridCenter;
-        c.x += cellSize * 0.5f;
-        c.y -= cellSize * 0.5f;
-        root.bounds = new Rectangle((int)c.x- (int)(rows * cellSize*0.5f),
-            (int)c.y + (int)(columns * cellSize * 0.5f), w * (int)Mathf.Ceil(cellSize), w * (int)Mathf.Ceil(cellSize));
+        //c.x -= cellSize * 0.5f;
+        //c.y += cellSize * 0.5f;
+        root.bounds = new RectangleFloat();
+        root.bounds.X = c.x - (rows * cellSize * 0.5f);
+        root.bounds.Y = c.y + (columns * cellSize * 0.5f);
+        root.bounds.X -= cellSize * 0.5f;
+        root.bounds.Y += cellSize * 0.5f;
+        root.bounds.Width = root.bounds.Height = w * cellSize;
+        //
         CreateQuadTree(ref root);
 
     }
 
     public void RegenerateGrid() //Can be done before every night phase in case new obstacles have been placed
     {
-        int center = rows / 2;
+        float center = rows / 2.0f;
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
@@ -220,7 +279,7 @@ public class AiGrid2 : MonoBehaviour
         customGrid = new A_STAR_NODE[rows, columns];
         //Left and Down is Decreasing in Unity
         //0,0 is left and down in this grid
-        int center = rows / 2;
+        float center = rows / 2.0f;
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
@@ -251,35 +310,40 @@ public class AiGrid2 : MonoBehaviour
                 {
                     worldPos.y = gridCenter.y + cellSize * (y - center);
                 }
-                worldPos.x += cellSize * 0.5f; //making the worldpos be in the center of the node
-                worldPos.y -= cellSize * 0.5f;
+                //worldPos.x += cellSize * 0.5f; //making the worldpos be in the center of the node
+                //worldPos.y -= cellSize * 0.5f;
 
-               
+               //
                 colliderBox.offset = worldPos;
               
                
                  Vector2 pos = new Vector2(worldPos.x, worldPos.y);
                 customGrid[x, y].pos = pos;
                 bool obstacle = false;
-                if(colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
+                
+                if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
                 {
-                   
-                    foreach(Collider2D collider in colliderResult)
+                    if (colliderResult != null)
                     {
-                        if(collider != null)
+
+                        foreach (Collider2D collider in colliderResult)
                         {
-                            if (collider.gameObject.tag == "Character")
+
+                            if (collider.gameObject.tag != "Character" && collider.gameObject.tag != "Player")
                             {
-                                obstacle = false;
+                                
+                                obstacle = true;
+                                break;
+
                             }
                             else
                             {
-                                obstacle = true;
-                                break;
+                                break;//Temporary fix, if enemy is in cell then no collision cus for some reason it adds it despite the tags
                             }
                         }
-                       
+
                     }
+                    
                    
                     
                     
@@ -288,7 +352,7 @@ public class AiGrid2 : MonoBehaviour
 
                 //if (customGrid[x, y].obstacle)
                 //    DrawDebugBounds(colliderBox.bounds);
-                
+                //
                 customGrid[x, y].previous = new A_STAR_NODE[1];
                 customGrid[x, y].previous[0] = new A_STAR_NODE();
                 customGrid[x, y].neighbours = new List<A_STAR_NODE>();
@@ -357,23 +421,24 @@ public class AiGrid2 : MonoBehaviour
             node.children[2] = new QUAD_NODE();
 
             node.children[3] = new QUAD_NODE();
+            RectangleFloat childBounds = new RectangleFloat();
+            childBounds.Width = childBounds.Height = node.bounds.Width / 2.0f;
+            childBounds.X = node.bounds.X;
+            childBounds.Y = node.bounds.Y;
 
+            node.children[0].bounds = childBounds;
+            childBounds.X = node.bounds.X+ childBounds.Width;
+            childBounds.Y = node.bounds.Y;
 
-            node.children[0].bounds = new Rectangle(node.bounds.X, node.bounds.Y,
-                    node.bounds.Width / 2,
-                    node.bounds.Height / 2);
-            node.children[1].bounds = new Rectangle(node.bounds.X + node.bounds.Width / 2,
-                node.bounds.Y,
-                    node.bounds.Width / 2,
-                    node.bounds.Height / 2);
-            node.children[2].bounds = new Rectangle(node.bounds.X + node.bounds.Width / 2,
-                node.bounds.Y - node.bounds.Height / 2,
-                    node.bounds.Width / 2,
-                    node.bounds.Height / 2);
-            node.children[3].bounds = new Rectangle(node.bounds.X, node.bounds.Y -
-               node.bounds.Height / 2,
-                    node.bounds.Width / 2,
-                    node.bounds.Height / 2);
+            node.children[1].bounds = childBounds;
+           
+            childBounds.X = node.bounds.X + childBounds.Width;
+            childBounds.Y = node.bounds.Y - childBounds.Height;
+
+            node.children[2].bounds = childBounds;
+            childBounds.X = node.bounds.X;
+            childBounds.Y = node.bounds.Y - childBounds.Height;
+            node.children[3].bounds = childBounds;
             
             CreateQuadTree(ref node.children[0]);
             CreateQuadTree(ref node.children[1]);
@@ -397,7 +462,7 @@ public class AiGrid2 : MonoBehaviour
                 if (PointAABBIntersectionTest(node.bounds, customGrid[x, y].pos))
                 {
                     node.gridIndices.Add(customGrid[x, y].index); //Since the nodes can be smaller than the AI nodes multiple nodes
-                    
+                    //Debug.Log(customGrid[x, y].pos);
                 }
             }
 
@@ -407,12 +472,54 @@ public class AiGrid2 : MonoBehaviour
 
     }
     //Unity Rectangle Contains function dosen't work
-    bool PointAABBIntersectionTest(Rectangle bounds, Vector2 p)
+    bool PointAABBIntersectionTest(RectangleFloat bounds, Vector2 p)
     {
         return p.x >= bounds.X
             && p.x <= bounds.X + bounds.Width
             && p.y >= bounds.Y - bounds.Height
             && p.y <= bounds.Y;
+    }
+    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)
+    {
+
+        if (PointAABBIntersectionTest(node.bounds, pos))
+        {
+
+
+            if (node.leaf)
+            {
+                if (node.gridIndices.Count == 0)
+                {
+                    status = false;
+                    return;
+                }
+                index = node.gridIndices[0];
+                float distance = Vector2.Distance(pos, customGrid[index.x, index.y].pos);
+                foreach (Vector2Int indices in node.gridIndices)
+                {
+                    float d = Vector2.Distance(pos, customGrid[indices.x, indices.y].pos);
+                    if (d < distance && !customGrid[indices.x, indices.y].obstacle)
+                    {
+                        distance = d;
+                        index = indices;
+                    }
+                }
+                status = true;
+                
+                return;
+
+            }
+            else
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    GetAIGridIndex(pos, node.children[i], ref index, ref status);
+                }
+
+            }
+        }
+        status = false;
+        return;
     }
 }
 

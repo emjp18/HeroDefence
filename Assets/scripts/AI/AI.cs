@@ -19,79 +19,113 @@ public class AI : MonoBehaviour
     [SerializeField] float movementSpeed = 5;
     //[SerializeField] AIGrid grid;
     [SerializeField] AiGrid2 grid;
-    double PathFindingDelay = 5.0;
-    double time = 5.0;
-
+    float PathFindingDelay = 5.0f;
+    //float PathFindingDelay2 = 6.0f;
+    //float playerMinRange = 20;
+    float time = 5.0f;
+    //float time2 = 0.0f;
+    Vector2 dir = Vector2.zero;
+    //bool collisionHit = false;
+    //bool switchTarget = false;
+    Vector2 collisionDir;
+    Vector2 destination;
+    
     void Start()
     {
-        //anim = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
        
         rb = GetComponent<Rigidbody2D>();
-        currentState = new Chase(gameObject, anim, player, target);
+        currentState = new Chase(gameObject, anim, player, target, false);
       
         AStar = new AStar2D(grid);
-
-
+        destination = transform.position;
+        
 
     }
+    private void FixedUpdate()
+    {
+        rb.velocity = dir * movementSpeed * Time.fixedDeltaTime;
+        
 
- 
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log(collision.gameObject.layer);
+    }
+    public AiGrid2 GetGrid() { return grid; }
     void Update()
     {
         currentState = currentState.Process();
-        
-        if(currentState.GetType() == typeof(Chase))
-        {
-            
-           
-            if(AStar.GetPathFound())
-            {
-                
-                var path = AStar.GetPath();
-                if(pathElement<path.Count)
-                {
-                    Vector2 dest = path[pathElement].pos;
-                    
-                    Vector2 dir = dest - new Vector2(rb.position.x, rb.position.y);
-                    float distane = dest.magnitude;
-                    dir.Normalize();
-                    rb.velocity = dir * movementSpeed;
+        dir = Vector2.zero;
 
-                    
-                    if ((dest - new Vector2(rb.position.x, rb.position.y)).magnitude < 0.10f)
-                    {
-                        pathElement++;
-                        
-                      
-                    }
-                }
-                else
-                {
-                    (currentState as Chase).ReachedEndDest = true;
-                }
-                
+        if(currentState.name==State.STATE.CHASE)
+        {
+            if(Vector2.Distance(transform.position, target.position)>Vector2.Distance(transform.position, player.position))
+            {
+                (currentState as Chase).SetShouldChasePlayer(true);
             }
             else
             {
-                
-                if(time>=PathFindingDelay)
+                (currentState as Chase).SetShouldChasePlayer(false);
+            }
+            if(AStar.IsWithinGridBounds(transform.position))
+            {
+                if (time > PathFindingDelay)
                 {
-                    time = 0.0;
-                    AStar.ResetPath();
-                    AStar.AStarSearch(transform.position,target.transform.position);
+                    //collisionHit = false;
+                    time = 0;
+                    if((currentState as Chase).GetShouldChasePlayer())
+                    {
+                        AStar.AStarSearch(transform.position, player.transform.position);
+                    }
+                    else
+                    {
+                        AStar.AStarSearch(transform.position, target.transform.position);
+                    }
+                    
+
+
                 }
                 else
                 {
                     time += Time.deltaTime;
                 }
-               
+                if (AStar.GetPathFound())
+                {
+
+                    destination = AStar.GetPath()[pathElement].pos;
+                    dir = destination - new Vector2(transform.position.x, transform.position.y);
+                    dir.Normalize();
+
+                    if (Vector2.Distance(transform.position, destination) < 1)
+                    {
+                        pathElement++;
+                        
+
+                    }
+                    if (pathElement >= AStar.GetPath().Count)
+                    {
+
+                        pathElement = 0;
+                        AStar.ResetPath();
+                        (currentState as Chase).ReachedEndDest = true;
+                    }
+                }
             }
+            else
+            {
+                dir = grid.GetCenter() - new Vector2(transform.position.x, transform.position.y).normalized;
+            }
+            
+            
         }
         
     }
     public void SetTarget(Transform target)
     {
         this.target = target;
-  
+        //switchTarget = true;
+
+
     }
 }

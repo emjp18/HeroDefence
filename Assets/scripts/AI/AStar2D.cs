@@ -80,7 +80,8 @@ public class AStar2D
 
     public void ResetPath()
     {
-        foreach(A_STAR_NODE node in customGrid) 
+        pathFound = false;
+        foreach (A_STAR_NODE node in customGrid) 
         {
             node.previous[0].isNull = true;
         }
@@ -106,7 +107,7 @@ public class AStar2D
         //Vector3Int endIndex;
         Vector2Int startIndex = new Vector2Int();
         Vector2Int endIndex = new Vector2Int();
-       
+
         //try//If the position is outside the grid bounds then it wont work
         //{
         //    // startIndex = tilemap.WorldToCell(new Vector3(startPosition.x, startPosition.y, 0));
@@ -118,18 +119,24 @@ public class AStar2D
         //{
         //    return;
         //}
-     
-        GetAIGridIndex(startPosition, rootQuadNode, ref startIndex);
-        
-        GetAIGridIndex(targetPosition, rootQuadNode, ref endIndex);
-       
+        bool status = false;
+        GetAIGridIndex(startPosition, rootQuadNode, ref startIndex, ref status);
+        //Debug.Log("Start");
+        //Debug.Log(status);
+        //if (!status)
+        //    return;
+        GetAIGridIndex(targetPosition, rootQuadNode, ref endIndex, ref status);
+        //Debug.Log("End");
+        //if (!status)
+        //    return;
         //Vector3Int origin = tilemap.origin;
         //int shiftX = -origin.x;
         //int shiftY = -origin.y;
 
         //start = customGrid[startIndex.x+ shiftX, startIndex.y+ shiftY];
         //end = customGrid[endIndex.x+ shiftX, endIndex.y+ shiftY];
-
+        //Debug.Log(startIndex);
+        //Debug.Log(endIndex);
         start = customGrid[startIndex.x, startIndex.y];
         end = customGrid[endIndex.x, endIndex.y];
         open.Clear();
@@ -217,14 +224,18 @@ public class AStar2D
 
     }
     //Unity Rectangle Contains function dosen't work
-    bool PointAABBIntersectionTest(Rectangle bounds, Vector2 p)
+    bool PointAABBIntersectionTest(RectangleFloat bounds, Vector2 p)
     {
         return p.x >= bounds.X
             && p.x <= bounds.X + bounds.Width
             && p.y >= bounds.Y - bounds.Height
             && p.y <= bounds.Y;
     }
-    bool GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index)
+    public bool IsWithinGridBounds(Vector2 pos)
+    {
+        return PointAABBIntersectionTest(rootQuadNode.bounds, pos);
+    }
+    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)
     {
 
         if (PointAABBIntersectionTest(node.bounds, pos))
@@ -233,7 +244,11 @@ public class AStar2D
             
             if (node.leaf)
             {
-                
+                if(node.gridIndices.Count == 0)
+                {
+                    status = false;
+                    return;
+                }
                 index = node.gridIndices[0];
                 float distance = Vector2.Distance(pos, customGrid[index.x, index.y].pos);
                 foreach (Vector2Int indices in node.gridIndices)
@@ -245,19 +260,21 @@ public class AStar2D
                         index = indices;
                     }
                 }
-                return true;
+                status = true;
+                //Debug.Log("FoundPath");
+                return;
 
             }
             else
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    GetAIGridIndex(pos, node.children[i], ref index);
+                    GetAIGridIndex(pos, node.children[i], ref index, ref status);
                 }
 
             }
         }
-       
-        return false;
+        status = false;
+        return;
     }
 }
