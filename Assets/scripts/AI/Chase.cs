@@ -43,9 +43,10 @@ public class Chase : State
     {
         if(reachedEndDestination)
         {
-            nextState = new Attack(npc, anim, player, target,chasePlayer);
-            stage = EVENT.EXIT;
+            //nextState = new Attack(npc, anim, player, target,chasePlayer);
+            //stage = EVENT.EXIT;
             reachedEndDestination = false;
+            Debug.Log("reachedend");
            
         }
         else

@@ -19,7 +19,7 @@ public class AI : MonoBehaviour
     [SerializeField] float movementSpeed = 5;
     //[SerializeField] AIGrid grid;
     [SerializeField] AiGrid2 grid;
-    float PathFindingDelay = 5.0f;
+    float PathFindingDelay = 2.50f;
     //float PathFindingDelay2 = 6.0f;
     //float playerMinRange = 20;
     float time = 5.0f;
@@ -76,10 +76,14 @@ public class AI : MonoBehaviour
                     time = 0;
                     if((currentState as Chase).GetShouldChasePlayer())
                     {
+                        pathElement = 0;
+                        AStar.ResetPath();
                         AStar.AStarSearch(transform.position, player.transform.position);
                     }
                     else
                     {
+                        pathElement = 0;
+                        AStar.ResetPath();
                         AStar.AStarSearch(transform.position, target.transform.position);
                     }
                     
