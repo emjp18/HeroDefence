@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public class AI : MonoBehaviour
 {
-   
+    [SerializeField] ENEMY_TYPE type = ENEMY_TYPE.CHASE_PLAYER;
     [SerializeField] Transform player;
     [SerializeField] Transform target;
     State currentState;
@@ -17,18 +17,14 @@ public class AI : MonoBehaviour
     int pathElement = 0;
     Rigidbody2D rb;
     [SerializeField] float movementSpeed = 5;
-    //[SerializeField] AIGrid grid;
+    float thresholdToSwitchDir = 1;
     [SerializeField] AiGrid2 grid;
-    float PathFindingDelay = 2.50f;
-    //float PathFindingDelay2 = 6.0f;
-    //float playerMinRange = 20;
+    float PathFindingDelay = 5.0f;
     float time = 5.0f;
-    //float time2 = 0.0f;
+
     Vector2 dir = Vector2.zero;
-    //bool collisionHit = false;
-    //bool switchTarget = false;
-    Vector2 collisionDir;
-    Vector2 destination;
+  
+
     
     void Start()
     {
@@ -38,8 +34,15 @@ public class AI : MonoBehaviour
         currentState = new Chase(gameObject, anim, player, target, false);
       
         AStar = new AStar2D(grid);
-        destination = transform.position;
-        
+   
+        if(type == ENEMY_TYPE.CHASE_PLAYER)
+        {
+            (currentState as Chase).SetShouldChasePlayer(true);
+        }
+        else
+        {
+            (currentState as Chase).SetShouldChasePlayer(false);
+        }
 
     }
     private void FixedUpdate()
@@ -50,86 +53,104 @@ public class AI : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log(collision.gameObject.layer);
+      
     }
     public AiGrid2 GetGrid() { return grid; }
     void Update()
     {
-        currentState = currentState.Process();
-        dir = Vector2.zero;
-
-        if(currentState.name==State.STATE.CHASE)
+        currentState.Process();
+        if (currentState is Chase)
         {
-            if(Vector2.Distance(transform.position, target.position)>Vector2.Distance(transform.position, player.position))
-            {
-                (currentState as Chase).SetShouldChasePlayer(true);
-            }
-            else
-            {
-                (currentState as Chase).SetShouldChasePlayer(false);
-            }
             if(AStar.IsWithinGridBounds(transform.position))
             {
-                if (time > PathFindingDelay)
+                if ((currentState as Chase).GetShouldChasePlayer())
                 {
-                    //collisionHit = false;
-                    time = 0;
-                    if((currentState as Chase).GetShouldChasePlayer())
+                    if (time < PathFindingDelay)
                     {
-                        pathElement = 0;
-                        AStar.ResetPath();
-                        AStar.AStarSearch(transform.position, player.transform.position);
+                        time += Time.deltaTime;
                     }
                     else
                     {
-                        pathElement = 0;
+                        time = 0.0f;
+                        
                         AStar.ResetPath();
-                        AStar.AStarSearch(transform.position, target.transform.position);
+                        AStar.AStarSearch((Vector2)transform.position, (Vector2)player.transform.position);
                     }
-                    
+                    if (AStar.GetPathFound())
+                    {
+                        if (pathElement >= AStar.GetPath().Count)
+                        {
+                            //switch to attack
+                            //reset pathsss
+                            (currentState as Chase).ReachedEndDest = true;
+                            pathElement = 0;
+                            dir = Vector2.zero;
+                           
+                            
+                        }
+                        else
+                        {
 
-
+                            dir = (AStar.GetPath()[pathElement].pos - (Vector2)transform.position).normalized;
+                            if (Vector2.Distance(transform.position, AStar.GetPath()[pathElement].pos) < thresholdToSwitchDir)
+                            {
+                                pathElement++;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    time += Time.deltaTime;
-                }
-                if (AStar.GetPathFound())
-                {
-
-                    destination = AStar.GetPath()[pathElement].pos;
-                    dir = destination - new Vector2(transform.position.x, transform.position.y);
-                    dir.Normalize();
-
-                    if (Vector2.Distance(transform.position, destination) < 1)
+                    if(!AStar.GetPathFound())
                     {
-                        pathElement++;
+                        if (time < PathFindingDelay)
+                        {
+                            time += Time.deltaTime;
+                        }
+                        else
+                        {
+                            time = 0.0f;
+                            
+                            AStar.ResetPath();
+                            AStar.AStarSearch((Vector2)transform.position, (Vector2)target.transform.position);
+                        }
+                    }
+                    else
+                    {
+                        if(pathElement == AStar.GetPath().Count)
+                        {
+                            //switch to attack
+                            //reset path
+                            (currentState as Chase).ReachedEndDest = true;
+                            pathElement = 0;
+                           
+                            AStar.ResetPath();
+                        }
+                        else
+                        {
+                           
+                            dir = (AStar.GetPath()[pathElement].pos - (Vector2)transform.position).normalized;
+                            if (Vector2.Distance(transform.position, AStar.GetPath()[pathElement].pos) < thresholdToSwitchDir)
+                            {
+                                pathElement++;
+                            }
+                        }
+                      
                         
-
                     }
-                    if (pathElement >= AStar.GetPath().Count)
-                    {
-
-                        pathElement = 0;
-                        AStar.ResetPath();
-                        (currentState as Chase).ReachedEndDest = true;
-                    }
+                    
                 }
             }
             else
             {
-                dir = grid.GetCenter() - new Vector2(transform.position.x, transform.position.y).normalized;
+                dir = (grid.GetCenter() - (Vector2)transform.position).normalized;
             }
+
             
-            
+           
         }
         
+        
     }
-    public void SetTarget(Transform target)
-    {
-        this.target = target;
-        //switchTarget = true;
-
-
-    }
+    
 }

@@ -12,8 +12,8 @@ public class Attack : State
         this.chasePlayer = chasePlayer;
     }
     //float attackRange = 5;
-    float minDistance = 10;
-    float maxDistance = 30;
+    float minDistance = 20;
+    //float maxDistance = 30;
     //float attackInterval = 1.5f;
     //float time = 0;
     bool chasePlayer = false;
@@ -23,26 +23,25 @@ public class Attack : State
     }
     public override void Update()
     {
-        float distance = Vector2.Distance(npc.transform.position, player.transform.position);
+        
         if (chasePlayer)
         {
-            
-            if (distance > maxDistance)
+            float distance = Vector2.Distance(npc.transform.position, player.transform.position);
+            if (distance > minDistance)
             {
-                chasePlayer = false;
+                //chasePlayer = false;
                 nextState = new Chase(npc, anim, player, target, chasePlayer);
                 stage = EVENT.EXIT;
+            }
+            else
+            {
+                //attack
             }
         }
         else
         {
            
-            if (distance < minDistance)
-            {
-                chasePlayer = true;
-                nextState = new Chase(npc, anim, player, target, chasePlayer);
-                stage = EVENT.EXIT;
-            }
+           //attack or die
         }
 
         

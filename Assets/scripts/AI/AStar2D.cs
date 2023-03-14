@@ -43,6 +43,7 @@ public struct A_STAR_NODE
         }
     }
 }
+
 public class A_STAR_NODEComparer : IComparer<A_STAR_NODE>
 {
     public int Compare(A_STAR_NODE x, A_STAR_NODE y)
@@ -53,9 +54,8 @@ public class A_STAR_NODEComparer : IComparer<A_STAR_NODE>
 }
 public class AStar2D
 {
-  
-    //AIGrid grid;
-    AiGrid2 grid;
+    Vector2Int startIndex;
+    Vector2Int endIndex;
     A_STAR_NODEComparer comp = new A_STAR_NODEComparer();
     bool pathFound = false;
     A_STAR_NODE start;
@@ -63,29 +63,45 @@ public class AStar2D
     List<A_STAR_NODE> open = new List<A_STAR_NODE>();
     List<A_STAR_NODE> closed = new List<A_STAR_NODE>();
     List<A_STAR_NODE> path = new List<A_STAR_NODE>();
-    
+    bool resetPath = false;
+    bool isSearching = false;
+    bool isFinding = false;
     A_STAR_NODE[,] customGrid;
-    ///Tilemap tilemap;
     QUAD_NODE rootQuadNode;
+  
 
     public AStar2D(AiGrid2 grid)
     {
-        //tilemap = grid.GetTileMap();
+
         rootQuadNode = grid.Getroot();
         customGrid = grid.GetCustomGrid();
     }
-    
-
-  
+    public bool Finding
+    {
+        get { return isFinding; }
+        set { isFinding = value; }
+    }
+    public bool Reset
+    {
+        get { return resetPath; }
+        set { resetPath = value; }
+    }
+    public bool Searching
+    {
+        get { return isSearching; }
+        set { isSearching = value; }
+    }
 
     public void ResetPath()
     {
+        resetPath= true;
+        isSearching= false;
+        isFinding= false;
+        startIndex = Vector2Int.zero;
+        endIndex = Vector2Int.zero;
         pathFound = false;
-        foreach (A_STAR_NODE node in customGrid) 
-        {
-            node.previous[0].isNull = true;
-        }
         path.Clear();
+        
     }
     public bool GetPathFound()
     {
@@ -100,43 +116,14 @@ public class AStar2D
     {
         return (int)MathF.Abs(nodeA.pos.x - nodeB.pos.x) + (int)MathF.Abs(nodeA.pos.y - nodeB.pos.y);
     }
-    public void AStarSearch(Vector2 startPosition, Vector2 targetPosition)//start and target needs to be inside of the tilemap
+    void FindPath(Vector2Int startIndex, Vector2Int endIndex)
     {
-        
-        //Vector3Int startIndex;
-        //Vector3Int endIndex;
-        Vector2Int startIndex = new Vector2Int();
-        Vector2Int endIndex = new Vector2Int();
+        if(resetPath)
+        {
+            return;
+        }
+        isFinding = true;
 
-        //try//If the position is outside the grid bounds then it wont work
-        //{
-        //    // startIndex = tilemap.WorldToCell(new Vector3(startPosition.x, startPosition.y, 0));
-        //    //endIndex   = tilemap.WorldToCell(new Vector3(targetPosition.x, targetPosition.y, 0));
-
-
-        //}
-        //catch
-        //{
-        //    return;
-        //}
-        bool status = false;
-        GetAIGridIndex(startPosition, rootQuadNode, ref startIndex, ref status);
-        //Debug.Log("Start");
-        //Debug.Log(status);
-        //if (!status)
-        //    return;
-        GetAIGridIndex(targetPosition, rootQuadNode, ref endIndex, ref status);
-        //Debug.Log("End");
-        //if (!status)
-        //    return;
-        //Vector3Int origin = tilemap.origin;
-        //int shiftX = -origin.x;
-        //int shiftY = -origin.y;
-
-        //start = customGrid[startIndex.x+ shiftX, startIndex.y+ shiftY];
-        //end = customGrid[endIndex.x+ shiftX, endIndex.y+ shiftY];
-        //Debug.Log(startIndex);
-        //Debug.Log(endIndex);
         start = customGrid[startIndex.x, startIndex.y];
         end = customGrid[endIndex.x, endIndex.y];
         open.Clear();
@@ -147,6 +134,10 @@ public class AStar2D
         customGrid[start.index.x, start.index.y].openSet = true;
         while (open.Count > 0 && !pathFound)
         {
+            if (resetPath)
+            {
+                return;
+            }
             if (open.Count > 1)
             {
                 open.Sort(comp);
@@ -156,18 +147,21 @@ public class AStar2D
             if (current.pos.x == end.pos.x && current.pos.y == end.pos.y)
             {
                 pathFound = true;
+
                 A_STAR_NODE temp = current;
                 customGrid[temp.index.x, temp.index.y].correctPath = true;
                 path.Add(customGrid[temp.index.x, temp.index.y]);
 
                 while (!temp.previous[0].isNull)
                 {
+                    temp.previous[0].isNull = true;
                     temp = temp.previous[0];
                     customGrid[temp.index.x, temp.index.y].correctPath = true;
                     path.Add(customGrid[temp.index.x, temp.index.y]);
 
                 }
                 path.Reverse();
+                
             }
             else
             {
@@ -218,6 +212,14 @@ public class AStar2D
                 }
             }
         }
+        
+    }
+    public void AStarSearch(Vector2 currentPos, Vector2 goalPos)
+    {
+        isSearching = true;
+        resetPath= false;
+        GetAIGridIndex(currentPos, rootQuadNode);
+        GetAIGridIndex(goalPos, rootQuadNode,false);
 
 
 
@@ -235,46 +237,54 @@ public class AStar2D
     {
         return PointAABBIntersectionTest(rootQuadNode.bounds, pos);
     }
-    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)
+    void GetAIGridIndex(Vector2 pos,QUAD_NODE node, bool isCurrentPos = true)
     {
+        //abort if restart
+        if (resetPath)
+            return;
+
+
 
         if (PointAABBIntersectionTest(node.bounds, pos))
         {
-            
-            
-            if (node.leaf)
+            if(node.leaf)
             {
-                if(node.gridIndices.Count == 0)
+               
+                if (isCurrentPos)
                 {
-                    status = false;
+                    
+                    startIndex = node.gridIndices[0];
                     return;
                 }
-                index = node.gridIndices[0];
-                float distance = Vector2.Distance(pos, customGrid[index.x, index.y].pos);
-                foreach (Vector2Int indices in node.gridIndices)
+                else if (!isCurrentPos)
                 {
-                    float d = Vector2.Distance(pos, customGrid[indices.x, indices.y].pos);
-                    if (d<distance&&!customGrid[indices.x, indices.y].obstacle)
+                   
+                    endIndex = node.gridIndices[0];
+                    if (startIndex != Vector2Int.zero && endIndex != Vector2Int.zero)
                     {
-                        distance = d;
-                        index = indices;
+                        
+                        FindPath(startIndex, endIndex);
+                        return;
                     }
+                    return;
                 }
-                status = true;
-                //Debug.Log("FoundPath");
-                return;
-
+                
             }
             else
             {
-                for (int i = 0; i < 4; i++)
+                for(int i=0; i<4; i++)
                 {
-                    GetAIGridIndex(pos, node.children[i], ref index, ref status);
+                    GetAIGridIndex(pos, node.children[i], isCurrentPos);
                 }
-
+                return;
             }
         }
-        status = false;
         return;
+
+
+
+
+
+
     }
 }
