@@ -55,8 +55,9 @@ public class AiGrid2 : MonoBehaviour
             DrawDebugLine(node);
         }
     }
-    public bool SetTargetToValidCell(ref Vector2 target)
+    public bool SetTargetToValidCell(ref Vector2 target) //This function is evil
     {
+        //Debug.Log("Moving Target");
         Vector2Int temp = Vector2Int.zero;
         bool result = false;
         GetAIGridIndex(target, root, ref temp, ref result);
@@ -222,6 +223,7 @@ public class AiGrid2 : MonoBehaviour
 
     public void RegenerateGrid() //Can be done before every night phase in case new obstacles have been placed
     {
+        //Debug.Log("Regenerating");
         float center = rows / 2.0f;
         for (int x = 0; x < rows; x++)
         {
@@ -274,8 +276,8 @@ public class AiGrid2 : MonoBehaviour
     public void GenerateGrid()
     {
 
-        
-       
+
+        //Debug.Log("Generating");
         customGrid = new A_STAR_NODE[rows, columns];
         //Left and Down is Decreasing in Unity
         //0,0 is left and down in this grid
@@ -408,7 +410,7 @@ public class AiGrid2 : MonoBehaviour
     //Each recursion divides the bounds and creates 4 new equally large nodes, when the nodes are small enough the recursion stops
     void CreateQuadTree(ref QUAD_NODE node)
     {
-        
+        //Debug.Log("Creating Quad Tree");
         node.leaf = false;
         node.gridIndices = new List<Vector2Int>(); //this list should be empty for every node that isn't a leaf node
         if (node.bounds.Width > cellSize) // the rectangles uses integer division
@@ -479,9 +481,9 @@ public class AiGrid2 : MonoBehaviour
             && p.y >= bounds.Y - bounds.Height
             && p.y <= bounds.Y;
     }
-    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)
+    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)//Double Code Segment fix this
     {
-
+        //Debug.Log("Get AI Grid Index");
         if (PointAABBIntersectionTest(node.bounds, pos))
         {
 
@@ -494,16 +496,7 @@ public class AiGrid2 : MonoBehaviour
                     return;
                 }
                 index = node.gridIndices[0];
-                float distance = Vector2.Distance(pos, customGrid[index.x, index.y].pos);
-                foreach (Vector2Int indices in node.gridIndices)
-                {
-                    float d = Vector2.Distance(pos, customGrid[indices.x, indices.y].pos);
-                    if (d < distance && !customGrid[indices.x, indices.y].obstacle)
-                    {
-                        distance = d;
-                        index = indices;
-                    }
-                }
+               
                 status = true;
                 
                 return;
@@ -513,6 +506,7 @@ public class AiGrid2 : MonoBehaviour
             {
                 for (int i = 0; i < 4; i++)
                 {
+                    
                     GetAIGridIndex(pos, node.children[i], ref index, ref status);
                 }
 
