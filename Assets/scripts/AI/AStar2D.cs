@@ -10,48 +10,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 
-public struct A_STAR_NODE
-{
-    public bool isNull;
-    public A_STAR_NODE[] previous;
-    public Vector2 pos;
-    public float g;
-    public float h;
-    public float f;
-    public bool obstacle;
-    public bool openSet;
-    public bool closedSet;
-    public bool correctPath;
-    public List<A_STAR_NODE> neighbours;
-    public Vector2Int index;
 
-    public override bool Equals(object obj)
-    {
-        var b = (A_STAR_NODE)obj;
-        return pos == b.pos;
-    }
-
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            int hash = 1430287;
-
-            hash = hash * 7302013 ^ pos.x.GetHashCode();
-            hash = hash * 7302013 ^ pos.y.GetHashCode();
-            return hash;
-        }
-    }
-}
-
-public class A_STAR_NODEComparer : IComparer<A_STAR_NODE>
-{
-    public int Compare(A_STAR_NODE x, A_STAR_NODE y)
-    {
-
-        return x.f.CompareTo(y.f);
-    }
-}
 public class AStar2D
 {
     Vector2Int startIndex;
@@ -149,14 +108,14 @@ public class AStar2D
                 pathFound = true;
 
                 A_STAR_NODE temp = current;
-                customGrid[temp.index.x, temp.index.y].correctPath = true;
+                //customGrid[temp.index.x, temp.index.y].correctPath = true;
                 path.Add(customGrid[temp.index.x, temp.index.y]);
 
                 while (!temp.previous[0].isNull)
                 {
                     temp.previous[0].isNull = true;
                     temp = temp.previous[0];
-                    customGrid[temp.index.x, temp.index.y].correctPath = true;
+                    //customGrid[temp.index.x, temp.index.y].correctPath = true;
                     path.Add(customGrid[temp.index.x, temp.index.y]);
 
                 }
@@ -262,7 +221,11 @@ public class AStar2D
                     endIndex = node.gridIndices[0];
                     if (startIndex != Vector2Int.zero && endIndex != Vector2Int.zero)
                     {
-                        
+                        if (customGrid[endIndex.x, endIndex.y].obstacle)
+                        {
+                            endIndex = Vector2Int.zero;
+                            return;
+                        }
                         FindPath(startIndex, endIndex);
                         return;
                     }

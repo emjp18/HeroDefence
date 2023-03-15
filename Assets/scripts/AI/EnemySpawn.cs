@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public enum ENEMY_TYPE
-{ CHASE_PLAYER, CHASE_TOWER};
+
 
 public class EnemySpawn : MonoBehaviour
 {
