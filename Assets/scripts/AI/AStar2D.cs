@@ -54,12 +54,10 @@ public class AStar2D
     public void ResetPath()
     {
         resetPath= true;
-        isSearching= false;
-        isFinding= false;
         startIndex = Vector2Int.zero;
         endIndex = Vector2Int.zero;
         pathFound = false;
-        path.Clear();
+        
         
     }
     public bool GetPathFound()
@@ -75,26 +73,31 @@ public class AStar2D
     {
         return (int)MathF.Abs(nodeA.pos.x - nodeB.pos.x) + (int)MathF.Abs(nodeA.pos.y - nodeB.pos.y);
     }
-    void FindPath(Vector2Int startIndex, Vector2Int endIndex)
+    void FindPath(Vector2Int startIndex, Vector2Int endIndex, int maxiumNodes = 100)
     {
         if(resetPath)
         {
+            isFinding = false;
             return;
         }
-        isFinding = true;
+       
 
         start = customGrid[startIndex.x, startIndex.y];
         end = customGrid[endIndex.x, endIndex.y];
         open.Clear();
         closed.Clear();
         open.Add(start);
-
-
+        path.Clear();
+        int c = 0;
         customGrid[start.index.x, start.index.y].openSet = true;
         while (open.Count > 0 && !pathFound)
         {
-            if (resetPath)
+            c++;
+            
+            if (resetPath||c>maxiumNodes)
             {
+               
+                isFinding = false;
                 return;
             }
             if (open.Count > 1)
@@ -118,14 +121,16 @@ public class AStar2D
                     //customGrid[temp.index.x, temp.index.y].correctPath = true;
                     path.Add(customGrid[temp.index.x, temp.index.y]);
 
+                    
                 }
                 path.Reverse();
-                
+                isFinding = false;
+                //Debug.Log(c);
+                return;
             }
             else
             {
                 open.Remove(open.First());
-
                 customGrid[current.index.x, current.index.y].openSet = false;
                 closed.Add(current);
                 customGrid[current.index.x, current.index.y].closedSet = true;
@@ -172,13 +177,22 @@ public class AStar2D
             }
         }
         
+        isFinding = false;
+        return;
     }
-    public void AStarSearch(Vector2 currentPos, Vector2 goalPos)
+    public void AStarSearch(Vector2 currentPos, Vector2 goalPos, int maximunNodes = 100)
     {
-        isSearching = true;
-        resetPath= false;
-        GetAIGridIndex(currentPos, rootQuadNode);
-        GetAIGridIndex(goalPos, rootQuadNode,false);
+        if(!isFinding&&!isSearching)
+        {
+            isSearching = true; 
+            resetPath = false;
+            GetAIGridIndex(currentPos, rootQuadNode, true,maximunNodes);
+            GetAIGridIndex(goalPos, rootQuadNode, false, maximunNodes);
+           
+        }
+       
+        
+        
 
 
 
@@ -196,11 +210,15 @@ public class AStar2D
     {
         return PointAABBIntersectionTest(rootQuadNode.bounds, pos);
     }
-    void GetAIGridIndex(Vector2 pos,QUAD_NODE node, bool isCurrentPos = true)
+    void GetAIGridIndex(Vector2 pos,QUAD_NODE node, bool isCurrentPos = true, int maximunNodes = 100)
     {
         //abort if restart
         if (resetPath)
+        {
+            isSearching= false;
             return;
+        }
+         
 
 
 
@@ -208,16 +226,21 @@ public class AStar2D
         {
             if(node.leaf)
             {
-               
+                isSearching = false;
                 if (isCurrentPos)
                 {
-                    
+                    if (node.gridIndices.Count == 0)
+                        return;
                     startIndex = node.gridIndices[0];
+                    if (customGrid[startIndex.x, startIndex.y].obstacle)
+                        startIndex = Vector2Int.zero;
+
                     return;
                 }
                 else if (!isCurrentPos)
                 {
-                   
+                    if (node.gridIndices.Count == 0)
+                        return;
                     endIndex = node.gridIndices[0];
                     if (startIndex != Vector2Int.zero && endIndex != Vector2Int.zero)
                     {
@@ -226,7 +249,9 @@ public class AStar2D
                             endIndex = Vector2Int.zero;
                             return;
                         }
-                        FindPath(startIndex, endIndex);
+                        
+                        isFinding = true;
+                        FindPath(startIndex, endIndex, maximunNodes);
                         return;
                     }
                     return;

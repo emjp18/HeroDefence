@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 using static Unity.VisualScripting.Metadata;
@@ -21,6 +23,7 @@ public struct QUAD_NODE
     public bool leaf;
     public List<Vector2Int> gridIndices;
 }
+public enum Row_Count{ONE=1, TWO=2, FOUR=4, EIGHT=8, SIXTYFOUR=64 };
 public class AiGrid2 : MonoBehaviour
 {
     float z = 100;
@@ -29,8 +32,9 @@ public class AiGrid2 : MonoBehaviour
     Collider2D[] colliderResult = new Collider2D[10];
     ContactFilter2D contactFilter = new ContactFilter2D();
     //Needs to be uniform for the sake of the quad tree
-    [SerializeField] int rows = 10;
+    [SerializeField] Row_Count rowsCount = Row_Count.SIXTYFOUR;
     int columns;
+    int rows;
     [SerializeField] float cellSize = 5.0f;
     QUAD_NODE root;
     A_STAR_NODE[,] customGrid;
@@ -192,19 +196,18 @@ public class AiGrid2 : MonoBehaviour
     public void Awake() //Before start in case start elsewhere calls for the Grid
     {
         //collisionLayer.value = collisionLayerInteger; //All of the colliders that are on the layer with this index will count in the grid.
-        columns = rows;
+        columns = (int)rowsCount;
+        rows = columns;
         gridCenter = gridCenterTransform.position;
         //contactFilter.SetLayerMask(collisionLayer);
         contactFilter.NoFilter();
         colliderBox = GetComponent<BoxCollider2D>();
         colliderBox.size = new Vector2(cellSize, cellSize);
+
+       //1,2,4,8,64
+
         GenerateGrid();
-        int w = rows;
-        while (w % 4 != 0)
-        {
-            w += 1;
-        }
-        //
+       
         root = new QUAD_NODE();
         //x and y is upper left corner
         Vector2 c = gridCenter;
@@ -214,8 +217,10 @@ public class AiGrid2 : MonoBehaviour
         root.bounds.X = c.x - (rows * cellSize * 0.5f);
         root.bounds.Y = c.y + (columns * cellSize * 0.5f);
         root.bounds.X -= cellSize * 0.5f;
-        root.bounds.Y += cellSize * 0.5f;
-        root.bounds.Width = root.bounds.Height = w * cellSize;
+        root.bounds.Y -= cellSize * 0.5f;
+        root.bounds.Width = root.bounds.Height = rows * cellSize;
+
+        
         //
         CreateQuadTree(ref root);
 
@@ -413,7 +418,11 @@ public class AiGrid2 : MonoBehaviour
         //Debug.Log("Creating Quad Tree");
         node.leaf = false;
         node.gridIndices = new List<Vector2Int>(); //this list should be empty for every node that isn't a leaf node
-        if (node.bounds.Width > cellSize) // the rectangles uses integer division
+
+
+      
+
+        if (node.bounds.Width > cellSize) 
         {
             node.children = new QUAD_NODE[4];
             node.children[0] = new QUAD_NODE();
@@ -464,8 +473,29 @@ public class AiGrid2 : MonoBehaviour
                 if (PointAABBIntersectionTest(node.bounds, customGrid[x, y].pos))
                 {
                     node.gridIndices.Add(customGrid[x, y].index); //Since the nodes can be smaller than the AI nodes multiple nodes
-                    //Debug.Log(customGrid[x, y].pos);
+                   
                 }
+                if (node.gridIndices.Count > 1)
+                {
+                    Vector2 center = new Vector2(node.bounds.X + (node.bounds.Width * 0.5f), node.bounds.Y - (node.bounds.Height * 0.5f));
+                    float d = float.MaxValue;
+                    A_STAR_NODE closestCenterNode = new A_STAR_NODE();
+                    foreach (Vector2Int index in node.gridIndices)
+                    {
+                        A_STAR_NODE n = customGrid[index.x, index.y];
+                        if (Vector2.Distance(center, n.pos) < d)
+                        {
+                            closestCenterNode = n;
+                            d = Vector2.Distance(center, n.pos);
+                        }
+                            
+
+
+                    }
+                    node.gridIndices.Clear();
+                    node.gridIndices.Add(closestCenterNode.index);
+                }
+                   
             }
 
         }
