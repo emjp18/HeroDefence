@@ -107,7 +107,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!95 &543426550370657031
 Animator:
@@ -172,4 +172,4 @@ MonoBehaviour:
   player: {fileID: 0}
   AIPathGrid: {fileID: 0}
   waitTime: 4
-  thresholdDistance: 1
+  cellsize: 2

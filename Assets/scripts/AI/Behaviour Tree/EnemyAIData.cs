@@ -12,11 +12,54 @@ namespace BehaviorTree
        
         public override NodeState Evaluate()
         {
+            if (!(bool)GetData("withinGrid"))
+            {
+                return NodeState.FAILURE;
+            }
+           
+            if (Vector2.Distance((Vector2)GetData("position"), (Vector2)GetData("targetPosition")) <= (float)GetData("attackRange"))
+            {
+                return NodeState.FAILURE;
+            }
+            if(((AStar2D)GetData("AStar2D")).GetPathFound())
+            {
+                return NodeState.FAILURE;
+            }
+            if ((float)GetData("time") < (float)GetData("waitTime"))
+            {
+                SetData("time", (float)GetData("time") + Time.deltaTime);
+
+            }
+            else
+            {
+
+                SetData("time", 0.0f);
+                SetData("pathindex", 0);
+                ((AStar2D)GetData("AStar2D")).ResetPath();
+                ((AStar2D)GetData("AStar2D")).AStarSearch((Vector2)GetData("position"), (Vector2)GetData("targetPosition"), 50);
+            }
+
             state = NodeState.RUNNING;
             return state;
         }
     }
 
+    public class Death : Node
+    {
+        public Death() : base() { }
+
+        public override NodeState Evaluate()
+        {
+            state = NodeState.FAILURE;
+            if (((EnemyStats)GetData("stats")).Health<=0)
+            {
+                state = NodeState.SUCCESS;
+               
+            }
+
+            return state;
+        }
+    }
 
 
 
@@ -54,71 +97,65 @@ namespace BehaviorTree
       
         public override NodeState Evaluate()
         {
-            if ((bool)GetData("withinGrid"))
-            {
-                Vector2 targetpos = (Vector2)GetData("targetPosition");
-                if (Vector2.Distance((Vector2)GetData("position"), (Vector2)GetData("targetPosition")) <= (float)GetData("attackRange"))
-                {
-                    SetData("pathindex", 0);
-                    ((AStar2D)GetData("AStar2D")).ResetPath();
-
-                    return NodeState.FAILURE;
-                }
-                if (((AStar2D)GetData("AStar2D")).GetPathFound())
-                {
-                    var path = ((AStar2D)GetData("AStar2D")).GetPath();
-
-                    if ((int)GetData("pathindex") >= path.Count)
-                    {
-
-                        SetData("pathindex", 0);
-
-                        ((AStar2D)GetData("AStar2D")).ResetPath();
-
-                    }
-                    else
-                    {
-
-                        SetData("movementDirection", (path[(int)GetData("pathindex")].pos - (Vector2)GetData("position")).normalized);
-
-                        if (Vector2.Distance((Vector2)GetData("position"), path[(int)GetData("pathindex")].pos) < (float)GetData("cellsize") * 0.5f)
-                        {
-                            SetData("pathindex", (int)GetData("pathindex") + 1);
-
-                        }
-
-                    }
-
-
-                }
-
-                if (targetpos != (Vector2)GetData("targetPosition") || !((AStar2D)GetData("AStar2D")).GetPathFound())
-                {
-                    targetpos = (Vector2)GetData("targetPosition");
-                    if ((bool)GetData("withinGrid"))
-                    {
-                        if ((float)GetData("time") < (float)GetData("waitTime"))
-                        {
-                            SetData("time", (float)GetData("time") + Time.deltaTime);
-
-                        }
-                        else
-                        {
-
-                            SetData("time", 0.0f);
-                            SetData("pathindex", 0);
-                            ((AStar2D)GetData("AStar2D")).ResetPath();
-                            ((AStar2D)GetData("AStar2D")).AStarSearch((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),100);
-                        }
-                    }
-                }
-            }
-            else
+            if (!(bool)GetData("withinGrid")|| !((AStar2D)GetData("AStar2D")).GetPathFound())
             {
                 state = NodeState.FAILURE;
                 return state;
             }
-            
+           
+            Vector2 targetpos = (Vector2)GetData("targetPosition");
+            if (Vector2.Distance((Vector2)GetData("position"), (Vector2)GetData("targetPosition")) <= (float)GetData("attackRange"))
+            {
+                SetData("pathindex", 0);
+                ((AStar2D)GetData("AStar2D")).ResetPath();
+
+                return NodeState.FAILURE;
+            }
+            if (((AStar2D)GetData("AStar2D")).GetPathFound())
+            {
+                var path = ((AStar2D)GetData("AStar2D")).GetPath();
+
+                if ((int)GetData("pathindex") >= path.Count)
+                {
+
+                    SetData("pathindex", 0);
+
+                    ((AStar2D)GetData("AStar2D")).ResetPath();
+
+                }
+                else
+                {
+
+                    SetData("movementDirection", (path[(int)GetData("pathindex")].pos - (Vector2)GetData("position")).normalized);
+
+                    if (Vector2.Distance((Vector2)GetData("position"), path[(int)GetData("pathindex")].pos) < (float)GetData("cellsize") * 0.5f)
+                    {
+                        SetData("pathindex", (int)GetData("pathindex") + 1);
+
+                    }
+
+                }
+
+
+            }
+
+            if (targetpos != (Vector2)GetData("targetPosition"))
+            {
+                targetpos = (Vector2)GetData("targetPosition");
+                if ((float)GetData("time") < (float)GetData("waitTime"))
+                {
+                    SetData("time", (float)GetData("time") + Time.deltaTime);
+
+                }
+                else
+                {
+
+                    SetData("time", 0.0f);
+                    SetData("pathindex", 0);
+                    ((AStar2D)GetData("AStar2D")).ResetPath();
+                    ((AStar2D)GetData("AStar2D")).AStarSearch((Vector2)GetData("position"), (Vector2)GetData("targetPosition"), 50);
+                }
+            }
 
             state = NodeState.RUNNING;
             return state;

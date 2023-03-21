@@ -18,8 +18,8 @@ public class EnemyChasePlayerComponent : MonoBehaviour
     bool isNight = false;
     Root root;
     [SerializeField] float waitTime = 4.0f;
-    [SerializeField] float cellsize = 2.0f;
-   
+    float cellsize;
+    EnemyStats stats;
     public bool night
     {
         get { return isNight; }
@@ -35,9 +35,11 @@ public class EnemyChasePlayerComponent : MonoBehaviour
    
     private void Start()
     {
+        cellsize = AIPathGrid.GetCellSize();
+        stats = new EnemyStats(ENEMY_TYPE.CHASE_PLAYER);
         Node attack = new Sequence(new List<Node> { new AttackFast(), new AttackHeavy(), new Evade(), new Attack() });
-        Node chase = new Selector(new List<Node> { new ChaseGrid(), new ChaseTarget() });
-        root = new Root(new List<Node> { chase,attack });
+        Node chase = new Selector(new List<Node> { new ChaseGrid(), new ChaseTarget(), new Death() });
+        root = new Root(new List<Node> { chase,attack,new Idle() });
         AStarFunctionality = new AStar2D(AIPathGrid);
         root.SetData("attackRange", attackRange);
         root.SetData("targetPosition", (Vector2)player.position);
@@ -49,6 +51,7 @@ public class EnemyChasePlayerComponent : MonoBehaviour
         root.SetData("withinGrid", false);
         root.SetData("waitTime", waitTime);
         root.SetData("cellsize", cellsize);
+        root.SetData("stats", stats);
         //anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         root.SetData("velocity", rb.velocity);
@@ -64,7 +67,8 @@ public class EnemyChasePlayerComponent : MonoBehaviour
         movementDirection = (Vector2)root.GetData("movementDirection");
         if (root != null)
             root.Evaluate();
-        if (!AStarFunctionality.GetPathFound()&& (bool)root.GetData("withinGrid"))
+        if ((!AStarFunctionality.GetPathFound() && (bool)root.GetData("withinGrid")) ||
+            Vector2.Distance((Vector2)transform.position, (Vector2)player.position) <= attackRange)
             movementDirection = Vector2.zero;
 
 
