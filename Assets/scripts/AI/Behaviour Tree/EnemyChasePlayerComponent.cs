@@ -58,22 +58,33 @@ public class EnemyChasePlayerComponent : MonoBehaviour
         root.SetData("position", (Vector2)transform.position);
         AStarFunctionality.ResetPath();
         AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)player.position, 4096);
+
+    }
+    public void StartNightPhase() //This should be called without any other movement from the player. Otherwise it will lag.
+    {
+        AIPathGrid.RegenerateGrid();
+        AStarFunctionality.UpdateGrid(AIPathGrid);
+        AStarFunctionality.ResetPath();
+        AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)player.position, 4096);
     }
     private void Update()
     {
         root.SetData("withinGrid", AStarFunctionality.IsWithinGridBounds(transform.position));
         root.SetData("position", (Vector2)transform.position);
         root.SetData("targetPosition", (Vector2)player.position);
-        movementDirection = (Vector2)root.GetData("movementDirection");
+
         if (root != null)
             root.Evaluate();
-        if ((!AStarFunctionality.GetPathFound() && (bool)root.GetData("withinGrid")) ||
-            Vector2.Distance((Vector2)transform.position, (Vector2)player.position) <= attackRange)
+        if (!AStarFunctionality.GetPathFound() ||
+              Vector2.Distance((Vector2)transform.position, (Vector2)player.position) <= attackRange)
+        {
             movementDirection = Vector2.zero;
+            root.SetData("movementDirection", movementDirection);
+        }
 
 
 
-
+        movementDirection = (Vector2)root.GetData("movementDirection");
 
 
     }

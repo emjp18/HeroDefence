@@ -28,7 +28,11 @@ public class AStar2D
     A_STAR_NODE[,] customGrid;
     QUAD_NODE rootQuadNode;
   
-
+    public void UpdateGrid(AiGrid2 grid)
+    {
+        rootQuadNode = grid.Getroot();
+        customGrid = grid.GetCustomGrid();
+    }
     public AStar2D(AiGrid2 grid)
     {
 
@@ -96,7 +100,7 @@ public class AStar2D
             
             if (resetPath||c>maxiumNodes)
             {
-               
+                
                 isFinding = false;
                 return;
             }
@@ -109,7 +113,7 @@ public class AStar2D
             if (current.pos.x == end.pos.x && current.pos.y == end.pos.y)
             {
                 pathFound = true;
-
+              
                 A_STAR_NODE temp = current;
                 //customGrid[temp.index.x, temp.index.y].correctPath = true;
                 path.Add(customGrid[temp.index.x, temp.index.y]);
@@ -125,7 +129,7 @@ public class AStar2D
                 }
                 path.Reverse();
                 isFinding = false;
-                //Debug.Log(c);
+                //
                 return;
             }
             else
@@ -210,7 +214,7 @@ public class AStar2D
     {
         return PointAABBIntersectionTest(rootQuadNode.bounds, pos);
     }
-    void GetAIGridIndex(Vector2 pos,QUAD_NODE node, bool isCurrentPos = true, int maximunNodes = 100)
+    void GetAIGridIndex(Vector2 pos,QUAD_NODE node, bool isCurrentPos = true, int maximumNodes = 100)
     {
         //abort if restart
         if (resetPath)
@@ -251,7 +255,8 @@ public class AStar2D
                         }
                         
                         isFinding = true;
-                        FindPath(startIndex, endIndex, maximunNodes);
+                   
+                        FindPath(startIndex, endIndex, maximumNodes);
                         return;
                     }
                     return;
@@ -262,7 +267,7 @@ public class AStar2D
             {
                 for(int i=0; i<4; i++)
                 {
-                    GetAIGridIndex(pos, node.children[i], isCurrentPos);
+                    GetAIGridIndex(pos, node.children[i], isCurrentPos, maximumNodes);
                 }
                 return;
             }

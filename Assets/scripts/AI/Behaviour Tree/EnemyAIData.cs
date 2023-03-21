@@ -97,9 +97,12 @@ namespace BehaviorTree
       
         public override NodeState Evaluate()
         {
+           
             if (!(bool)GetData("withinGrid")|| !((AStar2D)GetData("AStar2D")).GetPathFound())
             {
+               
                 state = NodeState.FAILURE;
+              
                 return state;
             }
            
@@ -113,6 +116,7 @@ namespace BehaviorTree
             }
             if (((AStar2D)GetData("AStar2D")).GetPathFound())
             {
+               
                 var path = ((AStar2D)GetData("AStar2D")).GetPath();
 
                 if ((int)GetData("pathindex") >= path.Count)

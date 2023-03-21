@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class EnemyChasePlayerAndBuildingComponent : MonoBehaviour
 {
+    [SerializeField] bool focusPlayer = false;
     [SerializeField] float playerRange = 50;
     [SerializeField] float attackRange = 4;
     [SerializeField] float movementSpeed = 100;
@@ -60,12 +61,22 @@ public class EnemyChasePlayerAndBuildingComponent : MonoBehaviour
         root.SetData("position", (Vector2)transform.position);
         AStarFunctionality.ResetPath();
         AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)currentTarget.position, 4096);
+
     }
     private void Update()
     {
-        if(Vector2.Distance(player.position, transform.position)<playerRange)
+        float d = Vector2.Distance(player.position, transform.position);
+        if (d < playerRange )
         {
-            currentTarget = player;
+            if(focusPlayer)
+            {
+                currentTarget = player;
+            }
+            else if(d < Vector2.Distance(buildingTarget.position, transform.position))
+            {
+                currentTarget = player;
+            }
+           
         }
         else
         {
@@ -75,16 +86,18 @@ public class EnemyChasePlayerAndBuildingComponent : MonoBehaviour
         root.SetData("withinGrid", AStarFunctionality.IsWithinGridBounds(transform.position));
         root.SetData("position", (Vector2)transform.position);
         root.SetData("targetPosition", (Vector2)currentTarget.position);
-        movementDirection = (Vector2)root.GetData("movementDirection");
+     
         if (root != null)
             root.Evaluate();
-        if ((!AStarFunctionality.GetPathFound() && (bool)root.GetData("withinGrid")) ||
-             Vector2.Distance((Vector2)transform.position, (Vector2)currentTarget.position) <= attackRange)
+        if (!AStarFunctionality.GetPathFound() ||
+            Vector2.Distance((Vector2)transform.position, (Vector2)currentTarget.position) <= attackRange)
+        {
             movementDirection = Vector2.zero;
+            root.SetData("movementDirection", movementDirection);
+        }
 
 
-
-
+        movementDirection = (Vector2)root.GetData("movementDirection");
 
 
     }

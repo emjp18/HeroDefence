@@ -7,65 +7,13 @@ using static UnityEngine.GraphicsBuffer;
 public enum ENEMY_TYPE { MINI_BOSS, CHASE_PLAYER, CHASE_BUILDING, CHASE_BOTH}
 public class EnemySpawn : MonoBehaviour
 {
-    bool night = false;
-    [SerializeField] int maxEnemies = 5;
-    //[SerializeField] float spawnFrequency = 10;
-    int enemySpawned = 0;
-    //float time = 0;
-    
-    [SerializeField] string enemyName = "Enemy";
-    GameObject enemy;
-    [SerializeField] List<Transform> targets; //Set each target to each spawn point manually. Even if the center building is the target, make it outside collision in the direction of the spawn point.
-    [SerializeField] List<Transform> spawnPoints;
-    //int targetNr = 0;
-    void Start()
+    [SerializeField] List<GameObject> enemies;
+    private void Start()
     {
-        Physics2D.IgnoreLayerCollision(6, 6);
-        Physics2D.IgnoreLayerCollision(6, 7);//This helps the pathfinding, enemies will ignore collision but if they accidentally touches
-        //they will not stop but pass through the objects.
-        enemy = GameObject.Find(enemyName);
-        //var AIComp = enemy.GetComponent<AI>();
-        //var grid = AIComp.GetGrid();
-        //foreach (Transform target in targets)
-        //{
-           
-        //    Vector2 targetPos = target.position;
-        //    //grid.SetTargetToValidCell(ref targetPos); //Set the target in a valid cell manually.
-        //    target.position = targetPos;
-        //}
-       
+        
     }
-
-   
-    void Update()
+    private void Update()
     {
-        if(night&&enemySpawned<maxEnemies)
-        {
-            //if(time>spawnFrequency)
-            //{
-            //    time = 0.0f;
-            //    foreach (Transform t in spawnPoints)
-            //    {
-            //        Instantiate(enemy, t.position, t.rotation);
-            //        if (targetNr >= targets.Count)
-            //            targetNr = 0;
-            //        enemy.GetComponent<AI>().SetTarget(targets[targetNr++]);
-            //        enemySpawned++;
-            //    }
-            //}
-            //else
-            //{
-            //    time += Time.deltaTime;
-            //}
-            
-        }
-    }
-    public void SetNight(bool night)
-    {
-        this.night = night;
-    }
-    public void SetEnemyToSpawn(string nameOfGameObject)
-    {
-        enemyName = nameOfGameObject;
+        
     }
 }

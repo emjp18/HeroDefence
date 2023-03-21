@@ -56,22 +56,28 @@ public class EnemyChaseBuildingComponent : MonoBehaviour
         root.SetData("position", (Vector2)transform.position);
         AStarFunctionality.ResetPath();
         AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)targetBuilding.position, 4096);
+   
     }
     private void Update()
     {
         root.SetData("withinGrid", AStarFunctionality.IsWithinGridBounds(transform.position));
         root.SetData("position", (Vector2)transform.position);
-   
-        movementDirection = (Vector2)root.GetData("movementDirection");
+
+  
         if (root != null)
             root.Evaluate();
-        if ((!AStarFunctionality.GetPathFound() && (bool)root.GetData("withinGrid")) ||
+        if (!AStarFunctionality.GetPathFound() ||
             Vector2.Distance((Vector2)transform.position, (Vector2)targetBuilding.position) <= attackRange)
+        {
+           
             movementDirection = Vector2.zero;
+            root.SetData("movementDirection", movementDirection);
+        }
 
+       
+        movementDirection = (Vector2)root.GetData("movementDirection");
 
-
-
+       
 
 
     }
