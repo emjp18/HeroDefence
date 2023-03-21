@@ -228,14 +228,14 @@ public class AiGrid2 : MonoBehaviour
 
     public void RegenerateGrid() //Can be done before every night phase in case new obstacles have been placed
     {
-        //Debug.Log("Regenerating");
+
         float center = rows / 2.0f;
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
             {
                 Vector2 worldPos;
-                
+          
                 if (rows < center)
                 {
                     worldPos.x = gridCenter.x - cellSize * (center - x);
@@ -260,23 +260,49 @@ public class AiGrid2 : MonoBehaviour
                 {
                     worldPos.y = gridCenter.y + cellSize * (y - center);
                 }
-                worldPos.x += cellSize * 0.5f; //making the worldpos be in the center of the node assuming world center is up and left
-                worldPos.y -= cellSize * 0.5f;
-
-                colliderBox.transform.position = worldPos;
-
-
-                //Only regenerate collision
-                customGrid[x, y].obstacle = colliderBox.OverlapCollider(contactFilter, colliderResult) > 0;
-         
                 
+                colliderBox.offset = worldPos;
+
+
             
-               
+            
+                bool obstacle = false;
+
+                if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
+                {
+                    if (colliderResult != null)
+                    {
+
+                        foreach (Collider2D collider in colliderResult)
+                        {
+
+                            if (collider.gameObject.tag != "Character" && collider.gameObject.tag != "Player")
+                            {
+
+                                obstacle = true;
+                                break;
+
+                            }
+                            else
+                            {
+                                break;//Temporary fix, if enemy is in cell then no collision cus for some reason it adds it despite the tags
+                            }
+                        }
+
+                    }
+
+
+
+
+                }
+                customGrid[x, y].obstacle = obstacle;
 
             }
         }
 
        
+
+
     }
     public void GenerateGrid()
     {
