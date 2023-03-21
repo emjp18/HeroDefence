@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -20,7 +21,17 @@ public class PlayerMovement : MonoBehaviour
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
         if(Input.GetMouseButtonDown(0))
         {
-            animatorWarrior.SetTrigger("attack");
+            animatorWarrior.SetBool("Attack",true);
+        }
+        //else
+        //{
+        //    //animatorWarrior.SetBool("StopAttack",true);
+        //    animatorWarrior.SetBool("Attack", false);
+        //}
+        if (Input.GetMouseButtonUp(0))
+        {
+            animatorWarrior.SetBool("FrontAttack", false);
+            animatorWarrior.SetBool("StopAttack",true) ;
         }
     }
     void FixedUpdate()
