@@ -84,7 +84,7 @@ namespace BehaviorTree
             }
 
             SetData("movementDirection", ((Vector2)GetData("gridCenter") - (Vector2)GetData("position")).normalized);
-            
+           
             state = NodeState.SUCCESS;
             return state;
         }

@@ -13,16 +13,12 @@ public class EnemyChaseBuildingComponent : MonoBehaviour
     Animator anim;
     Vector2 movementDirection = Vector2.zero;
     Rigidbody2D rb;
-    bool isNight = false;
+
     Root root;
     [SerializeField] float waitTime = 4.0f;
     float cellsize;
     EnemyStats stats;
-    public bool night
-    {
-        get { return isNight; }
-        set { isNight = value; }
-    }
+   
 
     private void FixedUpdate()
     {
@@ -31,7 +27,8 @@ public class EnemyChaseBuildingComponent : MonoBehaviour
 
     }
 
-    private void Start()
+    
+    public void StartNightPhase() //This should be called without any other movement from the player. Otherwise it will lag.
     {
         cellsize = AIPathGrid.GetCellSize();
         stats = new EnemyStats(ENEMY_TYPE.CHASE_BUILDING);
@@ -54,9 +51,9 @@ public class EnemyChaseBuildingComponent : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         root.SetData("velocity", rb.velocity);
         root.SetData("position", (Vector2)transform.position);
+        AStarFunctionality.UpdateGrid(AIPathGrid);
         AStarFunctionality.ResetPath();
         AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)targetBuilding.position, 4096);
-   
     }
     private void Update()
     {

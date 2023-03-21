@@ -15,16 +15,12 @@ public class EnemyChasePlayerComponent : MonoBehaviour
     Animator anim;
     Vector2 movementDirection = Vector2.zero;
     Rigidbody2D rb;
-    bool isNight = false;
+
     Root root;
     [SerializeField] float waitTime = 4.0f;
     float cellsize;
     EnemyStats stats;
-    public bool night
-    {
-        get { return isNight; }
-        set { isNight= value; }
-    }
+    
    
     private void FixedUpdate()
     {
@@ -33,13 +29,14 @@ public class EnemyChasePlayerComponent : MonoBehaviour
       
     }
    
-    private void Start()
+  
+    public void StartNightPhase() //This should be called without any other movement from the player. Otherwise it will lag.
     {
         cellsize = AIPathGrid.GetCellSize();
         stats = new EnemyStats(ENEMY_TYPE.CHASE_PLAYER);
         Node attack = new Sequence(new List<Node> { new AttackFast(), new AttackHeavy(), new Evade(), new Attack() });
         Node chase = new Selector(new List<Node> { new ChaseGrid(), new ChaseTarget(), new Death() });
-        root = new Root(new List<Node> { chase,attack,new Idle() });
+        root = new Root(new List<Node> { chase, attack, new Idle() });
         AStarFunctionality = new AStar2D(AIPathGrid);
         root.SetData("attackRange", attackRange);
         root.SetData("targetPosition", (Vector2)player.position);
@@ -56,13 +53,6 @@ public class EnemyChasePlayerComponent : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         root.SetData("velocity", rb.velocity);
         root.SetData("position", (Vector2)transform.position);
-        AStarFunctionality.ResetPath();
-        AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)player.position, 4096);
-
-    }
-    public void StartNightPhase() //This should be called without any other movement from the player. Otherwise it will lag.
-    {
-        AIPathGrid.RegenerateGrid();
         AStarFunctionality.UpdateGrid(AIPathGrid);
         AStarFunctionality.ResetPath();
         AStarFunctionality.AStarSearch((Vector2)transform.position, (Vector2)player.position, 4096);
