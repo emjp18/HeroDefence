@@ -8,6 +8,7 @@ using static State;
 
 public class Flocking : MonoBehaviour
 {
+    [SerializeField]  bool leader = false;
     [SerializeField] Transform target;
     Vector2 dir;
     Vector2 currentVelocity;
@@ -15,34 +16,53 @@ public class Flocking : MonoBehaviour
     Collider2D box;
     List<Transform> neighbours;
     float avoidRadius;
+    float neighbourRange;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         box = GetComponent<Collider2D>();
         dir = (target.position - transform.position).normalized;
         avoidRadius = box.bounds.size.x*1.5f;
+        neighbourRange = avoidRadius * 3;
     }
     private void FixedUpdate()
     {
-
+        rb.velocity = dir * 100 * Time.fixedDeltaTime;
         currentVelocity = rb.velocity;
+     
 
     }
     void Update()
     {
+        if (leader)
+            dir = (target.position - transform.position).normalized;
+        else
+            dir = Vector2.zero;
         UpdateNeighbours();
+        dir += Cohesion();
+        dir += Alignment();
+        dir += Separation();
+
+
     }
     private void UpdateNeighbours()
     {
-        
+        neighbours.Clear();
+        Collider2D[] contextColliders = Physics2D.OverlapCircleAll(transform.position, neighbourRange);
+        foreach (Collider2D c in contextColliders)
+        {
+            if (c.tag == "Flock")
+                neighbours.Add(c.gameObject.transform);
+        }
+
     }
     public Vector2 Alignment()
     {
-        //if no neighbors, maintain current alignment
+        
         if (neighbours.Count == 0)
             return transform.forward;
 
-        //add all points together and average
+       
         Vector2 alignmentMove = Vector2.zero;
 
         foreach (Transform item in neighbours)
@@ -78,7 +98,7 @@ public class Flocking : MonoBehaviour
 
 
     }
-    public Vector2 Avoidance()
+    public Vector2 Separation()
     {
 
        
