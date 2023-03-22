@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,12 @@ using UnityEngine.Rendering; // used to access the volume component
 
 public class Day_Night_Cycle : MonoBehaviour
 {
+    [SerializeField] EnemySpawn enemySpawn;
+    public bool nightEndCondition = false;
+    public bool nightStartCondition = false;
+    float nightTime = 0.0f;
+    float dayTime = 0.0f;
+    bool isDay = false;
 
     public Volume ppv; // this is the post processing volume
 
@@ -22,11 +29,35 @@ public class Day_Night_Cycle : MonoBehaviour
     {
         ppv = gameObject.GetComponent<Volume>();
     }
-
+    private void Update()
+    {
+        if (isDay)
+        {
+            dayTime += Time.deltaTime;
+        }
+        else
+        {
+            nightTime += Time.deltaTime;
+        }
+        if (nightStartCondition) //Pause Game
+        {
+            isDay = false;
+            dayTime = 0.0f;
+            nightStartCondition = false;
+            enemySpawn.StartNightPhase();
+        }
+        if (nightEndCondition)//Pause Game
+        {
+            isDay = true;
+            nightTime = 0.0f;
+            nightEndCondition = false;
+            enemySpawn.EndNightPhase();
+        }
+    }
     // Update is called once per frame
     void FixedUpdate() // we used fixed update, since update is frame dependant. 
     {
-        CalcTime();
+        //CalcTime();
     }
 
     public void CalcTime() // Used to calculate sec, min and hours

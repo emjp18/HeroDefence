@@ -58,11 +58,10 @@ public class AStar2D
     public void ResetPath()
     {
         resetPath= true;
+        pathFound = false;
         startIndex = Vector2Int.zero;
         endIndex = Vector2Int.zero;
-        pathFound = false;
-        
-        
+
     }
     public bool GetPathFound()
     {
@@ -113,7 +112,7 @@ public class AStar2D
             if (current.pos.x == end.pos.x && current.pos.y == end.pos.y)
             {
                 pathFound = true;
-              
+                
                 A_STAR_NODE temp = current;
                 //customGrid[temp.index.x, temp.index.y].correctPath = true;
                 path.Add(customGrid[temp.index.x, temp.index.y]);
@@ -190,6 +189,7 @@ public class AStar2D
         {
             isSearching = true; 
             resetPath = false;
+            
             GetAIGridIndex(currentPos, rootQuadNode, true,maximunNodes);
             GetAIGridIndex(goalPos, rootQuadNode, false, maximunNodes);
            
