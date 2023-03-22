@@ -106,7 +106,7 @@ namespace BehaviorTree
                 return state;
             }
            
-            Vector2 targetpos = (Vector2)GetData("targetPosition");
+         
             if (Vector2.Distance((Vector2)GetData("position"), (Vector2)GetData("targetPosition")) <= (float)GetData("attackRange"))
             {
                 SetData("pathindex", 0);
@@ -116,7 +116,7 @@ namespace BehaviorTree
             }
             if (((AStar2D)GetData("AStar2D")).GetPathFound())
             {
-               
+                SetData("targetUpdated", false);
                 var path = ((AStar2D)GetData("AStar2D")).GetPath();
 
                 if ((int)GetData("pathindex") >= path.Count)
@@ -142,10 +142,8 @@ namespace BehaviorTree
 
 
             }
-
-            if (targetpos != (Vector2)GetData("targetPosition"))
+            if((bool)GetData("dynamicTarget")|| (bool)GetData("targetUpdated"))
             {
-                targetpos = (Vector2)GetData("targetPosition");
                 if ((float)GetData("time") < (float)GetData("waitTime"))
                 {
                     SetData("time", (float)GetData("time") + Time.deltaTime);
@@ -160,6 +158,7 @@ namespace BehaviorTree
                     ((AStar2D)GetData("AStar2D")).AStarSearch((Vector2)GetData("position"), (Vector2)GetData("targetPosition"), 50);
                 }
             }
+            
 
             state = NodeState.RUNNING;
             return state;
