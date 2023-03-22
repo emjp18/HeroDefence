@@ -9,6 +9,9 @@ public class EnemySpawn : MonoBehaviour
 {
     [SerializeField] AiGrid2 grid;
     [SerializeField] List<Transform> spawnpoints;
+    [SerializeField] int maxEnemyChasePlayercount = 10;
+    [SerializeField] int maxEnemyChaseBuildingcount = 20;
+    [SerializeField] int maxEnemyChaseBothcount = 10;
     [SerializeField] int enemyChasePlayercount = 0;
     [SerializeField] int enemyChaseBuildingcount = 0;
     [SerializeField] int enemyChaseBothcount = 0;
@@ -21,34 +24,35 @@ public class EnemySpawn : MonoBehaviour
     int waveNumber = 0;
     void UpdateEnemyLists()
     {
-       
-        for (int i = 0; i < enemyChasePlayercount; i++)
+       if(enemyChasePlayercount<= maxEnemyChasePlayercount)
         {
-            if(i>= chasePlayerenemies.Count)
+            for (int i = 0; i < enemyChasePlayercount; i++)
             {
-                chasePlayerenemies.Add(Instantiate(enemyChasePlayer));
+
+                chasePlayerenemies[i].SetActive(true);
             }
-        
-            chasePlayerenemies[i].SetActive(true);
         }
-        for (int i = 0; i < enemyChaseBuildingcount; i++)
+        if (enemyChaseBuildingcount <= maxEnemyChaseBuildingcount)
         {
-            if (i >= chaseBuildingenemies.Count)
+            for (int i = 0; i < enemyChaseBuildingcount; i++)
             {
-                chaseBuildingenemies.Add(Instantiate(enemyChaseBuilding));
+
+
+                chaseBuildingenemies[i].SetActive(true);
+            }
+        }
+            
+        if (enemyChaseBothcount <= maxEnemyChaseBothcount)
+        {
+            for (int i = 0; i < enemyChaseBothcount; i++)
+            {
+
+
+                chaseBothenemies[i].SetActive(true);
             }
 
-            chaseBuildingenemies[i].SetActive(true);
         }
-        for (int i = 0; i < enemyChaseBothcount; i++)
-        {
-            if (i >= chaseBothenemies.Count)
-            {
-                chaseBothenemies.Add(Instantiate(enemyChaseBoth));
-            }
-
-            chaseBothenemies[i].SetActive(true);
-        }
+            
     }
     private void Start()
     {
@@ -57,6 +61,21 @@ public class EnemySpawn : MonoBehaviour
         enemyChaseBoth.SetActive(false);
         Physics2D.SetLayerCollisionMask(6, 7);
         Physics2D.SetLayerCollisionMask(6, 6);
+        for (int i = 0; i < maxEnemyChasePlayercount; i++)
+        {
+            chasePlayerenemies.Add(Instantiate(enemyChasePlayer));
+            chasePlayerenemies[i].SetActive(false);
+        }
+        for (int i = 0; i < maxEnemyChaseBuildingcount; i++)
+        {
+            chaseBuildingenemies.Add(Instantiate(enemyChaseBuilding));
+            chaseBuildingenemies[i].SetActive(false);
+        }
+        for (int i = 0; i < maxEnemyChaseBothcount; i++)
+        {
+            chaseBothenemies.Add(Instantiate(enemyChaseBoth));
+            chaseBothenemies[i].SetActive(false);
+        }
     }
     public void EndNightPhase()
     {
@@ -76,9 +95,7 @@ public class EnemySpawn : MonoBehaviour
           
             chaseBothenemies[i].SetActive(false);
         }
-        chasePlayerenemies.Clear();
-        chaseBuildingenemies.Clear();
-        chaseBothenemies.Clear();
+      
         switch (waveNumber)//Update enemy count information for each type
         {
             case 0:
