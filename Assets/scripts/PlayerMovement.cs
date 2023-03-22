@@ -16,10 +16,10 @@ public class PlayerMovement : MonoBehaviour
         Input.GetAxisRaw("Horizontal");
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
-        animatorWarrior.SetFloat("Horizontal", movement.x);
+        animatorWarrior.SetFloat("Horizontal",movement.x);
         animatorWarrior.SetFloat("Vertical", movement.y);
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
-        if (Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0))
         {
             animatorWarrior.SetBool("Attack",true);
         }
