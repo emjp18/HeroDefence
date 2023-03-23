@@ -10,10 +10,16 @@ public class EnemyStats
     float attackRange;
     float movementSpeed;
     float chasePlayerRange;
+    float chaseTargetRange;
     public float Health
     {
         get { return health; }
         set { health = value; }
+    }
+    public float ChaseTargetRange
+    {
+        get { return chaseTargetRange; }
+        set { chaseTargetRange = value; }
     }
     public float PlayerRange
     {
@@ -53,6 +59,7 @@ public class EnemyStats
                     chasePlayerRange = 10;
                     movementSpeed = 300;
                     attackRange = 3;
+                    chaseTargetRange = 80;
                     break;
                 }
             case ENEMY_TYPE.CHASE_BUILDING:
@@ -63,6 +70,7 @@ public class EnemyStats
                     chasePlayerRange = 10;
                     movementSpeed = 300;
                     attackRange = 3;
+                    chaseTargetRange = 80;
                     break;
                 }
             case ENEMY_TYPE.CHASE_PLAYER:
@@ -73,6 +81,7 @@ public class EnemyStats
                     chasePlayerRange = 20;
                     movementSpeed = 300;
                     attackRange = 3;
+                    chaseTargetRange = 80;
                     break;
 
                 }
@@ -84,6 +93,7 @@ public class EnemyStats
                     chasePlayerRange = 10;
                     movementSpeed = 300;
                     attackRange = 3;
+                    chaseTargetRange = 80;
                     break;
                 }
         }

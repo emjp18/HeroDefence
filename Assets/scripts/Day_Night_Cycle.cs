@@ -7,7 +7,7 @@ using UnityEngine.Rendering; // used to access the volume component
 
 public class Day_Night_Cycle : MonoBehaviour
 {
-    [SerializeField] EnemySpawn enemySpawn;
+    [SerializeField] EnemySpawnFlock enemySpawn;
     public bool nightEndCondition = false;
     public bool nightStartCondition = false;
     float nightTime = 0.0f;

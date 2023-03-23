@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class SC_FPSCounter : MonoBehaviour
 {
     /* Assign this script to any object in the Scene to display frames per second */
@@ -27,6 +28,7 @@ public class SC_FPSCounter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         timeleft -= Time.deltaTime;
         accum += Time.timeScale / Time.deltaTime;
         ++frames;

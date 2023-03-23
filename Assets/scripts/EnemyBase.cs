@@ -17,10 +17,33 @@ public abstract class EnemyBase : MonoBehaviour
     {
 
         rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
-
+        
     }
-    public abstract void Init(AiGrid2 grid);
-   
-    public abstract void StartNightPhase(AiGrid2 grid);
-    
+    public virtual void InitA_STAR(AiGrid2 grid)
+    {
+        return;
+    }
+    public virtual void InitFlock(float sep, float sepOb, float tar, float align, float cohesive)
+    {
+        return;
+    }
+
+    public virtual void StartNightPhaseA_STAR(AiGrid2 grid)
+    {
+        return;
+    }
+    public virtual void Init()
+    {
+        return;
+    }
+
+    public virtual void StartNightPhase()
+    {
+        return;
+    }
+    public Vector2 Movement
+    {
+        get { return movementDirection; }
+    }
+
 }

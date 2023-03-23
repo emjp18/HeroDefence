@@ -1,206 +1,324 @@
+using BehaviorTree;
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
-using static State;
 
-public class Flocking : MonoBehaviour
+
+
+public abstract class FlockBehaviour
 {
-    List<EnemyBase> flock;
-    Vector2 dir;
-    Vector2 currentVelocity;
-    Rigidbody2D rb;
-    Collider2D box;
-    List<Transform> neighbours;
-    float avoidRadius;
-    float neighbourRange;
-    void Start()
+    protected List<Transform> nearbyAgents = new List<Transform>();
+    protected List<Vector2> nearbyObstacles = new List<Vector2>();
+    protected List<RectangleFloat> nearbyObstacleBoxes = new List<RectangleFloat>();
+    protected float detectCollisionRadius = 6;
+    protected float avoidanceRadius = 3;
+    protected Collider2D[] nearbyColliders = new Collider2D[20];
+    protected float cohesionWeight = 1.6f;
+    protected float alignmentWeight = 1.25f;
+    protected float separationWeight = 3.0f;
+    protected float targetWeight = 1;
+    protected float separationObstWeight = 2.0f;
+    protected List<int> physicsLayer = new List<int> { 3, 7,6 };
+    protected int flockPhysicslayer = 6;
+    protected float smoothTime = 0.3f;
+    protected Vector2 oldTargetpos = Vector2.zero;
+    protected bool waitForTarget = false;
+    protected Vector2 oldDir = Vector2.zero;
+    protected float angleThreshold = 35;
+    protected Vector2 newDirection;
+    protected RectangleFloat agentBounds = new RectangleFloat();
+    
+    public void SetLayers(List<int> layers )
     {
-        rb = GetComponent<Rigidbody2D>();
-        box = GetComponent<Collider2D>();
-        //dir = (target.position - transform.position).normalized;
-        avoidRadius = box.bounds.size.x*1.5f;
-        neighbourRange = avoidRadius * 3;
+        physicsLayer = layers;
     }
-    private void FixedUpdate()
+    public float CohesionWeight
     {
-        rb.velocity = dir * 100 * Time.fixedDeltaTime;
-        currentVelocity = rb.velocity;
-     
-
+        get { return cohesionWeight; }
+        set { cohesionWeight = value; }
     }
-    void Update()
+    public float SeparateOBWeight
     {
-        //if (leader)
-        //    dir = (target.position - transform.position).normalized;
-        //else
-        //    dir = Vector2.zero;
-        UpdateNeighbours();
-        dir += Cohesion();
-        dir += Alignment();
-        dir += Separation();
-
-
+        get { return separationObstWeight; }
+        set { separationObstWeight = value; }
     }
-    private void UpdateNeighbours()
+    public float TargetWeight
     {
-        neighbours.Clear();
-        Collider2D[] contextColliders = Physics2D.OverlapCircleAll(transform.position, neighbourRange);
-        foreach (Collider2D c in contextColliders)
+        get { return targetWeight; }
+        set { targetWeight = value; }
+    }
+    public int FlockPhysicsLayer
+    {
+        get { return flockPhysicslayer; }
+        set { flockPhysicslayer = value; }
+    }
+    public float AlignmentWeight
+    {
+        get { return alignmentWeight; }
+        set { alignmentWeight = value; }
+    }
+    public float CollisionR
+    {
+        get { return detectCollisionRadius; }
+        set { detectCollisionRadius = value; }
+    }
+    public float AvoidR
+    {
+        get { return avoidanceRadius; }
+        set { avoidanceRadius = value; }
+    }
+    public float SeparationWeight
+    {
+        get { return separationWeight; }
+        set { separationWeight = value; }
+    }
+    
+    protected void GetNearbyObjects(Vector2 pos, BoxCollider2D box)
+    {
+       
+
+
+        nearbyAgents.Clear();
+
+
+
+
+        int nr = Physics2D.OverlapCircleNonAlloc(pos, detectCollisionRadius, nearbyColliders);
+        for (int i = 0; i < nr; i++)
         {
-            if (c.tag == "Flock")
-                neighbours.Add(c.gameObject.transform);
+            if (nearbyColliders[i] != box && nearbyColliders[i].gameObject.layer == flockPhysicslayer)
+            {
+                nearbyAgents.Add(nearbyColliders[i].transform);
+            }
+           
         }
 
     }
-    public Vector2 Alignment()
+    public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, BoxCollider2D box,Vector2 currentVelocity, Vector2 currentDirection);
+    
+    public void SetGrid(AiGrid2 grid)
+    {
+
+        detectCollisionRadius = grid.GetCellSize() * 1.5f;
+        foreach (A_STAR_NODE node in grid.GetCustomGrid())
+        {
+            if(node.obstacle)
+            {
+                nearbyObstacles.Add(node.pos);
+                RectangleFloat bounds = new RectangleFloat();
+                bounds.X = node.pos.x- grid.GetCellSize()*0.5f;
+                bounds.Y = node.pos.y + grid.GetCellSize() * 0.5f;
+                bounds.Width =bounds.Height= grid.GetCellSize();
+                nearbyObstacleBoxes.Add(bounds);
+            }
+        }
+    }
+    
+}
+
+public class FlockBehaviourChase : FlockBehaviour
+{
+    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
     {
         
-        if (neighbours.Count == 0)
-            return transform.forward;
+        avoidanceRadius =  box.size.x > box.size.y ? box.size.x : box.size.y;
+        avoidanceRadius *= 1.25f;
+        GetNearbyObjects(pos, box);
+        newDirection = Vector2.zero;
 
-       
-        Vector2 alignmentMove = Vector2.zero;
+        newDirection += MoveToTarget(pos, targetPos, box,currentVelocity,currentDirection) * targetWeight;
 
-        foreach (Transform item in neighbours)
+ 
+
+        var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
+
+        if (cohesion.magnitude > cohesionWeight * cohesionWeight)
         {
-            alignmentMove += (Vector2)item.transform.up;
+            cohesion.Normalize();
+            cohesion *= cohesionWeight;
         }
-        alignmentMove /= neighbours.Count;
+        newDirection += cohesion;
+
+        var alignment = Alignment(currentVelocity, currentDirection) * alignmentWeight;
+
+        if (alignment.magnitude > alignmentWeight * alignmentWeight)
+        {
+            alignment.Normalize();
+            alignment *= alignmentWeight;
+        }
+        newDirection += alignment;
+
+        var separation = Separation(pos, currentVelocity, currentDirection) * separationWeight;
+
+        if (separation.magnitude > separationWeight * separationWeight)
+        {
+            separation.Normalize();
+            separation *= separationWeight;
+        }
+        newDirection += separation;
+        var separationOb = SeparationObstacles(pos, targetPos, currentVelocity, currentDirection) * separationObstWeight;
+
+        if (separationOb.magnitude > separationObstWeight * separationObstWeight)
+        {
+            separationOb.Normalize();
+            separationOb *= separationObstWeight;
+        }
+        newDirection += separationOb;
+        
+
+        return newDirection.normalized;
+
+
+
+    }
+    Vector2 Alignment(Vector2 currentVelocity, Vector2 currentDirection)
+    {
+        if (nearbyAgents.Count == 0)
+            return Vector2.zero;
+
+  
+        Vector2 alignmentMove = Vector2.zero;
+        //Filter();
+        foreach (Transform item in nearbyAgents)
+        {
+            alignmentMove += item.gameObject.GetComponent<EnemyBase>().Movement;
+        }
+        alignmentMove /= nearbyAgents.Count;
+        alignmentMove = Vector2.SmoothDamp(currentDirection, alignmentMove, ref currentVelocity, smoothTime);
         return alignmentMove;
     }
-    public Vector2 Cohesion()
+   
+    Vector2 SeparationObstacles(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection)
     {
-
-        if (neighbours.Count == 0)
-        {
-           
-            return Vector2.zero;
-        }
-            
-
-
-        Vector2 cohesionMove = Vector2.zero;
-
-        foreach (Transform item in neighbours)
-        {
-            cohesionMove += (Vector2)item.position;
-        }
-        cohesionMove /= neighbours.Count;
-        //dir * 200 * Time.fixedDeltaTime;
-
-        cohesionMove -= (Vector2)transform.position;
-        cohesionMove = Vector2.SmoothDamp(transform.up, cohesionMove, ref currentVelocity, 0.3f);
-        return cohesionMove;
-
-
-    }
-    public Vector2 Separation()
-    {
-
-       
-        if (neighbours.Count == 0)
+        if(nearbyObstacles.Count == 0)
             return Vector2.zero;
 
-    
+  
         Vector2 avoidanceMove = Vector2.zero;
         int nAvoid = 0;
    
-        foreach (Transform item in neighbours)
+        foreach (Vector2 position in nearbyObstacles)
         {
-            if (Vector2.SqrMagnitude(item.position - transform.position) < avoidRadius)
+         
+            if ((position - pos).magnitude < detectCollisionRadius)
             {
                 nAvoid++;
-                avoidanceMove += (Vector2)(transform.position - item.position);
+                avoidanceMove += (pos - position);
             }
         }
         if (nAvoid > 0)
+        {
+            avoidanceMove /= nAvoid;
+            waitForTarget = true;
+            oldDir = (targetPos - pos).normalized;
+            
+        }
+       
+
+        
+        return avoidanceMove;
+    }
+    Vector2 Separation(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)
+    {
+        if (nearbyAgents.Count == 0)
+            return Vector2.zero;
+
+
+        Vector2 avoidanceMove = Vector2.zero;
+        int nAvoid = 0;
+    
+        foreach (Transform t in nearbyAgents)
+        {
+
+            if (((Vector2)t.position - pos).magnitude < avoidanceRadius)
+            {
+                nAvoid++;
+                avoidanceMove += (pos - (Vector2)t.position);
+            }
+        }
+        if (nAvoid > 0)
+        {
             avoidanceMove /= nAvoid;
 
+           
+        }
+      
+
+
+
         return avoidanceMove;
+    }
+    Vector2 Cohesion(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)
+    {
+     
+        if (nearbyAgents.Count == 0)
+            return Vector2.zero;
+
+   
+        Vector2 cohesionMove = Vector2.zero;
+       //Filter();
+        foreach (Transform item in nearbyAgents)
+        {
+            cohesionMove += (Vector2)item.position;
+        }
+        cohesionMove /= nearbyAgents.Count;
 
 
+        cohesionMove -= pos;
+   
+        return cohesionMove;
+    }
+    Vector2 MoveToTarget(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    {
+        
+        Vector2 dir = (targetPos - pos).normalized;
+        if (waitForTarget)
+        {
+            float dot = Vector2.Dot(dir, oldDir);
+            float angle = Mathf.Acos(dot);
+            angle *= Mathf.Rad2Deg;
+
+            if (oldTargetpos != targetPos && Mathf.Abs(angle) > angleThreshold && angle != float.NaN)
+            {
+               
+                oldDir = dir;
+                waitForTarget = false;
+                oldTargetpos = targetPos;
+            }
+            else
+            {
+                return Vector2.zero;
+            }
+
+            
+
+
+        }
+        
+
+
+        foreach (RectangleFloat b in nearbyObstacleBoxes)
+        {
+            if (PointAABBIntersectionTest(b, (dir* b.Width)+pos))
+            {
+      
+                return Vector2.zero;
+                
+            }
+        }
+        dir = Vector2.SmoothDamp(currentDirection, dir, ref currentVelocity, smoothTime);
+        return dir;
+    }
+    
+    bool PointAABBIntersectionTest(RectangleFloat bounds, Vector2 p)
+    {
+        return p.x >= bounds.X
+            && p.x <= bounds.X + bounds.Width
+            && p.y >= bounds.Y - bounds.Height
+            && p.y <= bounds.Y;
     }
 }
-/*
- *  public FlockAgent agentPrefab;
-    List<FlockAgent> agents = new List<FlockAgent>();
-    public FlockBehavior behavior;
-
-    [Range(10, 500)]
-    public int startingCount = 250;
-    const float AgentDensity = 0.08f;
-
-    [Range(1f, 100f)]
-    public float driveFactor = 10f;
-    [Range(1f, 100f)]
-    public float maxSpeed = 5f;
-    [Range(1f, 10f)]
-    public float neighborRadius = 1.5f;
-    [Range(0f, 1f)]
-    public float avoidanceRadiusMultiplier = 0.5f;
-
-    float squareMaxSpeed;
-    float squareNeighborRadius;
-    float squareAvoidanceRadius;
-    public float SquareAvoidanceRadius { get { return squareAvoidanceRadius; } }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        squareMaxSpeed = maxSpeed * maxSpeed;
-        squareNeighborRadius = neighborRadius * neighborRadius;
-        squareAvoidanceRadius = squareNeighborRadius * avoidanceRadiusMultiplier * avoidanceRadiusMultiplier;
-
-        for (int i = 0; i < startingCount; i++)
-        {
-            FlockAgent newAgent = Instantiate(
-                agentPrefab,
-                Random.insideUnitCircle * startingCount * AgentDensity,
-                Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f)),
-                transform
-                );
-            newAgent.name = "Agent " + i;
-            newAgent.Initialize(this);
-            agents.Add(newAgent);
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        foreach (FlockAgent agent in agents)
-        {
-            List<Transform> context = GetNearbyObjects(agent);
-
-            //FOR DEMO ONLY
-            //agent.GetComponentInChildren<SpriteRenderer>().color = Color.Lerp(Color.white, Color.red, context.Count / 6f);
-
-            Vector2 move = behavior.CalculateMove(agent, context, this);
-            move *= driveFactor;
-            if (move.sqrMagnitude > squareMaxSpeed)
-            {
-                move = move.normalized * maxSpeed;
-            }
-            agent.Move(move);
-        }
-    }
-
-    List<Transform> GetNearbyObjects(FlockAgent agent)
-    {
-        List<Transform> context = new List<Transform>();
-        Collider2D[] contextColliders = Physics2D.OverlapCircleAll(agent.transform.position, neighborRadius);
-        foreach (Collider2D c in contextColliders)
-        {
-            if (c != agent.AgentCollider)
-            {
-                context.Add(c.transform);
-            }
-        }
-        return context;
-    }
-
- 
- */
