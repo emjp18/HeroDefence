@@ -6,9 +6,45 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace BehaviorTree
 {
-    public class Idle : Node
+    public class IDLE_FLOCK : Node
     {
-        public Idle() : base() { }
+        public IDLE_FLOCK() : base() { }
+        public override NodeState Evaluate()
+        {
+            if (!(bool)GetData("withinGrid"))
+            {
+                return NodeState.FAILURE;
+            }
+
+            if (Vector2.Distance((Vector2)GetData("position"), (Vector2)GetData("targetPosition")) <= (float)GetData("attackRange"))
+            {
+                return NodeState.FAILURE;
+            }
+            if (((AStar2D)GetData("AStar2D")).GetPathFound())
+            {
+                return NodeState.FAILURE;
+            }
+            if ((float)GetData("time") < (float)GetData("waitTime"))
+            {
+                SetData("time", (float)GetData("time") + Time.deltaTime);
+
+            }
+            else
+            {
+
+                SetData("time", 0.0f);
+                SetData("pathindex", 0);
+                ((AStar2D)GetData("AStar2D")).ResetPath();
+                ((AStar2D)GetData("AStar2D")).AStarSearch((Vector2)GetData("position"), (Vector2)GetData("targetPosition"), 50);
+            }
+
+            state = NodeState.RUNNING;
+            return state;
+        }
+    }
+    public class IdleASTAR : Node
+    {
+        public IdleASTAR() : base() { }
        
         public override NodeState Evaluate()
         {
@@ -90,9 +126,9 @@ namespace BehaviorTree
         }
 
     }
-    public class ChaseTarget : Node
+    public class ChaseTargetASTAR : Node
     {
-        public ChaseTarget() : base() { }
+        public ChaseTargetASTAR() : base() { }
 
       
         public override NodeState Evaluate()
