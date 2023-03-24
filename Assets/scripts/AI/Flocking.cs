@@ -22,7 +22,6 @@ public abstract class FlockBehaviour
     protected float separationWeight = 3.0f;
     protected float targetWeight = 1;
     protected float separationObstWeight = 2.0f;
-    protected List<int> physicsLayer = new List<int> { 3, 7,6 };
     protected int flockPhysicslayer = 6;
     protected float smoothTime = 0.3f;
     protected Vector2 oldTargetpos = Vector2.zero;
@@ -32,50 +31,8 @@ public abstract class FlockBehaviour
     protected Vector2 newDirection;
     protected RectangleFloat agentBounds = new RectangleFloat();
     
-    public void SetLayers(List<int> layers )
-    {
-        physicsLayer = layers;
-    }
-    public float CohesionWeight
-    {
-        get { return cohesionWeight; }
-        set { cohesionWeight = value; }
-    }
-    public float SeparateOBWeight
-    {
-        get { return separationObstWeight; }
-        set { separationObstWeight = value; }
-    }
-    public float TargetWeight
-    {
-        get { return targetWeight; }
-        set { targetWeight = value; }
-    }
-    public int FlockPhysicsLayer
-    {
-        get { return flockPhysicslayer; }
-        set { flockPhysicslayer = value; }
-    }
-    public float AlignmentWeight
-    {
-        get { return alignmentWeight; }
-        set { alignmentWeight = value; }
-    }
-    public float CollisionR
-    {
-        get { return detectCollisionRadius; }
-        set { detectCollisionRadius = value; }
-    }
-    public float AvoidR
-    {
-        get { return avoidanceRadius; }
-        set { avoidanceRadius = value; }
-    }
-    public float SeparationWeight
-    {
-        get { return separationWeight; }
-        set { separationWeight = value; }
-    }
+   
+    
     
     protected void GetNearbyObjects(Vector2 pos, BoxCollider2D box)
     {
@@ -100,28 +57,37 @@ public abstract class FlockBehaviour
     }
     public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, BoxCollider2D box,Vector2 currentVelocity, Vector2 currentDirection);
     
-    public void SetGrid(AiGrid2 grid)
+    
+    public FlockBehaviour(FlockWeights weights, AiGrid grid)
     {
+        separationWeight = weights.separateAgents;
+        separationObstWeight = weights.separateStatic;
+        targetWeight = weights.moveToTarget;
+        alignmentWeight = weights.align;
+        cohesionWeight = weights.cohesive;
 
         detectCollisionRadius = grid.GetCellSize() * 1.5f;
         foreach (A_STAR_NODE node in grid.GetCustomGrid())
         {
-            if(node.obstacle)
+            if (node.obstacle)
             {
                 nearbyObstacles.Add(node.pos);
                 RectangleFloat bounds = new RectangleFloat();
-                bounds.X = node.pos.x- grid.GetCellSize()*0.5f;
+                bounds.X = node.pos.x - grid.GetCellSize() * 0.5f;
                 bounds.Y = node.pos.y + grid.GetCellSize() * 0.5f;
-                bounds.Width =bounds.Height= grid.GetCellSize();
+                bounds.Width = bounds.Height = grid.GetCellSize();
                 nearbyObstacleBoxes.Add(bounds);
             }
         }
     }
-    
 }
 
 public class FlockBehaviourChase : FlockBehaviour
 {
+    public FlockBehaviourChase(FlockWeights weights, AiGrid grid) : base(weights, grid)
+    {
+    }
+
     public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
     {
         
@@ -303,7 +269,7 @@ public class FlockBehaviourChase : FlockBehaviour
 
         foreach (RectangleFloat b in nearbyObstacleBoxes)
         {
-            if (PointAABBIntersectionTest(b, (dir* b.Width)+pos))
+            if (Utility.PointAABBIntersectionTest(b, (dir* b.Width)+pos))
             {
       
                 return Vector2.zero;
@@ -314,11 +280,5 @@ public class FlockBehaviourChase : FlockBehaviour
         return dir;
     }
     
-    bool PointAABBIntersectionTest(RectangleFloat bounds, Vector2 p)
-    {
-        return p.x >= bounds.X
-            && p.x <= bounds.X + bounds.Width
-            && p.y >= bounds.Y - bounds.Height
-            && p.y <= bounds.Y;
-    }
+   
 }
