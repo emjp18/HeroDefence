@@ -59,53 +59,7 @@ public class AiGrid : MonoBehaviour
             DrawDebugLine(node);
         }
     }
-    public bool SetTargetToValidCell(ref Vector2 target) //This function is evil
-    {
-        //Debug.Log("Moving Target");
-        Vector2Int temp = Vector2Int.zero;
-        bool result = false;
-        GetAIGridIndex(target, root, ref temp, ref result);
-        if (customGrid[temp.x,temp.y].obstacle)
-        {
-            target.x += cellSize;
-            if(SetTargetToValidCell(ref target))
-            {
-                return true;
-            }
-            target.x -= cellSize*2;
-            if (SetTargetToValidCell(ref target))
-            {
-                return true;
-            }
-            target.x += cellSize;
-            target.y -= cellSize;
-            if (SetTargetToValidCell(ref target))
-            {
-                return true;
-            }
-            target.y += cellSize*2;
-            if (SetTargetToValidCell(ref target))
-            {
-                return true;
-            }
-            bool res = SetTargetToValidCell(ref target);
-            if (res)
-                return true;
-            target.y -= cellSize * 2;
-            res = SetTargetToValidCell(ref target);
-            if (res)
-                return true;
-            target.y += cellSize;
-            target.x += cellSize;
-            res = SetTargetToValidCell(ref target);
-            if (res)
-                return true;
-            target.x -= cellSize*2;
-            res = SetTargetToValidCell(ref target);
-            return res;
-        }
-        return true;
-    }
+   
     public float GetCellSize() { return cellSize; }
     void DrawDebugBounds(Bounds b)
     {
@@ -275,8 +229,9 @@ public class AiGrid : MonoBehaviour
 
                         foreach (Collider2D collider in colliderResult)
                         {
-
-                            if (collider.gameObject.tag != "Character" && collider.gameObject.tag != "Player")
+                            //Ignore player, npc and other enemies.
+                            if (collider.gameObject.layer!=3&&collider.gameObject.layer!=6
+                                &&collider.gameObject.layer!=8 && collider.gameObject.layer != 9)
                             {
 
                                 obstacle = true;
@@ -285,7 +240,7 @@ public class AiGrid : MonoBehaviour
                             }
                             else
                             {
-                                break;//Temporary fix, if enemy is in cell then no collision cus for some reason it adds it despite the tags
+                                break;
                             }
                         }
 

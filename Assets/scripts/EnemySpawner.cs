@@ -7,15 +7,15 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] AiGrid grid;
     [SerializeField] List<Transform> hidePoints;
-    [SerializeField] List<Transform> spawnpoints; //north +x, south +x, east - y west - y
-    [SerializeField] int maxSwarmerAmount = 30;
-    [SerializeField] EnemyBase enemyA;
+/*    [SerializeField] List<Transform> spawnpoints;*/ //north +x, south +x, east - y west - y
+    [SerializeField] int maxSwarmerAmount = 40;
+    [SerializeField] List<EnemyBase> enemyPrefabTemplates;
     //List<EnemyBase> enemiesNorth = new List<EnemyBase>();
     //List<EnemyBase> enemiesSouth = new List<EnemyBase>();
     //List<EnemyBase> enemiesWest= new List<EnemyBase>();
     //List<EnemyBase> enemiesEast = new List<EnemyBase>();
     List<EnemyBase> enemiesSwarm = new List<EnemyBase>();
-    [SerializeField] int swarmWaveAmount = 10;
+    [SerializeField] int swarmWaveAmountPerHidePoint = 10;
     //int waveNumber = -1;
     //[SerializeField]  bool north = false;
     //[SerializeField] bool south = false;
@@ -26,8 +26,10 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] float separateObjectPower;
     [SerializeField] float AlignPower;
     [SerializeField] float CohesionPower;
+    [SerializeField] float randomDirPower;
     FlockWeights flockWeights = new FlockWeights();
-    
+    public bool startNight = true;
+    public bool endNight = false;
     private void Start()
     {
         flockWeights.align = AlignPower;
@@ -35,26 +37,31 @@ public class EnemySpawner : MonoBehaviour
         flockWeights.cohesive = CohesionPower;
         flockWeights.separateStatic = separateObjectPower;
         flockWeights.moveToTarget = targetPower;
-       
+        flockWeights.random = randomDirPower;
 
-        switch(enemyA.Enemytype)
+
+        foreach ( EnemyBase enemy in enemyPrefabTemplates)
         {
-            case ENEMY_TYPE.SWARMER:
-                {
-                    for (int i = 0; i < maxSwarmerAmount; i++)
+            switch (enemy.Enemytype)
+            {
+                case ENEMY_TYPE.SWARMER:
                     {
-                        enemiesSwarm.Add(Instantiate(enemyA));
-                        enemiesSwarm[i].Init(flockWeights, grid);
-                        enemiesSwarm[i].gameObject.SetActive(false);
+                        for (int i = 0; i < maxSwarmerAmount; i++)
+                        {
+                            enemiesSwarm.Add(Instantiate(enemy));
+                            enemiesSwarm[i].Init(flockWeights, grid, swarmWaveAmountPerHidePoint);
+                            enemiesSwarm[i].gameObject.SetActive(false);
 
+                        }
+
+
+                        break;
                     }
+            }
 
-                   
-                    break;
-                }
+            enemy.gameObject.SetActive(false);
         }
-
-        enemyA.gameObject.SetActive(false);
+        
 
 
 
@@ -62,7 +69,7 @@ public class EnemySpawner : MonoBehaviour
     public void EndNightPhase()
     {
 
-        for (int i = 0; i < swarmWaveAmount; i++)
+        for (int i = 0; i < swarmWaveAmountPerHidePoint; i++)
         {
             enemiesSwarm[i].gameObject.SetActive(false);
         }
@@ -72,15 +79,13 @@ public class EnemySpawner : MonoBehaviour
     {
         for(int j=0; j<hidePoints.Count; j++)
         {
-            for (int i = 0; i < swarmWaveAmount; i++)
+            for (int i = 0; i < swarmWaveAmountPerHidePoint; i++)
             {
                 
-                enemiesSwarm[i + (swarmWaveAmount * j)].gameObject.SetActive(true);
-                enemiesSwarm[i + (swarmWaveAmount * j)].gameObject.transform.position =
-                    (Vector2)hidePoints[j].position +
-                    (i *
-                    enemiesSwarm[i + (swarmWaveAmount * j)].gameObject.GetComponent<BoxCollider2D>().size.x * Vector2.down);
-                enemiesSwarm[i + (swarmWaveAmount * j)].StartNightPhase(grid);
+                enemiesSwarm[i + (swarmWaveAmountPerHidePoint * j)].gameObject.SetActive(true);
+                enemiesSwarm[i + (swarmWaveAmountPerHidePoint * j)].gameObject.transform.position =
+                    (Vector2)hidePoints[j].position;
+                enemiesSwarm[i + (swarmWaveAmountPerHidePoint * j)].StartNightPhase(grid);
 
                
 
@@ -88,5 +93,20 @@ public class EnemySpawner : MonoBehaviour
         }
        
 
+    }
+    //Temporary
+
+    private void Update()
+    {
+        if(startNight)
+        {
+            StartNightPhase();
+            startNight = false;
+        }
+        if (endNight)
+        {
+            EndNightPhase();
+            endNight = false;
+        }
     }
 }

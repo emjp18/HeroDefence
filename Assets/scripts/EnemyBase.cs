@@ -10,6 +10,7 @@ public struct FlockWeights
     public float moveToTarget;
     public float align;
     public float cohesive;
+    public float random;
      
 }
 public abstract class EnemyBase : MonoBehaviour
@@ -28,7 +29,7 @@ public abstract class EnemyBase : MonoBehaviour
         rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
         
     }
-    public abstract void Init(FlockWeights flockweights, AiGrid grid);
+    public abstract void Init(FlockWeights flockweights, AiGrid grid, int flockamount);
 
     public abstract void StartNightPhase(AiGrid grid);
     

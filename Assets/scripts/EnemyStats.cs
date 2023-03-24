@@ -27,12 +27,12 @@ public class EnemyStats
         get { return chaseTargetRange; }
         set { chaseTargetRange = value; }
     }
-    public float PlayerRange
+    public float ChasePlayerRange
     {
         get { return chasePlayerRange; }
         set { chasePlayerRange = value; }
     }
-    public float Range
+    public float AttackRange
     {
         get { return attackRange; }
         set { attackRange = value; }
@@ -59,9 +59,10 @@ public class EnemyStats
 
             case ENEMY_TYPE.SWARMER:
                 {
-                    movementRestrictionRange = 30;
+                    movementRestrictionRange = 15;
                     quickDamage = 5;
-                    movementSpeed = 150;
+                    movementSpeed = 250;
+                    
                     break;
                 }
         }

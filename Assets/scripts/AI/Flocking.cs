@@ -14,14 +14,16 @@ public abstract class FlockBehaviour
     protected List<Transform> nearbyAgents = new List<Transform>();
     protected List<Vector2> nearbyObstacles = new List<Vector2>();
     protected List<RectangleFloat> nearbyObstacleBoxes = new List<RectangleFloat>();
-    protected float detectCollisionRadius = 6;
-    protected float avoidanceRadius = 3;
-    protected Collider2D[] nearbyColliders = new Collider2D[20];
-    protected float cohesionWeight = 1.6f;
-    protected float alignmentWeight = 1.25f;
-    protected float separationWeight = 3.0f;
-    protected float targetWeight = 1;
-    protected float separationObstWeight = 2.0f;
+    protected float detectCollisionRadius;
+    protected float flockradius;
+    protected float avoidanceRadius;
+    protected Collider2D[] nearbyColliders;
+    protected float cohesionWeight;
+    protected float alignmentWeight;
+    protected float separationWeight;
+    protected float targetWeight;
+    protected float separationObstWeight;
+    protected float moveRandomWeight;
     protected int flockPhysicslayer = 6;
     protected float smoothTime = 0.3f;
     protected Vector2 oldTargetpos = Vector2.zero;
@@ -30,21 +32,45 @@ public abstract class FlockBehaviour
     protected float angleThreshold = 35;
     protected Vector2 newDirection;
     protected RectangleFloat agentBounds = new RectangleFloat();
-    
-   
-    
-    
+    protected BoxCollider2D box;
+    public float RandomW
+    {
+        get => moveRandomWeight;
+        set => moveRandomWeight = value;
+    }
+    public float TargetW
+    {
+        get => targetWeight;
+        set => targetWeight = value;
+    }
+    public float AlignW
+    {
+        get => alignmentWeight;
+        set => alignmentWeight = value;
+    }
+    public float CohesiveW
+    {
+        get => cohesionWeight;
+        set => cohesionWeight = value;
+    }
+    public float SeparateAgentW
+    {
+        get => separationWeight;
+        set => separationWeight = value;
+    }
+    public float SeparateObstacleW
+    {
+        get => separationObstWeight;
+        set => separationObstWeight = value;
+    }
+
     protected void GetNearbyObjects(Vector2 pos, BoxCollider2D box)
     {
        
 
-
         nearbyAgents.Clear();
 
-
-
-
-        int nr = Physics2D.OverlapCircleNonAlloc(pos, detectCollisionRadius, nearbyColliders);
+        int nr = Physics2D.OverlapCircleNonAlloc(pos, flockradius, nearbyColliders);
         for (int i = 0; i < nr; i++)
         {
             if (nearbyColliders[i] != box && nearbyColliders[i].gameObject.layer == flockPhysicslayer)
@@ -55,18 +81,25 @@ public abstract class FlockBehaviour
         }
 
     }
-    public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, BoxCollider2D box,Vector2 currentVelocity, Vector2 currentDirection);
+    public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection);
     
     
-    public FlockBehaviour(FlockWeights weights, AiGrid grid)
+    public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount)
     {
+        avoidanceRadius = box.size.x > box.size.y ? box.size.x : box.size.y;
+        this.box = box;
+        nearbyColliders = new Collider2D[flockAgentAmount];
+        //flockradius = this.box.size.x > this.box.size.y ?
+        //    this.box.size.x: this.box.size.y;
+        flockradius = this.box.size.x > this.box.size.y ?
+            flockAgentAmount * this.box.size.x * 0.5f : flockAgentAmount * this.box.size.y * 0.5f;
         separationWeight = weights.separateAgents;
         separationObstWeight = weights.separateStatic;
         targetWeight = weights.moveToTarget;
         alignmentWeight = weights.align;
         cohesionWeight = weights.cohesive;
-
-        detectCollisionRadius = grid.GetCellSize() * 1.5f;
+        moveRandomWeight = weights.random;
+        detectCollisionRadius = grid.GetCellSize();
         foreach (A_STAR_NODE node in grid.GetCustomGrid())
         {
             if (node.obstacle)
@@ -84,22 +117,25 @@ public abstract class FlockBehaviour
 
 public class FlockBehaviourChase : FlockBehaviour
 {
-    public FlockBehaviourChase(FlockWeights weights, AiGrid grid) : base(weights, grid)
-    {
-    }
-
-    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    public FlockBehaviourChase(FlockWeights weights, AiGrid grid, BoxCollider2D box,int flockAgentAmount) 
+        : base(weights, grid,box,flockAgentAmount)
     {
         
-        avoidanceRadius =  box.size.x > box.size.y ? box.size.x : box.size.y;
-        avoidanceRadius *= 1.25f;
+    }
+
+    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos,  Vector2 currentVelocity, Vector2 currentDirection)
+    {
+        
+       
+   
         GetNearbyObjects(pos, box);
         newDirection = Vector2.zero;
 
         newDirection += MoveToTarget(pos, targetPos, box,currentVelocity,currentDirection) * targetWeight;
 
- 
+        newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection)* moveRandomWeight;
 
+       
         var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
 
         if (cohesion.magnitude > cohesionWeight * cohesionWeight)
@@ -279,6 +315,26 @@ public class FlockBehaviourChase : FlockBehaviour
         dir = Vector2.SmoothDamp(currentDirection, dir, ref currentVelocity, smoothTime);
         return dir;
     }
-    
-   
+
+    Vector2 MoveRandom(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    {
+
+        Vector2 randDir = Random.insideUnitCircle.normalized;
+       
+
+
+
+        foreach (RectangleFloat b in nearbyObstacleBoxes)
+        {
+            if (Utility.PointAABBIntersectionTest(b, (randDir * b.Width) + pos))
+            {
+
+                return Vector2.zero;
+
+            }
+        }
+        randDir = Vector2.SmoothDamp(currentDirection, randDir, ref currentVelocity, smoothTime);
+        return randDir;
+    }
+
 }
