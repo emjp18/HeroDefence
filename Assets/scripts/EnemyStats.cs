@@ -11,10 +11,16 @@ public class EnemyStats
     float movementSpeed;
     float chasePlayerRange;
     float chaseTargetRange;
+    float movementRestrictionRange;
     public float Health
     {
         get { return health; }
         set { health = value; }
+    }
+    public float MovementRange
+    {
+        get { return movementRestrictionRange; }
+        set { movementRestrictionRange = value; }
     }
     public float ChaseTargetRange
     {
@@ -50,50 +56,12 @@ public class EnemyStats
     {
         switch(type)
         {
-           
-            case ENEMY_TYPE.MINI_BOSS:
-                {
-                    health = 100;
-                    quickDamage = 25;
-                    heavyDamage = 50;
-                    chasePlayerRange = 10;
-                    movementSpeed = 300;
-                    attackRange = 3;
-                    chaseTargetRange = 80;
-                    break;
-                }
-            case ENEMY_TYPE.CHASE_BUILDING:
-                {
-                    health = 10;
-                    quickDamage = 5;
-                    heavyDamage = 10;
-                    chasePlayerRange = 10;
-                    movementSpeed = 300;
-                    attackRange = 3;
-                    chaseTargetRange = 80;
-                    break;
-                }
-            case ENEMY_TYPE.CHASE_PLAYER:
-                {
-                    health = 10;
-                    quickDamage = 5;
-                    heavyDamage = 10;
-                    chasePlayerRange = 20;
-                    movementSpeed = 300;
-                    attackRange = 3;
-                    chaseTargetRange = 80;
-                    break;
 
-                }
-            case ENEMY_TYPE.CHASE_BOTH:
+            case ENEMY_TYPE.SWARMER:
                 {
-                    health = 10;
+                    movementRestrictionRange = 30;
                     quickDamage = 5;
-                    heavyDamage = 10;
-                    chasePlayerRange = 10;
-                    movementSpeed = 300;
-                    attackRange = 3;
-                    chaseTargetRange = 80;
+                    movementSpeed = 150;
                     break;
                 }
         }

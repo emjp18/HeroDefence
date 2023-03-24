@@ -28,12 +28,12 @@ public class AStar2D
     A_STAR_NODE[,] customGrid;
     QUAD_NODE rootQuadNode;
   
-    public void UpdateGrid(AiGrid2 grid)
+    public void UpdateGrid(AiGrid grid)
     {
         rootQuadNode = grid.Getroot();
         customGrid = grid.GetCustomGrid();
     }
-    public AStar2D(AiGrid2 grid)
+    public AStar2D(AiGrid grid)
     {
 
         rootQuadNode = grid.Getroot();

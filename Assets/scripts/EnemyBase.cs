@@ -3,15 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct FlockWeights
+{
+    public float separateAgents;
+    public float separateStatic;
+    public float moveToTarget;
+    public float align;
+    public float cohesive;
+     
+}
 public abstract class EnemyBase : MonoBehaviour
 {
+    [SerializeField] ENEMY_TYPE type;
     protected Animator anim;
     protected Vector2 movementDirection = Vector2.zero;
     protected Rigidbody2D rb;
     protected Root root;
-    protected float cellsize;
     protected EnemyStats stats;
-    protected ENEMY_TYPE type;
+
   
     private void FixedUpdate()
     {
@@ -19,31 +28,16 @@ public abstract class EnemyBase : MonoBehaviour
         rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
         
     }
-    public virtual void InitA_STAR(AiGrid2 grid)
-    {
-        return;
-    }
-    public virtual void InitFlock(float sep, float sepOb, float tar, float align, float cohesive)
-    {
-        return;
-    }
+    public abstract void Init(FlockWeights flockweights, AiGrid grid);
 
-    public virtual void StartNightPhaseA_STAR(AiGrid2 grid)
-    {
-        return;
-    }
-    public virtual void Init()
-    {
-        return;
-    }
-
-    public virtual void StartNightPhase()
-    {
-        return;
-    }
+    public abstract void StartNightPhase(AiGrid grid);
+    
     public Vector2 Movement
     {
         get { return movementDirection; }
     }
-
+    public ENEMY_TYPE Enemytype
+    {
+        get { return type; }
+    }
 }
