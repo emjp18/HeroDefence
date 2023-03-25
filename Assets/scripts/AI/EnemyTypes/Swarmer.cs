@@ -8,10 +8,12 @@ using static UnityEngine.GraphicsBuffer;
 
 public class Swarmer : EnemyBase
 {
+    [SerializeField] float speed = 150;
+    [SerializeField] Transform movementRangePoint;
     [SerializeField] Transform hidePoint;
     [SerializeField] Transform player;
     FlockBehaviourChase flockingBehavior;
-   
+    bool outOfRange = false;
     public override void Init( AiGrid grid, int flockamount)
     {
         flockweights = new FlockWeights();
@@ -30,8 +32,8 @@ public class Swarmer : EnemyBase
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         stats.AttackRange = player.GetComponent<BoxCollider2D>().size.x;
-       
-
+        stats.MovementRange = (movementRangePoint.position - hidePoint.position).magnitude;
+        stats.Speed = speed;
 
     }
 
@@ -53,9 +55,9 @@ public class Swarmer : EnemyBase
         root.SetData("velocity", rb.velocity);
         root.SetData("type", Enemytype);
         root.SetData("flockWeights", flockweights);
-        root.SetData("outOfRange", false);
         root.SetData("hidePoint", (Vector2)hidePoint.position);
-        
+        root.SetData("moveToCenter", false);
+
     }
 
     void Update()
@@ -78,8 +80,8 @@ public class Swarmer : EnemyBase
          (Vector2.Distance((Vector2)player.position, (Vector2)transform.position) < stats.AttackRange));
 
 
-        root.SetData("outOfRange",
-            Vector2.Distance((Vector2)transform.position, (Vector2)hidePoint.position) >= stats.MovementRange*0.75f);
+        outOfRange =
+            Vector2.Distance((Vector2)transform.position, (Vector2)hidePoint.position) > stats.MovementRange;
         
         if ((bool)root.GetData("withinAttackRange"))
         {
@@ -93,7 +95,20 @@ public class Swarmer : EnemyBase
                 root.SetData("attackHeavy", false);
             }
         }
-
-      
+        if((bool)root.GetData("withinAttackRange"))
+        {
+            root.SetData("movementDirection", Vector2.zero);
+        }
+        if(outOfRange)
+        {
+            root.SetData("moveToCenter", true);
+        }
+        if((bool)root.GetData("moveToCenter"))
+        {
+            if(Vector2.Distance((Vector2)transform.position, (Vector2)hidePoint.position)<1)
+            {
+                root.SetData("moveToCenter", false);
+            }
+        }
     }
 }

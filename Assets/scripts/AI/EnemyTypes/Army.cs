@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Army : EnemyBase
 {
-   
+    [SerializeField] float speed = 100;
     [SerializeField] Transform player;
     FlockBehaviourChase flockingBehavior;
 
@@ -27,7 +27,7 @@ public class Army : EnemyBase
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         stats.AttackRange = player.GetComponent<BoxCollider2D>().size.x;
-        
+        stats.Speed = speed;
     }
 
     public override void StartNightPhase(AiGrid grid)
@@ -88,6 +88,7 @@ public class Army : EnemyBase
             {
                 root.SetData("attackHeavy", false);
             }
+            root.SetData("movementDirection", Vector2.zero);
         }
     }
 }

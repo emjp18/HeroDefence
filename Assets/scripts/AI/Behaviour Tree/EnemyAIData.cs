@@ -12,13 +12,19 @@ namespace BehaviorTree
         public Idle() : base() { }
         public override NodeState Evaluate()
         {
-            if ((bool)GetData("outOfRange"))
+            if ((bool)GetData("moveToCenter"))
             {
                 ((FlockBehaviourChase)GetData("flockPattern")).RandomW = 0;
                 ((FlockBehaviourChase)GetData("flockPattern")).TargetW = ((FlockWeights)GetData("flockWeights")).moveToTarget;
                 SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("hidePoint"),
                    (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
                 state = NodeState.RUNNING;
+             
+             
+                if(((Vector2)GetData("movementDirection") - ((Vector2)GetData("hidePoint") - (Vector2)GetData("position")).normalized).magnitude>2)
+                {
+                    Debug.Log("wrong direction?");
+                }
                 return state;
             }
             if ((bool)GetData("withinChaseRange"))
@@ -31,7 +37,7 @@ namespace BehaviorTree
             SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
                (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
 
-
+           
 
             state = NodeState.RUNNING;
             return state;
@@ -66,8 +72,7 @@ namespace BehaviorTree
         public override NodeState Evaluate()
         {
             
-            if (!(bool)GetData("withinChaseRange") || (bool)GetData("withinAttackRange")
-                /*|| (bool)GetData("attacking") *//*|| (bool)GetData("dead")*/|| (bool)GetData("outOfRange"))
+            if (!(bool)GetData("withinChaseRange") ||(bool)GetData("moveToCenter"))
             {
                
                 return NodeState.FAILURE;

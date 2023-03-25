@@ -59,17 +59,17 @@ public class EnemyStats
 
             case ENEMY_TYPE.SWARMER:
                 {
-                    movementRestrictionRange = 15;
+                 
                     quickDamage = 5;
-                    movementSpeed = 250;
+                    movementSpeed = 150;
                     heavyDamage = 10;
                     break;
                 }
             case ENEMY_TYPE.ARMY:
                 {
-                    chasePlayerRange = 8;
+                    chasePlayerRange = 4;
                     quickDamage = 5;
-                    movementSpeed = 150;
+                    movementSpeed = 100;
                     heavyDamage = 10;
                     break;
                 }
