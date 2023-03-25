@@ -11,20 +11,26 @@ public class Swarmer : EnemyBase
     [SerializeField] Transform hidePoint;
     [SerializeField] Transform player;
     FlockBehaviourChase flockingBehavior;
-    FlockWeights flockweights;
-    public override void Init(FlockWeights flockweights, AiGrid grid, int flockamount)
+   
+    public override void Init( AiGrid grid, int flockamount)
     {
+        flockweights = new FlockWeights();
+        flockweights.random = RandomW;
+        flockweights.align = AlignW;
+        flockweights.separateAgents = SeparateAgentW;
+        flockweights.separateStatic = SeparateObstacleW;
+        flockweights.cohesive = CohesiveW;
+        flockweights.moveToTarget = TargetW;
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
         flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount);
-        root = new Root(new List<Node> { new ChaseWithinArea(), new Selector(new List<Node>{new AttackFast(),
-        new AttackHeavy()}), new Idle(),
-        new Death()});
+            flockamount, gameObject.tag);
+        root = new Root(new List<Node> { new ChaseWithinArea(), new Idle()
+        });
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         stats.AttackRange = player.GetComponent<BoxCollider2D>().size.x;
-        this.flockweights = flockweights;
+       
 
 
     }

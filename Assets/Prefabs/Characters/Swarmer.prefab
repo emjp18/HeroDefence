@@ -168,5 +168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  targetPower: 1
+  separatePower: 1
+  separateObjectPower: 1
+  AlignPower: 1
+  CohesionPower: 1
+  randomDirPower: 1.1
   hidePoint: {fileID: 0}
   player: {fileID: 0}

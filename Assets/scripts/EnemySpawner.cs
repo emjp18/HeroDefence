@@ -1,43 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public enum SPAWN_TYPE { NORTH = 0, EAST = 2, WEST = 3, SOUTH = 1 } //make sure the spawn points are in this order
-public enum ENEMY_TYPE {  SWARMER }
+
+public enum ENEMY_TYPE {  SWARMER,ARMY  }
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] AiGrid grid;
     [SerializeField] List<Transform> hidePoints;
-/*    [SerializeField] List<Transform> spawnpoints;*/ //north +x, south +x, east - y west - y
+    [SerializeField] List<Transform> spawnPoints;//need to be in the same order as target
+                                                 //points. meaning northspawn == nothtarget
+    [SerializeField] List<Transform> targetPoints;
     [SerializeField] int maxSwarmerAmount = 40;
     [SerializeField] List<EnemyBase> enemyPrefabTemplates;
-    //List<EnemyBase> enemiesNorth = new List<EnemyBase>();
-    //List<EnemyBase> enemiesSouth = new List<EnemyBase>();
-    //List<EnemyBase> enemiesWest= new List<EnemyBase>();
-    //List<EnemyBase> enemiesEast = new List<EnemyBase>();
+    List<EnemyBase> enemiesArmy = new List<EnemyBase>();
     List<EnemyBase> enemiesSwarm = new List<EnemyBase>();
     [SerializeField] int swarmWaveAmountPerHidePoint = 10;
-    //int waveNumber = -1;
-    //[SerializeField]  bool north = false;
-    //[SerializeField] bool south = false;
-    //[SerializeField] bool west = false;
-    //[SerializeField] bool east = false;
-    [SerializeField] float targetPower;
-    [SerializeField] float separatePower;
-    [SerializeField] float separateObjectPower;
-    [SerializeField] float AlignPower;
-    [SerializeField] float CohesionPower;
-    [SerializeField] float randomDirPower;
-    FlockWeights flockWeights = new FlockWeights();
+    [SerializeField] int maxArmyamount = 40;
+    [SerializeField] int armyWaveAmountPerSpawnPoint = 10;
     public bool startNight = true;
     public bool endNight = false;
     private void Start()
     {
-        flockWeights.align = AlignPower;
-        flockWeights.separateAgents = separatePower;
-        flockWeights.cohesive = CohesionPower;
-        flockWeights.separateStatic = separateObjectPower;
-        flockWeights.moveToTarget = targetPower;
-        flockWeights.random = randomDirPower;
+        
 
 
         foreach ( EnemyBase enemy in enemyPrefabTemplates)
@@ -49,8 +33,21 @@ public class EnemySpawner : MonoBehaviour
                         for (int i = 0; i < maxSwarmerAmount; i++)
                         {
                             enemiesSwarm.Add(Instantiate(enemy));
-                            enemiesSwarm[i].Init(flockWeights, grid, swarmWaveAmountPerHidePoint);
+                            enemiesSwarm[i].Init( grid, swarmWaveAmountPerHidePoint);
                             enemiesSwarm[i].gameObject.SetActive(false);
+
+                        }
+
+
+                        break;
+                    }
+                case ENEMY_TYPE.ARMY:
+                    {
+                        for (int i = 0; i < maxArmyamount; i++)
+                        {
+                            enemiesArmy.Add(Instantiate(enemy));
+                            enemiesArmy[i].Init(grid, armyWaveAmountPerSpawnPoint);
+                            enemiesArmy[i].gameObject.SetActive(false);
 
                         }
 
@@ -85,16 +82,31 @@ public class EnemySpawner : MonoBehaviour
                 enemiesSwarm[i + (swarmWaveAmountPerHidePoint * j)].gameObject.SetActive(true);
                 enemiesSwarm[i + (swarmWaveAmountPerHidePoint * j)].gameObject.transform.position =
                     (Vector2)hidePoints[j].position;
+             
                 enemiesSwarm[i + (swarmWaveAmountPerHidePoint * j)].StartNightPhase(grid);
 
                
 
             }
         }
-       
+        for (int j = 0; j < spawnPoints.Count; j++)
+        {
+            for (int i = 0; i < armyWaveAmountPerSpawnPoint; i++)
+            {
+
+                enemiesArmy[i + (armyWaveAmountPerSpawnPoint * j)].gameObject.SetActive(true);
+                enemiesArmy[i + (armyWaveAmountPerSpawnPoint * j)].gameObject.transform.position =
+                    (Vector2)spawnPoints[j].position;
+                enemiesArmy[i + (armyWaveAmountPerSpawnPoint * j)].SetTarget(targetPoints[j]);
+                enemiesArmy[i + (armyWaveAmountPerSpawnPoint * j)].StartNightPhase(grid);
+
+
+
+            }
+        }
 
     }
-    //Temporary
+  
 
     private void Update()
     {

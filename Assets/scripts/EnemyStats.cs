@@ -62,7 +62,15 @@ public class EnemyStats
                     movementRestrictionRange = 15;
                     quickDamage = 5;
                     movementSpeed = 250;
-                    
+                    heavyDamage = 10;
+                    break;
+                }
+            case ENEMY_TYPE.ARMY:
+                {
+                    chasePlayerRange = 8;
+                    quickDamage = 5;
+                    movementSpeed = 150;
+                    heavyDamage = 10;
                     break;
                 }
         }

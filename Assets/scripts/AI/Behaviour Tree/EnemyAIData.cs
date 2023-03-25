@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using static UnityEngine.RuleTile.TilingRuleOutput;
+
 
 
 namespace BehaviorTree
@@ -21,13 +21,11 @@ namespace BehaviorTree
                 state = NodeState.RUNNING;
                 return state;
             }
-            if ((bool)GetData("withinChaseRange")|| (bool)GetData("withinAttackRange") || (bool)GetData("dead")
-                || (bool)GetData("attacking"))
+            if ((bool)GetData("withinChaseRange"))
             {
                 return NodeState.FAILURE;
             }
-
-
+           
             ((FlockBehaviourChase)GetData("flockPattern")).RandomW = ((FlockWeights)GetData("flockWeights")).random;
             ((FlockBehaviourChase)GetData("flockPattern")).TargetW = 0;
             SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
@@ -88,7 +86,32 @@ namespace BehaviorTree
         }
 
     }
-   
+    public class Chase : Node
+    {
+        public Chase() : base() { }
+
+
+        public override NodeState Evaluate()
+        {
+
+            //if ( (bool)GetData("withinAttackRange")
+            //    /*|| (bool)GetData("attacking") *//*|| (bool)GetData("dead")*/)
+            //{
+
+            //    return NodeState.FAILURE;
+            //}
+            
+
+            SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
+                (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+
+
+            state = NodeState.RUNNING;
+            return state;
+        }
+
+    }
+
     public class AttackFast : Node
     {
         public AttackFast() : base() { }

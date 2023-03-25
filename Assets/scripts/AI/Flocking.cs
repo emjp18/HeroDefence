@@ -25,6 +25,7 @@ public abstract class FlockBehaviour
     protected float separationObstWeight;
     protected float moveRandomWeight;
     protected int flockPhysicslayer = 6;
+    protected string flockTag;
     protected float smoothTime = 0.3f;
     protected Vector2 oldTargetpos = Vector2.zero;
     protected bool waitForTarget = false;
@@ -73,7 +74,7 @@ public abstract class FlockBehaviour
         int nr = Physics2D.OverlapCircleNonAlloc(pos, flockradius, nearbyColliders);
         for (int i = 0; i < nr; i++)
         {
-            if (nearbyColliders[i] != box && nearbyColliders[i].gameObject.layer == flockPhysicslayer)
+            if (nearbyColliders[i] != box && nearbyColliders[i].gameObject.tag == flockTag)
             {
                 nearbyAgents.Add(nearbyColliders[i].transform);
             }
@@ -84,15 +85,16 @@ public abstract class FlockBehaviour
     public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection);
     
     
-    public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount)
+    public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag)
     {
+        flockTag = tag;
         avoidanceRadius = box.size.x > box.size.y ? box.size.x : box.size.y;
         this.box = box;
         nearbyColliders = new Collider2D[flockAgentAmount];
         //flockradius = this.box.size.x > this.box.size.y ?
         //    this.box.size.x: this.box.size.y;
         flockradius = this.box.size.x > this.box.size.y ?
-            flockAgentAmount * this.box.size.x * 0.5f : flockAgentAmount * this.box.size.y * 0.5f;
+            flockAgentAmount * 0.5f * this.box.size.x : flockAgentAmount*0.5f * this.box.size.y;
         separationWeight = weights.separateAgents;
         separationObstWeight = weights.separateStatic;
         targetWeight = weights.moveToTarget;
@@ -117,8 +119,8 @@ public abstract class FlockBehaviour
 
 public class FlockBehaviourChase : FlockBehaviour
 {
-    public FlockBehaviourChase(FlockWeights weights, AiGrid grid, BoxCollider2D box,int flockAgentAmount) 
-        : base(weights, grid,box,flockAgentAmount)
+    public FlockBehaviourChase(FlockWeights weights, AiGrid grid, BoxCollider2D box,int flockAgentAmount, string tag) 
+        : base(weights, grid,box,flockAgentAmount, tag)
     {
         
     }
