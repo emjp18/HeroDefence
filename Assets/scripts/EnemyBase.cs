@@ -1,6 +1,7 @@
 using BehaviorTree;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 public struct FlockWeights
@@ -16,12 +17,7 @@ public struct FlockWeights
 public abstract class EnemyBase : MonoBehaviour
 {
     [SerializeField] ENEMY_TYPE type;
-    [SerializeField] float targetPower;
-    [SerializeField] float separatePower;
-    [SerializeField] float separateObjectPower;
-    [SerializeField] float AlignPower;
-    [SerializeField] float CohesionPower;
-    [SerializeField] float randomDirPower;
+   
     protected Animator anim;
     protected Vector2 movementDirection = Vector2.zero;
     protected Rigidbody2D rb;
@@ -50,39 +46,16 @@ public abstract class EnemyBase : MonoBehaviour
     {
         get { return type; }
     }
-    public float RandomW
-    {
-        get => randomDirPower;
-        set => randomDirPower = value;
-    }
-    public float TargetW
-    {
-        get => targetPower;
-        set => targetPower = value;
-    }
-    public float AlignW
-    {
-        get => AlignPower;
-        set => AlignPower = value;
-    }
-    public float CohesiveW
-    {
-        get => CohesionPower;
-        set => CohesionPower = value;
-    }
-    public float SeparateAgentW
-    {
-        get => separatePower;
-        set => separatePower = value;
-    }
-    public float SeparateObstacleW
-    {
-        get => separateObjectPower;
-        set => separateObjectPower = value;
-    }
+    
     public int FlockID
     {
         get => flockID;
         set => flockID = value;
     }
+    public ref EnemyStats eStats()
+    {
+        return ref stats;
+    }
+    
+    
 }

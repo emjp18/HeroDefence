@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 
@@ -69,15 +70,38 @@ namespace BehaviorTree
         {
             if((bool)GetData("withinAttackRange"))
             {
+                ((AStar2D)GetData("aStar")).ResetPath();
                 return NodeState.FAILURE;
             }
 
             if (((AStar2D)GetData("aStar")).GetPathFound())
             {
+                var path = ((AStar2D)GetData("aStar")).GetPath();
+                if ((int)GetData("pathIndex") == path.Count)
+                {
 
+                    SetData("pathIndex", 0);
+
+                    ((AStar2D)GetData("aStar")).ResetPath();
+
+                }
+                else
+                {
+
+                    SetData("movementDirection", (path[(int)GetData("pathIndex")].pos - (Vector2)GetData("position")).normalized);
+
+                    if (Vector2.Distance((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos) < (float)GetData("cellSize") * 0.5f)
+                    {
+                        SetData("pathIndex", (int)GetData("pathIndex") + 1);
+
+                    }
+
+                }
+                return NodeState.RUNNING;
             }
 
-            return NodeState.RUNNING;
+            return NodeState.FAILURE;
+
         }
     }
     
@@ -91,7 +115,7 @@ namespace BehaviorTree
             
             if (!(bool)GetData("withinChaseRange") ||(bool)GetData("moveToCenter"))
             {
-               
+                SetData("movementDirection", Vector2.zero);
                 return NodeState.FAILURE;
             }
 
@@ -156,6 +180,26 @@ namespace BehaviorTree
         }
 
     }
+    public class MoveForward : Node
+    {
+        public MoveForward() : base() { }
+
+
+        public override NodeState Evaluate()
+        {
+            
+            if ((bool)GetData("withinAttackRange"))
+            {
+                SetData("movementDirection", Vector2.zero);
+                return NodeState.FAILURE;
+            }
+            SetData("movementDirection", (Vector2)GetData("forward"));
+
+
+
+            return NodeState.RUNNING;
+        }
+    }
     public class AttackHeavy : Node
     {
         public AttackHeavy() : base() { }
@@ -164,11 +208,12 @@ namespace BehaviorTree
         public override NodeState Evaluate()
         {
             state = NodeState.FAILURE;
-            if ((bool)GetData("withinAttackRange")&&(bool)GetData("attackHeavy")&&!(bool)GetData("outOfRange"))
+            if ((bool)GetData("withinAttackRange"))
             {
                 SetData("attacking", true);
                 SetData("movementDirection", Vector2.zero);
                 state = NodeState.RUNNING;
+                //If played animation
                 SetData("attacking", false);
             }
 

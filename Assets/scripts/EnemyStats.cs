@@ -60,17 +60,41 @@ public class EnemyStats
             case ENEMY_TYPE.SWARM:
                 {
                  
-                    quickDamage = 5;
+                  
                     movementSpeed = 150;
-                    heavyDamage = 10;
+           
                     break;
                 }
             case ENEMY_TYPE.ARMY:
                 {
                     chasePlayerRange = 10;
-                    quickDamage = 5;
+                 
                     movementSpeed = 100;
-                    heavyDamage = 10;
+                
+                    break;
+                }
+            case ENEMY_TYPE.BOMB:
+                {
+
+                    attackRange = 2;
+                    movementSpeed = 200;
+               
+                    break;
+                }
+            case ENEMY_TYPE.RANGE:
+                {
+
+                    attackRange = 10;
+                    movementSpeed = 200;
+               
+                    break;
+                }
+            case ENEMY_TYPE.BOSS:
+                {
+
+                    
+                    movementSpeed = 50;
+
                     break;
                 }
         }

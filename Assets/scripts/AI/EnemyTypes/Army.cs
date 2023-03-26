@@ -8,20 +8,25 @@ public class Army : EnemyBase
 
     Transform player;
     FlockBehaviourChase flockingBehavior;
-
+    [SerializeField] float targetPower;
+    [SerializeField] float separatePower;
+    [SerializeField] float separateObjectPower;
+    [SerializeField] float AlignPower;
+    [SerializeField] float CohesionPower;
+    [SerializeField] float randomDirPower;
     public override void Init(AiGrid grid, int flockamount, int flockID, Transform hidePoint,
         Transform movementRangePoint, Transform player)
     {
         this.player = player;
         this.flockID = flockID;
          flockweights = new FlockWeights();
-        flockweights.random = RandomW;
-        flockweights.align = AlignW;
-        flockweights.separateAgents = SeparateAgentW;
-        flockweights.separateStatic = SeparateObstacleW;
-        flockweights.cohesive = CohesiveW;
-        flockweights.moveToTarget = TargetW;
-         stats = new EnemyStats(Enemytype);
+        flockweights.random = randomDirPower;
+        flockweights.align = AlignPower;
+        flockweights.separateAgents = separatePower;
+        flockweights.separateStatic = separateObjectPower;
+        flockweights.cohesive = AlignPower;
+        flockweights.moveToTarget = targetPower;
+        stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
         flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
             flockamount,gameObject.tag, flockID);

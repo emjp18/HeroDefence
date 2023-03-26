@@ -12,7 +12,12 @@ public class Swarm : EnemyBase
     Transform player;
     FlockBehaviourChase flockingBehavior;
     bool outOfRange = false;
-
+    [SerializeField] float targetPower;
+    [SerializeField] float separatePower;
+    [SerializeField] float separateObjectPower;
+    [SerializeField] float AlignPower;
+    [SerializeField] float CohesionPower;
+    [SerializeField] float randomDirPower;
     public override void Init( AiGrid grid, int flockamount, int flockID, Transform hidePoint,
         Transform movementRangePoint, Transform player)
     {
@@ -20,12 +25,12 @@ public class Swarm : EnemyBase
         this.player = player;
         this.flockID = flockID;
         flockweights = new FlockWeights();
-        flockweights.random = RandomW;
-        flockweights.align = AlignW;
-        flockweights.separateAgents = SeparateAgentW;
-        flockweights.separateStatic = SeparateObstacleW;
-        flockweights.cohesive = CohesiveW;
-        flockweights.moveToTarget = TargetW;
+        flockweights.random = randomDirPower;
+        flockweights.align = AlignPower;
+        flockweights.separateAgents = separatePower;
+        flockweights.separateStatic = separateObjectPower;
+        flockweights.cohesive = AlignPower;
+        flockweights.moveToTarget = targetPower;
    
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
