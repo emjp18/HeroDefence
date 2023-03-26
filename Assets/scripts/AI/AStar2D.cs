@@ -183,7 +183,7 @@ public class AStar2D
         isFinding = false;
         return;
     }
-    public void AStarSearch(Vector2 currentPos, Vector2 goalPos, int maximunNodes = 100)
+    public void AStarSearch(Vector2 currentPos, Vector2 goalPos, int maximunNodes = 50)
     {
         if(!isFinding&&!isSearching)
         {

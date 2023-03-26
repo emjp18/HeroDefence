@@ -5,29 +5,31 @@ using UnityEngine;
 
 public class Army : EnemyBase
 {
-    [SerializeField] float speed = 100;
-    [SerializeField] Transform player;
+
+    Transform player;
     FlockBehaviourChase flockingBehavior;
 
-    public override void Init( AiGrid grid, int flockamount)
+    public override void Init(AiGrid grid, int flockamount, int flockID, Transform hidePoint,
+        Transform movementRangePoint, Transform player)
     {
-        flockweights = new FlockWeights();
+        this.player = player;
+        this.flockID = flockID;
+         flockweights = new FlockWeights();
         flockweights.random = RandomW;
         flockweights.align = AlignW;
         flockweights.separateAgents = SeparateAgentW;
         flockweights.separateStatic = SeparateObstacleW;
         flockweights.cohesive = CohesiveW;
         flockweights.moveToTarget = TargetW;
-       
-        stats = new EnemyStats(Enemytype);
+         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
         flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount,gameObject.tag);
-        root = new Root(new List<Node> { new Chase()});
+            flockamount,gameObject.tag, flockID);
+        root = new Root(new List<Node> { new Chase(), new AttackFast()});
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         stats.AttackRange = player.GetComponent<BoxCollider2D>().size.x;
-        stats.Speed = speed;
+        
     }
 
     public override void StartNightPhase(AiGrid grid)
@@ -91,4 +93,5 @@ public class Army : EnemyBase
             root.SetData("movementDirection", Vector2.zero);
         }
     }
+   
 }

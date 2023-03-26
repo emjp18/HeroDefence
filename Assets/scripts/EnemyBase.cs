@@ -29,7 +29,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected EnemyStats stats;
     protected FlockWeights flockweights;
     protected Transform buildingTarget;
-
+    protected int flockID;
     private void FixedUpdate()
     {
 
@@ -37,7 +37,8 @@ public abstract class EnemyBase : MonoBehaviour
         
     }
     public void SetTarget(Transform target) { buildingTarget = target; }
-    public abstract void Init(AiGrid grid, int flockamount);
+    public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform hidePoint,
+        Transform movementRangePoint, Transform player);
 
     public abstract void StartNightPhase(AiGrid grid);
     
@@ -79,5 +80,9 @@ public abstract class EnemyBase : MonoBehaviour
         get => separateObjectPower;
         set => separateObjectPower = value;
     }
-
+    public int FlockID
+    {
+        get => flockID;
+        set => flockID = value;
+    }
 }

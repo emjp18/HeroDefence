@@ -62,7 +62,24 @@ namespace BehaviorTree
             return state;
         }
     }
-    
+    public class FindTarget : Node
+    {
+        public FindTarget() : base() { }
+        public override NodeState Evaluate()
+        {
+            if((bool)GetData("withinAttackRange"))
+            {
+                return NodeState.FAILURE;
+            }
+
+            if (((AStar2D)GetData("aStar")).GetPathFound())
+            {
+
+            }
+
+            return NodeState.RUNNING;
+        }
+    }
     
     public class ChaseWithinArea : Node
     {
@@ -99,13 +116,13 @@ namespace BehaviorTree
         public override NodeState Evaluate()
         {
 
-            //if ( (bool)GetData("withinAttackRange")
-            //    /*|| (bool)GetData("attacking") *//*|| (bool)GetData("dead")*/)
-            //{
+            if ((bool)GetData("withinAttackRange")
+              )
+            {
 
-            //    return NodeState.FAILURE;
-            //}
-            
+                return NodeState.FAILURE;
+            }
+
 
             SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
                 (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
@@ -125,7 +142,7 @@ namespace BehaviorTree
         public override NodeState Evaluate()
         {
             state = NodeState.FAILURE;
-            if ((bool)GetData("withinAttackRange")&&!(bool)GetData("outOfRange"))
+            if ((bool)GetData("withinAttackRange"))
             {
                 SetData("attacking", true);
                 SetData("movementDirection", Vector2.zero);

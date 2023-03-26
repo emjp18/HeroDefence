@@ -57,7 +57,7 @@ public class EnemyStats
         switch(type)
         {
 
-            case ENEMY_TYPE.SWARMER:
+            case ENEMY_TYPE.SWARM:
                 {
                  
                     quickDamage = 5;
@@ -67,7 +67,7 @@ public class EnemyStats
                 }
             case ENEMY_TYPE.ARMY:
                 {
-                    chasePlayerRange = 4;
+                    chasePlayerRange = 10;
                     quickDamage = 5;
                     movementSpeed = 100;
                     heavyDamage = 10;
