@@ -33,8 +33,8 @@ public abstract class EnemyBase : MonoBehaviour
         
     }
     public void SetTarget(Transform target) { buildingTarget = target; }
-    public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform hidePoint,
-        Transform movementRangePoint, Transform player);
+    public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
+        Transform movementRangePoint = null);
 
     public abstract void StartNightPhase(AiGrid grid);
     

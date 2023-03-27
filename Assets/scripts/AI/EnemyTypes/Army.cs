@@ -14,8 +14,8 @@ public class Army : EnemyBase
     [SerializeField] float AlignPower;
     [SerializeField] float CohesionPower;
     [SerializeField] float randomDirPower;
-    public override void Init(AiGrid grid, int flockamount, int flockID, Transform hidePoint,
-        Transform movementRangePoint, Transform player)
+    public override void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
+        Transform movementRangePoint = null)
     {
         this.player = player;
         this.flockID = flockID;
@@ -29,7 +29,7 @@ public class Army : EnemyBase
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
         flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount,gameObject.tag, flockID);
+            flockamount,gameObject.tag, flockID, flockLeader);
         root = new Root(new List<Node> { new Chase(), new AttackFast()});
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();

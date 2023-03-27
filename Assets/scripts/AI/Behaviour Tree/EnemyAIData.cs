@@ -157,7 +157,80 @@ namespace BehaviorTree
         }
 
     }
+    public class ChaseFindPath : Node
+    {
+        public ChaseFindPath() : base() { }
 
+
+        public override NodeState Evaluate()
+        {
+
+            if ((bool)GetData("withinAttackRange")
+              )
+            {
+
+                return NodeState.FAILURE;
+            }
+            if (((AStar2D)GetData("aStar")).GetPathFound())
+            {
+                var path = ((AStar2D)GetData("aStar")).GetPath();
+                if ((int)GetData("pathIndex") == path.Count)
+                {
+
+                    SetData("pathIndex", 0);
+
+                    ((AStar2D)GetData("aStar")).ResetPath();
+
+                }
+                else
+                {
+
+                    SetData("movementDirection", (path[(int)GetData("pathIndex")].pos - (Vector2)GetData("position")).normalized);
+
+                    if (Vector2.Distance((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos) < (float)GetData("cellSize") * 0.5f)
+                    {
+                        SetData("pathIndex", (int)GetData("pathIndex") + 1);
+
+                    }
+
+                }
+                SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos,
+             (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+            }
+            if (((AStar2D)GetData("aStar")).GetPathFound())
+            {
+                var path = ((AStar2D)GetData("aStar")).GetPath();
+               
+            }
+            else
+            {
+                SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
+               (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+            }
+                
+     
+
+            if((bool)GetData("isLeader"))
+            {
+                if ((bool)GetData("newPath"))
+                {
+                    if((bool)GetData("search"))
+                    {
+                        SetData("search", false);
+                        SetData("newPath", false);
+                        ((AStar2D)GetData("aStar")).AStarSearch((Vector2)GetData("position"),
+                      (Vector2)GetData("targetPosition"));
+                    }
+                    
+                  
+                }
+            }
+
+            state = NodeState.RUNNING;
+            return state;
+        }
+
+    }
     public class AttackFast : Node
     {
         public AttackFast() : base() { }

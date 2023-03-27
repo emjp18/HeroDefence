@@ -18,8 +18,8 @@ public class Swarm : EnemyBase
     [SerializeField] float AlignPower;
     [SerializeField] float CohesionPower;
     [SerializeField] float randomDirPower;
-    public override void Init( AiGrid grid, int flockamount, int flockID, Transform hidePoint,
-        Transform movementRangePoint, Transform player)
+    public override void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
+        Transform movementRangePoint = null)
     {
         this.hidePoint = hidePoint;
         this.player = player;
@@ -35,7 +35,7 @@ public class Swarm : EnemyBase
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
         flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount, gameObject.tag, flockID);
+            flockamount, gameObject.tag, flockID, flockLeader);
         root = new Root(new List<Node> { new ChaseWithinArea(), new Idle()
         });
         anim = GetComponent<Animator>();

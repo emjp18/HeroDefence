@@ -8,7 +8,8 @@ public class Range : EnemyBase
     AStar2D pathfinding;
     Transform aimTarget;
  
-    public override void Init(AiGrid grid, int flockamount, int flockID, Transform hidePoint, Transform movementRangePoint, Transform player)
+    public override void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
+        Transform movementRangePoint = null)
     {
         pathfinding = new AStar2D(grid);
         root = new Root(new List<Node> { new FindTarget(), new AttackFast() });

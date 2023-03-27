@@ -35,7 +35,18 @@ public abstract class FlockBehaviour
     protected RectangleFloat agentBounds = new RectangleFloat();
     protected BoxCollider2D box;
     protected int flockID;
-   
+    protected bool isLeader = false;
+    protected bool needsNewPath = false;
+    public bool Leader
+    {
+        get => isLeader;
+        set => isLeader = value;
+    }
+    public bool NewPath
+    {
+        get => needsNewPath;
+        set => needsNewPath = value;
+    }
     public float RandomW
     {
         get => moveRandomWeight;
@@ -98,8 +109,9 @@ public abstract class FlockBehaviour
     
     
     public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag
-        ,int flockID)
+        ,int flockID, bool leader)
     {
+        this.isLeader = leader;
         flockTag = tag;
         avoidanceRadius = box.size.x > box.size.y ? box.size.x : box.size.y;
         this.box = box;
@@ -134,8 +146,8 @@ public abstract class FlockBehaviour
 public class FlockBehaviourChase : FlockBehaviour
 {
     public FlockBehaviourChase(FlockWeights weights, AiGrid grid, BoxCollider2D box,int flockAgentAmount, string tag,
-        int flockid) 
-        : base(weights, grid,box,flockAgentAmount, tag, flockid)
+        int flockid, bool leader) 
+        : base(weights, grid,box,flockAgentAmount, tag, flockid, leader)
     {
         
     }
@@ -147,38 +159,44 @@ public class FlockBehaviourChase : FlockBehaviour
    
         GetNearbyObjects(pos, box);
         newDirection = Vector2.zero;
+        if(isLeader)
+        {
+            newDirection += MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection) * targetWeight;
 
-        newDirection += MoveToTarget(pos, targetPos, box,currentVelocity,currentDirection) * targetWeight;
+           
+        }
+        else
+        {
+            newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection) * moveRandomWeight;
 
-        newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection)* moveRandomWeight;
+            var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
 
+            if (cohesion.magnitude > cohesionWeight * cohesionWeight)
+            {
+                cohesion.Normalize();
+                cohesion *= cohesionWeight;
+            }
+            newDirection += cohesion;
+
+            var alignment = Alignment(currentVelocity, currentDirection) * alignmentWeight;
+
+            if (alignment.magnitude > alignmentWeight * alignmentWeight)
+            {
+                alignment.Normalize();
+                alignment *= alignmentWeight;
+            }
+            newDirection += alignment;
+
+            var separation = Separation(pos, currentVelocity, currentDirection) * separationWeight;
+
+            if (separation.magnitude > separationWeight * separationWeight)
+            {
+                separation.Normalize();
+                separation *= separationWeight;
+            }
+            newDirection += separation;
+        }
        
-        var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
-
-        if (cohesion.magnitude > cohesionWeight * cohesionWeight)
-        {
-            cohesion.Normalize();
-            cohesion *= cohesionWeight;
-        }
-        newDirection += cohesion;
-
-        var alignment = Alignment(currentVelocity, currentDirection) * alignmentWeight;
-
-        if (alignment.magnitude > alignmentWeight * alignmentWeight)
-        {
-            alignment.Normalize();
-            alignment *= alignmentWeight;
-        }
-        newDirection += alignment;
-
-        var separation = Separation(pos, currentVelocity, currentDirection) * separationWeight;
-
-        if (separation.magnitude > separationWeight * separationWeight)
-        {
-            separation.Normalize();
-            separation *= separationWeight;
-        }
-        newDirection += separation;
         var separationOb = SeparationObstacles(pos, targetPos, currentVelocity, currentDirection) * separationObstWeight;
 
         if (separationOb.magnitude > separationObstWeight * separationObstWeight)
@@ -187,11 +205,12 @@ public class FlockBehaviourChase : FlockBehaviour
             separationOb *= separationObstWeight;
         }
         newDirection += separationOb;
-        
-
+        Debug.Log(newDirection.normalized);
+        if (isLeader)
+            needsNewPath = separationOb != Vector2.zero;
         return newDirection.normalized;
 
-
+  
 
     }
     Vector2 Alignment(Vector2 currentVelocity, Vector2 currentDirection)
