@@ -165,8 +165,7 @@ namespace BehaviorTree
         public override NodeState Evaluate()
         {
 
-            if ((bool)GetData("withinAttackRange")
-              )
+            if ((bool)GetData("withinAttackRange"))
             {
 
                 return NodeState.FAILURE;
@@ -196,36 +195,46 @@ namespace BehaviorTree
                 }
                 SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos,
              (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
-            }
-            if (((AStar2D)GetData("aStar")).GetPathFound())
+            } 
+            else if((bool)GetData("newPath")) //make it so that only one needs to know the direction and the rest just follows.
             {
-                var path = ((AStar2D)GetData("aStar")).GetPath();
-               
+                Vector2Int index = (Vector2Int)GetData("index");
+                if (Utility.GetAIGridIndex((Vector2)GetData("obstacleCell"), ((AStar2D)GetData("aStar")).Quadtree, ref index))//Find the obstacle Cell
+                {
+                    Vector2 desiredDIr = ((Vector2)GetData("targetPosition") - (Vector2)GetData("position")).normalized;
+                    while (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
+                    {
+                        if (desiredDIr.x > 0.5f)//move cells in the direction of the target until one is found that is not an obstacle
+                        {
+                            index.x++;
+                        }
+                        else if (desiredDIr.y > 0.5f)
+                        {
+                            index.y++;
+                        }
+                        else
+                        {
+                            index.x++;
+                            index.y++;
+                        }
+                    }
+                    SetData("movementDirection", Vector2.zero);
+                    ((AStar2D)GetData("aStar")).AStarSearch((Vector2)GetData("position"), ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos);
+                    SetData("newPath", false);
+                    Debug.Log(((AStar2D)GetData("aStar")).GetPathFound());
+
+                }
             }
             else
             {
                 SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
                (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+                
             }
                 
      
 
-            if((bool)GetData("isLeader"))
-            {
-                if ((bool)GetData("newPath"))
-                {
-                    if((bool)GetData("search"))
-                    {
-                        SetData("search", false);
-                        SetData("newPath", false);
-                        ((AStar2D)GetData("aStar")).AStarSearch((Vector2)GetData("position"),
-                      (Vector2)GetData("targetPosition"));
-                    }
-                    
-                  
-                }
-            }
-
+            
             state = NodeState.RUNNING;
             return state;
         }

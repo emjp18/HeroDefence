@@ -97,6 +97,16 @@ public class EnemyStats
 
                     break;
                 }
+            case ENEMY_TYPE.ARMY1:
+                {
+
+                    chasePlayerRange = 10;
+
+                    movementSpeed = 100;
+                    movementSpeed = 50;
+
+                    break;
+                }
         }
     }
     

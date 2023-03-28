@@ -32,11 +32,17 @@ public abstract class FlockBehaviour
     protected Vector2 oldDir = Vector2.zero;
     protected float angleThreshold = 35;
     protected Vector2 newDirection;
+    protected Vector2 obstacleCell;
     protected RectangleFloat agentBounds = new RectangleFloat();
     protected BoxCollider2D box;
     protected int flockID;
     protected bool isLeader = false;
     protected bool needsNewPath = false;
+    public Vector2 ObstaclePos
+    {
+        get => obstacleCell;
+      
+    }
     public bool Leader
     {
         get => isLeader;
@@ -159,44 +165,37 @@ public class FlockBehaviourChase : FlockBehaviour
    
         GetNearbyObjects(pos, box);
         newDirection = Vector2.zero;
-        if(isLeader)
+        
+        newDirection += MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection) * targetWeight;
+        Debug.Log(newDirection);
+        newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection) * moveRandomWeight;
+
+        var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
+
+        if (cohesion.magnitude > cohesionWeight * cohesionWeight)
         {
-            newDirection += MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection) * targetWeight;
-
-           
+            cohesion.Normalize();
+            cohesion *= cohesionWeight;
         }
-        else
+        newDirection += cohesion;
+
+        var alignment = Alignment(currentVelocity, currentDirection) * alignmentWeight;
+
+        if (alignment.magnitude > alignmentWeight * alignmentWeight)
         {
-            newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection) * moveRandomWeight;
-
-            var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
-
-            if (cohesion.magnitude > cohesionWeight * cohesionWeight)
-            {
-                cohesion.Normalize();
-                cohesion *= cohesionWeight;
-            }
-            newDirection += cohesion;
-
-            var alignment = Alignment(currentVelocity, currentDirection) * alignmentWeight;
-
-            if (alignment.magnitude > alignmentWeight * alignmentWeight)
-            {
-                alignment.Normalize();
-                alignment *= alignmentWeight;
-            }
-            newDirection += alignment;
-
-            var separation = Separation(pos, currentVelocity, currentDirection) * separationWeight;
-
-            if (separation.magnitude > separationWeight * separationWeight)
-            {
-                separation.Normalize();
-                separation *= separationWeight;
-            }
-            newDirection += separation;
+            alignment.Normalize();
+            alignment *= alignmentWeight;
         }
-       
+        newDirection += alignment;
+
+        var separation = Separation(pos, currentVelocity, currentDirection) * separationWeight;
+
+        if (separation.magnitude > separationWeight * separationWeight)
+        {
+            separation.Normalize();
+            separation *= separationWeight;
+        }
+        newDirection += separation;
         var separationOb = SeparationObstacles(pos, targetPos, currentVelocity, currentDirection) * separationObstWeight;
 
         if (separationOb.magnitude > separationObstWeight * separationObstWeight)
@@ -205,9 +204,9 @@ public class FlockBehaviourChase : FlockBehaviour
             separationOb *= separationObstWeight;
         }
         newDirection += separationOb;
-        Debug.Log(newDirection.normalized);
-        if (isLeader)
-            needsNewPath = separationOb != Vector2.zero;
+
+        Debug.Log(newDirection);
+
         return newDirection.normalized;
 
   
@@ -246,7 +245,19 @@ public class FlockBehaviourChase : FlockBehaviour
             {
                 nAvoid++;
                 avoidanceMove += (pos - position);
+                if (!needsNewPath)
+                {
+                    float cos = Vector2.Dot((position - pos).normalized, (targetPos - pos).normalized);
+                    if (cos > 0.707106781 && cos < 1)
+                    {
+                        obstacleCell = position;
+                        needsNewPath = true;
+                        Debug.Log("?");
+                    }
+
+                }
             }
+            
         }
         if (nAvoid > 0)
         {
@@ -257,7 +268,7 @@ public class FlockBehaviourChase : FlockBehaviour
         }
        
 
-        
+
         return avoidanceMove;
     }
     Vector2 Separation(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)

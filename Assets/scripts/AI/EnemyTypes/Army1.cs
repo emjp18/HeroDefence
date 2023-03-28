@@ -58,9 +58,12 @@ public class Army1 : EnemyBase
         root.SetData("pathIndex", 0);
         root.SetData("cellSize", grid.GetCellSize());
         root.SetData("aStar", pathfinding);
-        root.SetData("search", false);
+      
         root.SetData("newPath", false);
+        root.SetData("index", new Vector2Int());
         root.SetData("isLeader", flockingBehavior.Leader);
+        root.SetData("grid", grid);
+
     }
     private void Update()
     {
@@ -74,8 +77,10 @@ public class Army1 : EnemyBase
         {
             root.SetData("targetPosition", (Vector2)buildingTarget.position);
         }
-
+        root.SetData("obstacleCell", flockingBehavior.ObstaclePos);
         root.SetData("newPath", flockingBehavior.NewPath);
+
+        flockingBehavior.NewPath = (bool)root.GetData("newPath");
 
         root.SetData("position", (Vector2)transform.position);
         root.Evaluate();
@@ -88,7 +93,7 @@ public class Army1 : EnemyBase
    
         root.SetData("dead",stats.Health <= 0);
         root.SetData("withinAttackRange",
-         (Vector2.Distance((Vector2)player.position, (Vector2)transform.position) < stats.AttackRange));
+         (Vector2.Distance((Vector2)root.GetData("targetPosition"), (Vector2)transform.position) < stats.AttackRange));
 
 
       

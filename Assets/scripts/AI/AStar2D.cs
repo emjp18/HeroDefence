@@ -27,6 +27,11 @@ public class AStar2D
     bool isFinding = false;
     A_STAR_NODE[,] customGrid;
     QUAD_NODE rootQuadNode;
+
+    public QUAD_NODE Quadtree
+    {
+        get => rootQuadNode;
+    }
   
     public void UpdateGrid(AiGrid grid)
     {
