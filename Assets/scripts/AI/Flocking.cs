@@ -24,6 +24,7 @@ public abstract class FlockBehaviour
     protected float targetWeight;
     protected float separationObstWeight;
     protected float moveRandomWeight;
+    protected float followLeaderWeight;
     protected int flockPhysicslayer = 6;
     protected string flockTag;
     protected float smoothTime = 0.3f;
@@ -38,6 +39,8 @@ public abstract class FlockBehaviour
     protected int flockID;
     protected bool isLeader = false;
     protected bool needsNewPath = false;
+    protected Vector2 leaderPos;
+    protected bool setnewpath = true;
     public Vector2 ObstaclePos
     {
         get => obstacleCell;
@@ -52,6 +55,11 @@ public abstract class FlockBehaviour
     {
         get => needsNewPath;
         set => needsNewPath = value;
+    }
+    public float LeaderW
+    {
+        get => followLeaderWeight;
+        set => followLeaderWeight = value;
     }
     public float RandomW
     {
@@ -111,7 +119,7 @@ public abstract class FlockBehaviour
         
 
     }
-    public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection);
+    public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection, Vector2 leaderPos);
     
     
     public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag
@@ -120,6 +128,7 @@ public abstract class FlockBehaviour
         this.isLeader = leader;
         flockTag = tag;
         avoidanceRadius = box.size.x > box.size.y ? box.size.x : box.size.y;
+        avoidanceRadius *= 0.5f;
         this.box = box;
         this.flockID = flockID;
         nearbyColliders = new Collider2D[flockAgentAmount];
@@ -133,6 +142,7 @@ public abstract class FlockBehaviour
         alignmentWeight = weights.align;
         cohesionWeight = weights.cohesive;
         moveRandomWeight = weights.random;
+        followLeaderWeight = weights.leader;
         detectCollisionRadius = grid.GetCellSize();
         foreach (A_STAR_NODE node in grid.GetCustomGrid())
         {
@@ -158,18 +168,16 @@ public class FlockBehaviourChase : FlockBehaviour
         
     }
 
-    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos,  Vector2 currentVelocity, Vector2 currentDirection)
+    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos,  Vector2 currentVelocity, Vector2 currentDirection, Vector2 leaderPos)
     {
-        
-       
-   
         GetNearbyObjects(pos, box);
         newDirection = Vector2.zero;
-        
-        newDirection += MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection) * targetWeight;
-        Debug.Log(newDirection);
-        newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection) * moveRandomWeight;
+        this.leaderPos = leaderPos;
 
+        newDirection += MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection) * targetWeight;
+        //newDirection += FollowLeader(pos, targetPos, box, currentVelocity, currentDirection) * followLeaderWeight;
+      
+        newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection) * moveRandomWeight;
         var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
 
         if (cohesion.magnitude > cohesionWeight * cohesionWeight)
@@ -196,6 +204,7 @@ public class FlockBehaviourChase : FlockBehaviour
             separation *= separationWeight;
         }
         newDirection += separation;
+    
         var separationOb = SeparationObstacles(pos, targetPos, currentVelocity, currentDirection) * separationObstWeight;
 
         if (separationOb.magnitude > separationObstWeight * separationObstWeight)
@@ -205,7 +214,9 @@ public class FlockBehaviourChase : FlockBehaviour
         }
         newDirection += separationOb;
 
-        Debug.Log(newDirection);
+
+
+
 
         return newDirection.normalized;
 
@@ -225,7 +236,7 @@ public class FlockBehaviourChase : FlockBehaviour
             alignmentMove += item.gameObject.GetComponent<EnemyBase>().Movement;
         }
         alignmentMove /= nearbyAgents.Count;
-        alignmentMove = Vector2.SmoothDamp(currentDirection, alignmentMove, ref currentVelocity, smoothTime);
+        //alignmentMove = Vector2.SmoothDamp(currentDirection, alignmentMove, ref currentVelocity, smoothTime);
         return alignmentMove;
     }
    
@@ -246,13 +257,16 @@ public class FlockBehaviourChase : FlockBehaviour
                 nAvoid++;
                 avoidanceMove += (pos - position);
                 if (!needsNewPath)
+                    setnewpath = true;
+                if (setnewpath/*&&isLeader*/)
                 {
                     float cos = Vector2.Dot((position - pos).normalized, (targetPos - pos).normalized);
                     if (cos > 0.707106781 && cos < 1)
                     {
                         obstacleCell = position;
                         needsNewPath = true;
-                        Debug.Log("?");
+                        setnewpath = false;
+
                     }
 
                 }
@@ -333,7 +347,7 @@ public class FlockBehaviourChase : FlockBehaviour
 
             if (oldTargetpos != targetPos && Mathf.Abs(angle) > angleThreshold && angle != float.NaN)
             {
-               
+
                 oldDir = dir;
                 waitForTarget = false;
                 oldTargetpos = targetPos;
@@ -343,23 +357,23 @@ public class FlockBehaviourChase : FlockBehaviour
                 return Vector2.zero;
             }
 
-            
+
 
 
         }
-        
+
 
 
         foreach (RectangleFloat b in nearbyObstacleBoxes)
         {
-            if (Utility.PointAABBIntersectionTest(b, (dir* b.Width)+pos))
+            if (Utility.PointAABBIntersectionTest(b, (dir * b.Width) + pos))
             {
-      
+
                 return Vector2.zero;
-                
+
             }
         }
-        dir = Vector2.SmoothDamp(currentDirection, dir, ref currentVelocity, smoothTime);
+        //dir = Vector2.SmoothDamp(currentDirection, dir, ref currentVelocity, smoothTime);
         return dir;
     }
 
@@ -367,7 +381,7 @@ public class FlockBehaviourChase : FlockBehaviour
     {
 
         Vector2 randDir = Random.insideUnitCircle.normalized;
-       
+
 
 
 
@@ -382,6 +396,16 @@ public class FlockBehaviourChase : FlockBehaviour
         }
         randDir = Vector2.SmoothDamp(currentDirection, randDir, ref currentVelocity, smoothTime);
         return randDir;
+    }
+    Vector2 FollowLeader(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    {
+       
+        Vector2 movement = (leaderPos - pos).normalized;
+
+    
+        movement = Vector2.SmoothDamp(currentDirection, movement, ref currentVelocity, smoothTime);
+
+        return movement;
     }
 
 }

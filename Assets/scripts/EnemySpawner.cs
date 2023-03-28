@@ -239,34 +239,16 @@ public class EnemySpawner : MonoBehaviour
         //}
         for (int j = 0; j < spawnPoints.Count; j++)
         {
-            //Vector2 dir = (targetPoints[j].position - spawnPoints[j].position).normalized;
-            //float x = dir.x;
-            //dir.x = dir.y;
-            //dir.y = x;
+            Vector2 dir = (targetPoints[j].position - spawnPoints[j].position).normalized;
+            dir *= -1;
 
-            //for (int i = 0; i < armyAmountPerSpawnPoint; i++)
-            //{
-
-            //    enemiesArmy[i + (armyAmountPerSpawnPoint * j)].gameObject.SetActive(true);
-            //    enemiesArmy[i + (armyAmountPerSpawnPoint * j)].gameObject.transform.position =
-            //        (Vector2)spawnPoints[j].position + dir * i;
-            //    enemiesArmy[i + (armyAmountPerSpawnPoint * j)].SetTarget(targetPoints[j]);
-            //    enemiesArmy[i + (armyAmountPerSpawnPoint * j)].StartNightPhase(grid);
-
-
-
-            //}
-            //enemiesboss[j].gameObject.SetActive(true);
-            //enemiesboss[j].gameObject.transform.position =
-            //    (Vector2)spawnPoints[j].position + dir * 5;
-            //enemiesboss[j].SetTarget(targetPoints[j]);
-            //enemiesboss[j].StartNightPhase(grid);
+           
             for (int i = 0; i < army1AmountPerSpawn; i++)
             {
 
                 enemiesarmy1s[i + (army1AmountPerSpawn * j)].gameObject.SetActive(true);
                 enemiesarmy1s[i + (army1AmountPerSpawn * j)].gameObject.transform.position =
-                    (Vector2)spawnPoints[j].position/* + dir * i*/;
+                    (Vector2)spawnPoints[j].position + dir * i;
                 enemiesarmy1s[i + (army1AmountPerSpawn * j)].SetTarget(targetPoints[j]);
                 enemiesarmy1s[i + (army1AmountPerSpawn * j)].StartNightPhase(grid);
 
@@ -280,7 +262,11 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if(startNight)
+        for (int i = 1; i < army1AmountPerSpawn; i++)
+        {
+            (enemiesarmy1s[i] as Army1).SetLeader(enemiesarmy1s[0].transform.position);
+        }
+            if (startNight)
         {
             StartNightPhase();
             startNight = false;

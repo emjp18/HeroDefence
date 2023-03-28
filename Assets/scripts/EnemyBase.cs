@@ -12,6 +12,7 @@ public struct FlockWeights
     public float align;
     public float cohesive;
     public float random;
+    public float leader;
      
 }
 public abstract class EnemyBase : MonoBehaviour
@@ -30,6 +31,7 @@ public abstract class EnemyBase : MonoBehaviour
     {
 
         rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
+        //Debug.Log(stats.Speed);
         
     }
     public void SetTarget(Transform target) { buildingTarget = target; }

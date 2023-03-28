@@ -102,8 +102,8 @@ public class EnemyStats
 
                     chasePlayerRange = 10;
 
-                    movementSpeed = 100;
-                    movementSpeed = 50;
+                    movementSpeed = 200;
+             
 
                     break;
                 }

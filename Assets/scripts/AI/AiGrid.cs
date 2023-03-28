@@ -235,6 +235,23 @@ public class AiGrid : MonoBehaviour
                             {
 
                                 obstacle = true;
+                                if (y < columns - 1)
+                                    customGrid[x, y + 1].obstacle = true;
+                                if (y < columns - 1 && x < rows - 1)
+                                    customGrid[x + 1, y + 1].obstacle = true;
+                                if (x < rows - 1)
+                                    customGrid[x + 1, y].obstacle = true;
+
+                                if (x < rows - 1 && y > 0)
+                                    customGrid[x + 1, y - 1].obstacle = true;
+                                if (y > 0)
+                                    customGrid[x, y - 1].obstacle = true;
+                                if (x > 0 && y > 0)
+                                    customGrid[x - 1, y - 1].obstacle = true;
+                                if (x > 0)
+                                    customGrid[x - 1, y].obstacle = true;
+                                if (x > 0 && y < columns - 1)
+                                    customGrid[x - 1, y + 1].obstacle = true;
                                 break;
 
                             }
@@ -255,6 +272,7 @@ public class AiGrid : MonoBehaviour
             }
         }
 
+       
        
 
 
@@ -321,6 +339,23 @@ public class AiGrid : MonoBehaviour
                             {
                                 
                                 obstacle = true;
+                                if (y < columns - 1)
+                                    customGrid[x, y + 1].obstacle = true;
+                                if (y < columns - 1 && x < rows - 1)
+                                    customGrid[x + 1, y + 1].obstacle = true;
+                                if (x < rows - 1)
+                                    customGrid[x + 1, y].obstacle = true;
+
+                                if (x < rows - 1 && y > 0)
+                                    customGrid[x + 1, y - 1].obstacle = true;
+                                if (y > 0)
+                                    customGrid[x, y - 1].obstacle = true;
+                                if (x > 0 && y > 0)
+                                    customGrid[x - 1, y - 1].obstacle = true;
+                                if (x > 0)
+                                    customGrid[x - 1, y].obstacle = true;
+                                if (x > 0 && y < columns - 1)
+                                    customGrid[x - 1, y + 1].obstacle = true;
                                 break;
 
                             }
@@ -350,6 +385,8 @@ public class AiGrid : MonoBehaviour
 
             }
         }
+   
+      
 
         for (int x = 0; x < rows; x++)
         {
@@ -453,7 +490,7 @@ public class AiGrid : MonoBehaviour
 
                 if (PointAABBIntersectionTest(node.bounds, customGrid[x, y].pos))
                 {
-                    node.gridIndices.Add(customGrid[x, y].index); //Since the nodes can be smaller than the AI nodes multiple nodes
+                    node.gridIndices.Add(customGrid[x, y].index); 
                    
                 }
                 if (node.gridIndices.Count > 1)
@@ -469,14 +506,14 @@ public class AiGrid : MonoBehaviour
                             closestCenterNode = n;
                             d = Vector2.Distance(center, n.pos);
                         }
-                            
+
 
 
                     }
                     node.gridIndices.Clear();
                     node.gridIndices.Add(closestCenterNode.index);
                 }
-                   
+
             }
 
         }
@@ -492,7 +529,7 @@ public class AiGrid : MonoBehaviour
             && p.y >= bounds.Y - bounds.Height
             && p.y <= bounds.Y;
     }
-    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)//Double Code Segment fix this
+    public void GetAIGridIndex(Vector2 pos, QUAD_NODE node, ref Vector2Int index, ref bool status)
     {
         //Debug.Log("Get AI Grid Index");
         if (PointAABBIntersectionTest(node.bounds, pos))

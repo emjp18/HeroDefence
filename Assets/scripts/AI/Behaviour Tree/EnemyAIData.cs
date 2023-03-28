@@ -13,30 +13,30 @@ namespace BehaviorTree
         public Idle() : base() { }
         public override NodeState Evaluate()
         {
-            if ((bool)GetData("moveToCenter"))
-            {
-                ((FlockBehaviourChase)GetData("flockPattern")).RandomW = 0;
-                ((FlockBehaviourChase)GetData("flockPattern")).TargetW = ((FlockWeights)GetData("flockWeights")).moveToTarget;
-                SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("hidePoint"),
-                   (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
-                state = NodeState.RUNNING;
+            //if ((bool)GetData("moveToCenter"))
+            //{
+            //    ((FlockBehaviourChase)GetData("flockPattern")).RandomW = 0;
+            //    ((FlockBehaviourChase)GetData("flockPattern")).TargetW = ((FlockWeights)GetData("flockWeights")).moveToTarget;
+            //    SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("hidePoint"),
+            //       (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+            //    state = NodeState.RUNNING;
              
              
-                if(((Vector2)GetData("movementDirection") - ((Vector2)GetData("hidePoint") - (Vector2)GetData("position")).normalized).magnitude>2)
-                {
-                    Debug.Log("wrong direction?");
-                }
-                return state;
-            }
-            if ((bool)GetData("withinChaseRange"))
-            {
-                return NodeState.FAILURE;
-            }
+            //    if(((Vector2)GetData("movementDirection") - ((Vector2)GetData("hidePoint") - (Vector2)GetData("position")).normalized).magnitude>2)
+            //    {
+            //        Debug.Log("wrong direction?");
+            //    }
+            //    return state;
+            //}
+            //if ((bool)GetData("withinChaseRange"))
+            //{
+            //    return NodeState.FAILURE;
+            //}
            
-            ((FlockBehaviourChase)GetData("flockPattern")).RandomW = ((FlockWeights)GetData("flockWeights")).random;
-            ((FlockBehaviourChase)GetData("flockPattern")).TargetW = 0;
-            SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
-               (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+            //((FlockBehaviourChase)GetData("flockPattern")).RandomW = ((FlockWeights)GetData("flockWeights")).random;
+            //((FlockBehaviourChase)GetData("flockPattern")).TargetW = 0;
+            //SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
+            //   (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
 
            
 
@@ -121,10 +121,10 @@ namespace BehaviorTree
 
 
 
-            ((FlockBehaviourChase)GetData("flockPattern")).RandomW = 0;
-            ((FlockBehaviourChase)GetData("flockPattern")).TargetW = ((FlockWeights)GetData("flockWeights")).moveToTarget;
-            SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
-                (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+            //((FlockBehaviourChase)GetData("flockPattern")).RandomW = 0;
+            //((FlockBehaviourChase)GetData("flockPattern")).TargetW = ((FlockWeights)GetData("flockWeights")).moveToTarget;
+            //SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
+            //    (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
 
            
             state = NodeState.RUNNING;
@@ -148,8 +148,8 @@ namespace BehaviorTree
             }
 
 
-            SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
-                (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
+            //SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
+            //    (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
 
 
             state = NodeState.RUNNING;
@@ -170,22 +170,26 @@ namespace BehaviorTree
 
                 return NodeState.FAILURE;
             }
+
             if (((AStar2D)GetData("aStar")).GetPathFound())
             {
+                
                 var path = ((AStar2D)GetData("aStar")).GetPath();
-                if ((int)GetData("pathIndex") == path.Count)
+                if ((int)GetData("pathIndex") >= path.Count)
                 {
 
                     SetData("pathIndex", 0);
 
                     ((AStar2D)GetData("aStar")).ResetPath();
+                    Debug.Log("RESET");
 
                 }
                 else
                 {
 
                     SetData("movementDirection", (path[(int)GetData("pathIndex")].pos - (Vector2)GetData("position")).normalized);
-
+                    //         SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos,
+                    //(Vector2)GetData("velocity"), (Vector2)GetData("movementDirection"), (Vector2)GetData("leader")));
                     if (Vector2.Distance((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos) < (float)GetData("cellSize") * 0.5f)
                     {
                         SetData("pathIndex", (int)GetData("pathIndex") + 1);
@@ -193,48 +197,56 @@ namespace BehaviorTree
                     }
 
                 }
-                SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos,
-             (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
-            } 
-            else if((bool)GetData("newPath")) //make it so that only one needs to know the direction and the rest just follows.
+
+            }
+            else if ((bool)GetData("newPath")) 
             {
                 Vector2Int index = (Vector2Int)GetData("index");
-                if (Utility.GetAIGridIndex((Vector2)GetData("obstacleCell"), ((AStar2D)GetData("aStar")).Quadtree, ref index))//Find the obstacle Cell
+                index = Vector2Int.zero;
+                Utility.GetAIGridIndex((Vector2)GetData("obstacleCell"), ((AStar2D)GetData("aStar")).Quadtree, ref index);
+                
+                Vector2 desiredDIr = ((Vector2)GetData("targetPosition") - (Vector2)GetData("position")).normalized;
+                
+                while (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
                 {
-                    Vector2 desiredDIr = ((Vector2)GetData("targetPosition") - (Vector2)GetData("position")).normalized;
-                    while (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
-                    {
-                        if (desiredDIr.x > 0.5f)//move cells in the direction of the target until one is found that is not an obstacle
-                        {
-                            index.x++;
-                        }
-                        else if (desiredDIr.y > 0.5f)
-                        {
-                            index.y++;
-                        }
-                        else
-                        {
-                            index.x++;
-                            index.y++;
-                        }
-                    }
-                    SetData("movementDirection", Vector2.zero);
-                    ((AStar2D)GetData("aStar")).AStarSearch((Vector2)GetData("position"), ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos);
-                    SetData("newPath", false);
-                    Debug.Log(((AStar2D)GetData("aStar")).GetPathFound());
 
+                    if (desiredDIr.x > 0.5f)//move cells in the direction of the target until one is found that is not an obstacle
+                    {
+                        if(index.x< ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                            index.x++;
+                    }
+                    else if (desiredDIr.y > 0.5f)
+                    {
+                        if (index.y < ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
+                            index.y++;
+                    }
+                    else
+                    {
+                        if (index.x < ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                            index.x++;
+                        if (index.y < ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
+                            index.y++;
+                    }
                 }
+
+                SetData("movementDirection", Vector2.zero);
+                ((AStar2D)GetData("aStar")).AStarSearch((Vector2)GetData("position"), ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos);
+                SetData("newPath", false);
+
+                
             }
             else
             {
                 SetData("movementDirection", ((FlockBehaviourChase)GetData("flockPattern")).CalculateDirection((Vector2)GetData("position"), (Vector2)GetData("targetPosition"),
-               (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection")));
-                
+           (Vector2)GetData("velocity"), (Vector2)GetData("movementDirection"), (Vector2)GetData("leader")));
+                Debug.Log("FLOCKING");
+
             }
-                
-     
 
             
+
+
+
             state = NodeState.RUNNING;
             return state;
         }

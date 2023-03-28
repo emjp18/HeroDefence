@@ -15,10 +15,6 @@ public static class Utility
     public static bool GetAIGridIndex(Vector2 pos, QUAD_NODE node,  ref Vector2Int index)
     {
        
-
-
-
-
         if (PointAABBIntersectionTest(node.bounds, pos))
         {
             if (node.leaf)
