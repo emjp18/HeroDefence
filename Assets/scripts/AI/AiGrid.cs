@@ -9,13 +9,44 @@ using UnityEngine.Assertions;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 using static Unity.VisualScripting.Metadata;
+using static UnityEditor.PlayerSettings;
+
 public struct RectangleFloat
 {
     public float X;
     public float Y;
     public float Width;
     public float Height;
+    public static bool operator ==(RectangleFloat left, RectangleFloat right)
+    {
+        return left.Width==right.Width && left.Height==right.Height&&left.Y==right.Y&&left.X==right.X;
+    }
+    public static bool operator !=(RectangleFloat left, RectangleFloat right)
+    {
+        return left.Width != right.Width || left.Height != right.Height || left.Y != right.Y || left.X != right.X;
+    }
+    public override bool Equals(object obj)
+    {
+        var convObj = (RectangleFloat)obj;
+        return this.Width == convObj.Width && this.Height == convObj.Height && this.Y
+            == convObj.Y && this.X == convObj.X;
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hash = 1430287;
+
+            hash = hash * 7302013 ^ Width.GetHashCode();
+            hash = hash * 7302013 ^ Height.GetHashCode();
+            hash = hash * 7302013 ^ X.GetHashCode();
+            hash = hash * 7302013 ^ Y.GetHashCode();
+            return hash;
+        }
+    }
 }
+
 public struct QUAD_NODE
 {
     public QUAD_NODE[] children;
@@ -29,7 +60,7 @@ public class AiGrid : MonoBehaviour
     float z = 100;
     //[SerializeField] int collisionLayerInteger;
     //LayerMask collisionLayer = new LayerMask();
-    Collider2D[] colliderResult = new Collider2D[10];
+    Collider2D[] colliderResult = new Collider2D[50];
     ContactFilter2D contactFilter = new ContactFilter2D();
     //Needs to be uniform for the sake of the quad tree
     [SerializeField] Row_Count rowsCount = Row_Count.SIXTYFOUR;
@@ -182,46 +213,25 @@ public class AiGrid : MonoBehaviour
 
     public void RegenerateGrid() //Can be done before every night phase in case new obstacles have been placed
     {
+        for (int x = 0; x < rows; x++)
+        {
+            for (int y = 0; y < columns; y++)
+            {
 
+                customGrid[x, y].obstacle = false;
+            }
+        }
         float center = rows / 2.0f;
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
             {
-                Vector2 worldPos;
-          
-                if (rows < center)
-                {
-                    worldPos.x = gridCenter.x - cellSize * (center - x);
-                }
-                else if (rows == center)
-                {
-                    worldPos.x = gridCenter.x;
-                }
-                else
-                {
-                    worldPos.x = gridCenter.x + cellSize * (x - center);
-                }
-                if (columns < center)
-                {
-                    worldPos.y = gridCenter.y - cellSize * (center - y);
-                }
-                else if (columns == center)
-                {
-                    worldPos.y = gridCenter.y;
-                }
-                else
-                {
-                    worldPos.y = gridCenter.y + cellSize * (y - center);
-                }
-                
-                colliderBox.offset = worldPos;
+                colliderBox.offset = customGrid[x, y].pos;
 
 
-            
-            
+
+
                 bool obstacle = false;
-
                 if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
                 {
                     if (colliderResult != null)
@@ -229,36 +239,32 @@ public class AiGrid : MonoBehaviour
 
                         foreach (Collider2D collider in colliderResult)
                         {
-                            //Ignore player, npc and other enemies.
-                            if (collider.gameObject.layer!=3&&collider.gameObject.layer!=6
-                                &&collider.gameObject.layer!=8 && collider.gameObject.layer != 9)
+                            
+                            if (collider.gameObject.layer==7)
                             {
 
                                 obstacle = true;
-                                if (y < columns - 1)
-                                    customGrid[x, y + 1].obstacle = true;
-                                if (y < columns - 1 && x < rows - 1)
-                                    customGrid[x + 1, y + 1].obstacle = true;
-                                if (x < rows - 1)
-                                    customGrid[x + 1, y].obstacle = true;
+                                //if (y < columns - 1)
+                                //    customGrid[x, y + 1].obstacle = true;
+                                //if (y < columns - 1 && x < rows - 1)
+                                //    customGrid[x + 1, y + 1].obstacle = true;
+                                //if (x < rows - 1)
+                                //    customGrid[x + 1, y].obstacle = true;
 
-                                if (x < rows - 1 && y > 0)
-                                    customGrid[x + 1, y - 1].obstacle = true;
-                                if (y > 0)
-                                    customGrid[x, y - 1].obstacle = true;
-                                if (x > 0 && y > 0)
-                                    customGrid[x - 1, y - 1].obstacle = true;
-                                if (x > 0)
-                                    customGrid[x - 1, y].obstacle = true;
-                                if (x > 0 && y < columns - 1)
-                                    customGrid[x - 1, y + 1].obstacle = true;
+                                //if (x < rows - 1 && y > 0)
+                                //    customGrid[x + 1, y - 1].obstacle = true;
+                                //if (y > 0)
+                                //    customGrid[x, y - 1].obstacle = true;
+                                //if (x > 0 && y > 0)
+                                //    customGrid[x - 1, y - 1].obstacle = true;
+                                //if (x > 0)
+                                //    customGrid[x - 1, y].obstacle = true;
+                                //if (x > 0 && y < columns - 1)
+                                //    customGrid[x - 1, y + 1].obstacle = true;
                                 break;
 
                             }
-                            else
-                            {
-                                break;
-                            }
+                            
                         }
 
                     }
@@ -267,7 +273,9 @@ public class AiGrid : MonoBehaviour
 
 
                 }
-                customGrid[x, y].obstacle = obstacle;
+                if (!customGrid[x, y].obstacle)
+                    customGrid[x, y].obstacle = obstacle;
+
 
             }
         }
@@ -290,6 +298,7 @@ public class AiGrid : MonoBehaviour
         {
             for (int y = 0; y < columns; y++)
             {
+               
                 Vector2 worldPos;
                 customGrid[x,y] = new A_STAR_NODE();
                 if(rows<center)
@@ -316,62 +325,19 @@ public class AiGrid : MonoBehaviour
                 {
                     worldPos.y = gridCenter.y + cellSize * (y - center);
                 }
-                //worldPos.x += cellSize * 0.5f; //making the worldpos be in the center of the node
-                //worldPos.y -= cellSize * 0.5f;
-
+               
                //
-                colliderBox.offset = worldPos;
+              
               
                
-                 Vector2 pos = new Vector2(worldPos.x, worldPos.y);
+                Vector2 pos = new Vector2(worldPos.x, worldPos.y);
                 customGrid[x, y].pos = pos;
-                bool obstacle = false;
-                
-                if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
-                {
-                    if (colliderResult != null)
-                    {
+                customGrid[x, y].bounds = new RectangleFloat();
+                customGrid[x, y].bounds.Width = customGrid[x, y].bounds.Height = cellSize;
+                customGrid[x, y].bounds.X = pos.x - cellSize * 0.5f;
+                customGrid[x, y].bounds.Y = pos.y + cellSize * 0.5f;
+                customGrid[x, y].obstacle = false;
 
-                        foreach (Collider2D collider in colliderResult)
-                        {
-
-                            if (collider.gameObject.tag != "Character" && collider.gameObject.tag != "Player")
-                            {
-                                
-                                obstacle = true;
-                                if (y < columns - 1)
-                                    customGrid[x, y + 1].obstacle = true;
-                                if (y < columns - 1 && x < rows - 1)
-                                    customGrid[x + 1, y + 1].obstacle = true;
-                                if (x < rows - 1)
-                                    customGrid[x + 1, y].obstacle = true;
-
-                                if (x < rows - 1 && y > 0)
-                                    customGrid[x + 1, y - 1].obstacle = true;
-                                if (y > 0)
-                                    customGrid[x, y - 1].obstacle = true;
-                                if (x > 0 && y > 0)
-                                    customGrid[x - 1, y - 1].obstacle = true;
-                                if (x > 0)
-                                    customGrid[x - 1, y].obstacle = true;
-                                if (x > 0 && y < columns - 1)
-                                    customGrid[x - 1, y + 1].obstacle = true;
-                                break;
-
-                            }
-                            else
-                            {
-                                break;//Temporary fix, if enemy is in cell then no collision cus for some reason it adds it despite the tags
-                            }
-                        }
-
-                    }
-                    
-                   
-                    
-                    
-                }
-                customGrid[x, y].obstacle = obstacle;
 
                 //if (customGrid[x, y].obstacle)
                 //    DrawDebugBounds(colliderBox.bounds);
@@ -385,8 +351,58 @@ public class AiGrid : MonoBehaviour
 
             }
         }
-   
-      
+        for (int x = 0; x < rows; x++)
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                colliderBox.offset = customGrid[x, y].pos;
+                bool obstacle = false;
+                if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
+                {
+                    if (colliderResult != null)
+                    {
+
+                        foreach (Collider2D collider in colliderResult)
+                        {
+
+                            if (collider.gameObject.layer==7)
+                            {
+                                
+                                obstacle = true;
+                                //if (y < columns - 1)
+                                //    customGrid[x, y + 1].obstacle = true;
+                                //if (y < columns - 1 && x < rows - 1)
+                                //    customGrid[x + 1, y + 1].obstacle = true;
+                                //if (x < rows - 1)
+                                //    customGrid[x + 1, y].obstacle = true;
+
+                                //if (x < rows - 1 && y > 0)
+                                //    customGrid[x + 1, y - 1].obstacle = true;
+                                //if (y > 0)
+                                //    customGrid[x, y - 1].obstacle = true;
+                                //if (x > 0 && y > 0)
+                                //    customGrid[x - 1, y - 1].obstacle = true;
+                                //if (x > 0)
+                                //    customGrid[x - 1, y].obstacle = true;
+                                //if (x > 0 && y < columns - 1)
+                                //    customGrid[x - 1, y + 1].obstacle = true;
+                                break;
+
+                            }
+                            
+                        }
+
+                    }
+
+
+
+
+                }
+                if (!customGrid[x, y].obstacle)
+                    customGrid[x, y].obstacle = obstacle;
+            }
+        }
+
 
         for (int x = 0; x < rows; x++)
         {
@@ -438,8 +454,6 @@ public class AiGrid : MonoBehaviour
         node.gridIndices = new List<Vector2Int>(); //this list should be empty for every node that isn't a leaf node
 
 
-      
-
         if (node.bounds.Width > cellSize) 
         {
             node.children = new QUAD_NODE[4];
@@ -455,19 +469,19 @@ public class AiGrid : MonoBehaviour
             childBounds.X = node.bounds.X;
             childBounds.Y = node.bounds.Y;
 
-            node.children[0].bounds = childBounds;
+            node.children[0].bounds = childBounds;//top left
             childBounds.X = node.bounds.X+ childBounds.Width;
             childBounds.Y = node.bounds.Y;
 
-            node.children[1].bounds = childBounds;
+            node.children[1].bounds = childBounds; //top right
            
             childBounds.X = node.bounds.X + childBounds.Width;
             childBounds.Y = node.bounds.Y - childBounds.Height;
 
-            node.children[2].bounds = childBounds;
+            node.children[2].bounds = childBounds; //right down
             childBounds.X = node.bounds.X;
             childBounds.Y = node.bounds.Y - childBounds.Height;
-            node.children[3].bounds = childBounds;
+            node.children[3].bounds = childBounds; // left down
             
             CreateQuadTree(ref node.children[0]);
             CreateQuadTree(ref node.children[1]);
@@ -490,29 +504,30 @@ public class AiGrid : MonoBehaviour
 
                 if (PointAABBIntersectionTest(node.bounds, customGrid[x, y].pos))
                 {
-                    node.gridIndices.Add(customGrid[x, y].index); 
-                   
+                    node.gridIndices.Add(customGrid[x, y].index);
+                    if (node.gridIndices.Count > 1)
+                        Debug.Log("To many nodes inside list");
                 }
-                if (node.gridIndices.Count > 1)
-                {
-                    Vector2 center = new Vector2(node.bounds.X + (node.bounds.Width * 0.5f), node.bounds.Y - (node.bounds.Height * 0.5f));
-                    float d = float.MaxValue;
-                    A_STAR_NODE closestCenterNode = new A_STAR_NODE();
-                    foreach (Vector2Int index in node.gridIndices)
-                    {
-                        A_STAR_NODE n = customGrid[index.x, index.y];
-                        if (Vector2.Distance(center, n.pos) < d)
-                        {
-                            closestCenterNode = n;
-                            d = Vector2.Distance(center, n.pos);
-                        }
+                //if (node.gridIndices.Count > 1)
+                //{
+                //    Vector2 center = new Vector2(node.bounds.X + (node.bounds.Width * 0.5f), node.bounds.Y - (node.bounds.Height * 0.5f));
+                //    float d = float.MaxValue;
+                //    A_STAR_NODE closestCenterNode = new A_STAR_NODE();
+                //    foreach (Vector2Int index in node.gridIndices)
+                //    {
+                //        A_STAR_NODE n = customGrid[index.x, index.y];
+                //        if (Vector2.Distance(center, n.pos) < d)
+                //        {
+                //            closestCenterNode = n;
+                //            d = Vector2.Distance(center, n.pos);
+                //        }
 
 
 
-                    }
-                    node.gridIndices.Clear();
-                    node.gridIndices.Add(closestCenterNode.index);
-                }
+                //    }
+                //    node.gridIndices.Clear();
+                //    node.gridIndices.Add(closestCenterNode.index);
+                //}
 
             }
 

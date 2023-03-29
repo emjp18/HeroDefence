@@ -28,8 +28,8 @@ public class Army : EnemyBase
         flockweights.moveToTarget = targetPower;
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
-        flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount,gameObject.tag, flockID, flockLeader);
+        //flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
+        //    flockamount,gameObject.tag, flockID, flockLeader);
         root = new Root(new List<Node> { new Chase(), new AttackFast()});
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();

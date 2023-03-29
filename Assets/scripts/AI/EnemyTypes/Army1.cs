@@ -1,7 +1,8 @@
 using BehaviorTree;
-using System.Collections;
+
+
 using System.Collections.Generic;
-using UnityEditor.Rendering;
+
 using UnityEngine;
 
 public class Army1 : EnemyBase
@@ -10,14 +11,9 @@ public class Army1 : EnemyBase
     Transform player;
     AStar2D pathfinding;
     FlockBehaviourChase flockingBehavior;
-    [SerializeField] float targetPower;
-    [SerializeField] float separatePower;
-    [SerializeField] float separateObjectPower;
-    [SerializeField] float AlignPower;
-    [SerializeField] float CohesionPower;
-    [SerializeField] float randomDirPower;
-    [SerializeField] float followLeaderWeight;
-
+   
+    bool isAttacking = false;
+    bool isAnyoneAttacking = false;
     public override void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader =false, Transform hidePoint = null,
         Transform movementRangePoint = null)
     {
@@ -25,18 +21,12 @@ public class Army1 : EnemyBase
         this.player = player;
         this.flockID = flockID;
          flockweights = new FlockWeights();
-        flockweights.random = randomDirPower;
-        flockweights.align = AlignPower;
-        flockweights.separateAgents = separatePower;
-        flockweights.separateStatic = separateObjectPower;
-        flockweights.cohesive = AlignPower;
-        flockweights.moveToTarget = targetPower;
-        flockweights.leader = followLeaderWeight;
+       
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
-        flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount,gameObject.tag, flockID, flockLeader);
-        root = new Root(new List<Node> { new ChaseFindPath(), new AttackFast()});
+        //flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
+        //    flockamount,gameObject.tag, flockID, flockLeader);
+        root = new Root(new List<Node> { new ChaseFindPathFlock(), new AttackFast()});
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         stats.AttackRange = player.GetComponent<BoxCollider2D>().size.x;
@@ -50,6 +40,7 @@ public class Army1 : EnemyBase
     public override void StartNightPhase(AiGrid grid)
     {
         pathfinding.UpdateGrid(grid);
+        flockingBehavior.AddCollision(grid);
         movementDirection = Vector2.zero;
         root.SetData("targetPosition", (Vector2)buildingTarget.position);
         root.SetData("movementDirection", movementDirection);
@@ -69,7 +60,7 @@ public class Army1 : EnemyBase
         root.SetData("index", new Vector2Int());
         root.SetData("isLeader", flockingBehavior.Leader);
         root.SetData("grid", grid);
-  
+        root.SetData("check", false);
     }
    
     private void Update()
@@ -80,22 +71,42 @@ public class Army1 : EnemyBase
 
         if (Vector2.Distance(transform.position, player.position) < stats.ChasePlayerRange)
         {
+            if ((Vector2)root.GetData("targetPosition") != (Vector2)player.position)
+            {
+                root.SetData("targetChanged", true);
+            }
+            else
+            {
+                root.SetData("targetChanged", false);
+            }
             root.SetData("targetPosition", (Vector2)player.position);
         }
         else
         {
+            if((Vector2)root.GetData("targetPosition")!= (Vector2)buildingTarget.position)
+            {
+                root.SetData("targetChanged", true);
+            }
+            else
+            {
+                root.SetData("targetChanged", false);
+            }
             root.SetData("targetPosition", (Vector2)buildingTarget.position);
         }
         root.SetData("obstacleCell", flockingBehavior.ObstaclePos);
-
-        root.SetData("newPath", flockingBehavior.NewPath);
+        if(!(bool)root.GetData("check"))
+        {
+            root.SetData("newPath", flockingBehavior.NewPath);
+        }
+     
 
         if(flockingBehavior.NewPath)
         {
-            flockingBehavior.NewPath = (bool)root.GetData("newPath");
+            
+            root.SetData("check", true);
         }
-        
 
+    
         root.SetData("position", (Vector2)transform.position);
        
         movementDirection = (Vector2)root.GetData("movementDirection");
@@ -107,12 +118,14 @@ public class Army1 : EnemyBase
 
         root.SetData("dead", stats.Health <= 0);
         root.SetData("withinAttackRange",
-         (Vector2.Distance((Vector2)root.GetData("targetPosition"), (Vector2)transform.position) < stats.AttackRange));
+         (Vector2.Distance((Vector2)root.GetData("targetPosition"),
+         (Vector2)transform.position) < stats.AttackRange));
 
        
 
         if ((bool)root.GetData("withinAttackRange"))
         {
+            isAttacking = true;
             int r = Random.Range(0, 2);
             if (r == 0)
             {
@@ -123,8 +136,18 @@ public class Army1 : EnemyBase
                 root.SetData("attackHeavy", false);
             }
             root.SetData("movementDirection", Vector2.zero);
+         
         }
+        else
+        {
+            isAttacking = false;
+        }
+        flockingBehavior.Attacking = isAnyoneAttacking;
+        
         root.Evaluate();
     }
-   
+   public bool GetIsAttacking() { return isAttacking; }
+    public void SetIsAttacking(bool attacking) { isAnyoneAttacking = attacking; }
+
+    
 }

@@ -107,6 +107,16 @@ public class EnemyStats
 
                     break;
                 }
+            case ENEMY_TYPE.BOMB1:
+                {
+
+                    chasePlayerRange = 10;
+
+                    movementSpeed = 200;
+
+
+                    break;
+                }
         }
     }
     

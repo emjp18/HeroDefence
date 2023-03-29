@@ -30,7 +30,7 @@ public abstract class EnemyBase : MonoBehaviour
     private void FixedUpdate()
     {
 
-        rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
+        rb.velocity = movementDirection.normalized * stats.Speed * Time.fixedDeltaTime;
         //Debug.Log(stats.Speed);
         
     }

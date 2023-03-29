@@ -34,8 +34,8 @@ public class Swarm : EnemyBase
    
         stats = new EnemyStats(Enemytype);
         var box = GetComponent<BoxCollider2D>();
-        flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
-            flockamount, gameObject.tag, flockID, flockLeader);
+        //flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
+        //    flockamount, gameObject.tag, flockID, flockLeader);
         root = new Root(new List<Node> { new ChaseWithinArea(), new Idle()
         });
         anim = GetComponent<Animator>();

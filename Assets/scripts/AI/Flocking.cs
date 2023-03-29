@@ -41,10 +41,21 @@ public abstract class FlockBehaviour
     protected bool needsNewPath = false;
     protected Vector2 leaderPos;
     protected bool setnewpath = true;
+    protected bool attacking = false;
+    protected AiGrid grid;
+    protected QUAD_NODE rootNode; //Todo separate into classes
+    protected List<Vector2> temp = new List<Vector2>();
+    protected List<Vector2> temp2 = new List<Vector2>();
+    protected List<float> temp3 = new List<float>();
     public Vector2 ObstaclePos
     {
         get => obstacleCell;
       
+    }
+    public bool Attacking
+    {
+        get => attacking;
+        set => attacking = value;
     }
     public bool Leader
     {
@@ -91,11 +102,52 @@ public abstract class FlockBehaviour
         get => separationObstWeight;
         set => separationObstWeight = value;
     }
-
+    public void UpdateStaticCollision()
+    {
+        List<Vector2> temp0 = new List<Vector2>();
+        List<Vector2> temp1 = new List<Vector2>();
+        List<Vector2> temp2 = new List<Vector2>();
+        List<Vector2> temp3 = new List<Vector2>();
+      
+        
+        
+        foreach (A_STAR_NODE node in grid.GetCustomGrid())
+        {
+            if (node.obstacle && node.pos.x <= node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f//left, down
+                || node.obstacle && node.pos.y <= node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
+            {
+                temp0.Add(node.pos);
+            }
+            if (node.obstacle && node.pos.x > node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f //right, down
+               || node.obstacle && node.pos.y <= node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
+            {
+                temp1.Add(node.pos);
+            }
+            if (node.obstacle && node.pos.x <= node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f //left up
+                || node.obstacle && node.pos.y > node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
+            {
+                temp2.Add(node.pos);
+            }
+            if (node.obstacle && node.pos.x > node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f //right, up
+                || node.obstacle && node.pos.y > node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
+            {
+                temp3.Add(node.pos);
+            }
+        }
+        Debug.Log(rootNode.children[0].bounds);
+        Utility.staticObstacles.Add(rootNode.children[0].bounds,temp2);
+        Utility.staticObstacles.Add(rootNode.children[3].bounds, temp0);
+        Utility.staticObstacles.Add(rootNode.children[2].bounds,temp1);
+        Utility.staticObstacles.Add(rootNode.children[1].bounds,temp3);
+    }
+    public void UpdateGrid(AiGrid grid)
+    {
+        this.grid = grid;
+        rootNode = grid.Getroot();
+    }
     protected void GetNearbyObjects(Vector2 pos, BoxCollider2D box)
     {
 
-        
         nearbyAgents.Clear();
 
         int nr = Physics2D.OverlapCircleNonAlloc(pos, flockradius, nearbyColliders);
@@ -109,11 +161,7 @@ public abstract class FlockBehaviour
            && nearbyColliders[i].gameObject.GetComponent<EnemyBase>().FlockID == flockID)
             {
                 nearbyAgents.Add(nearbyColliders[i].transform);
-                
             }
-
-
-
 
         }
         
@@ -121,114 +169,25 @@ public abstract class FlockBehaviour
     }
     public abstract Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection, Vector2 leaderPos);
     
-    
-    public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag
-        ,int flockID, bool leader)
+    public void AddCollision(AiGrid grid)
     {
-        this.isLeader = leader;
-        flockTag = tag;
-        avoidanceRadius = box.size.x > box.size.y ? box.size.x : box.size.y;
-        avoidanceRadius *= 0.5f;
-        this.box = box;
-        this.flockID = flockID;
-        nearbyColliders = new Collider2D[flockAgentAmount];
-        //flockradius = this.box.size.x > this.box.size.y ?
-        //    this.box.size.x: this.box.size.y;
-        flockradius = this.box.size.x > this.box.size.y ?
-            flockAgentAmount * 0.5f * this.box.size.x : flockAgentAmount*0.5f * this.box.size.y;
-        separationWeight = weights.separateAgents;
-        separationObstWeight = weights.separateStatic;
-        targetWeight = weights.moveToTarget;
-        alignmentWeight = weights.align;
-        cohesionWeight = weights.cohesive;
-        moveRandomWeight = weights.random;
-        followLeaderWeight = weights.leader;
-        detectCollisionRadius = grid.GetCellSize();
+        nearbyObstacles.Clear();
         foreach (A_STAR_NODE node in grid.GetCustomGrid())
         {
             if (node.obstacle)
             {
                 nearbyObstacles.Add(node.pos);
-                RectangleFloat bounds = new RectangleFloat();
-                bounds.X = node.pos.x - grid.GetCellSize() * 0.5f;
-                bounds.Y = node.pos.y + grid.GetCellSize() * 0.5f;
-                bounds.Width = bounds.Height = grid.GetCellSize();
-                nearbyObstacleBoxes.Add(bounds);
+                
+                nearbyObstacleBoxes.Add(node.bounds);
             }
         }
     }
-}
-
-public class FlockBehaviourChase : FlockBehaviour
-{
-    public FlockBehaviourChase(FlockWeights weights, AiGrid grid, BoxCollider2D box,int flockAgentAmount, string tag,
-        int flockid, bool leader) 
-        : base(weights, grid,box,flockAgentAmount, tag, flockid, leader)
-    {
-        
-    }
-
-    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos,  Vector2 currentVelocity, Vector2 currentDirection, Vector2 leaderPos)
-    {
-        GetNearbyObjects(pos, box);
-        newDirection = Vector2.zero;
-        this.leaderPos = leaderPos;
-
-        newDirection += MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection) * targetWeight;
-        //newDirection += FollowLeader(pos, targetPos, box, currentVelocity, currentDirection) * followLeaderWeight;
-      
-        newDirection += MoveRandom(pos, targetPos, box, currentVelocity, currentDirection) * moveRandomWeight;
-        var cohesion = Cohesion(pos, currentVelocity, currentDirection) * cohesionWeight;
-
-        if (cohesion.magnitude > cohesionWeight * cohesionWeight)
-        {
-            cohesion.Normalize();
-            cohesion *= cohesionWeight;
-        }
-        newDirection += cohesion;
-
-        var alignment = Alignment(currentVelocity, currentDirection) * alignmentWeight;
-
-        if (alignment.magnitude > alignmentWeight * alignmentWeight)
-        {
-            alignment.Normalize();
-            alignment *= alignmentWeight;
-        }
-        newDirection += alignment;
-
-        var separation = Separation(pos, currentVelocity, currentDirection) * separationWeight;
-
-        if (separation.magnitude > separationWeight * separationWeight)
-        {
-            separation.Normalize();
-            separation *= separationWeight;
-        }
-        newDirection += separation;
-    
-        var separationOb = SeparationObstacles(pos, targetPos, currentVelocity, currentDirection) * separationObstWeight;
-
-        if (separationOb.magnitude > separationObstWeight * separationObstWeight)
-        {
-            separationOb.Normalize();
-            separationOb *= separationObstWeight;
-        }
-        newDirection += separationOb;
-
-
-
-
-
-        return newDirection.normalized;
-
-  
-
-    }
-    Vector2 Alignment(Vector2 currentVelocity, Vector2 currentDirection)
+    protected Vector2 Alignment(Vector2 currentVelocity, Vector2 currentDirection)
     {
         if (nearbyAgents.Count == 0)
             return Vector2.zero;
 
-  
+
         Vector2 alignmentMove = Vector2.zero;
         //Filter();
         foreach (Transform item in nearbyAgents)
@@ -239,53 +198,147 @@ public class FlockBehaviourChase : FlockBehaviour
         //alignmentMove = Vector2.SmoothDamp(currentDirection, alignmentMove, ref currentVelocity, smoothTime);
         return alignmentMove;
     }
-   
-    Vector2 SeparationObstacles(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection)
+
+    protected Vector2 SeparationObstacles(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection)
     {
-        if(nearbyObstacles.Count == 0)
+        if (nearbyObstacles.Count == 0)
             return Vector2.zero;
 
-  
+
         Vector2 avoidanceMove = Vector2.zero;
         int nAvoid = 0;
-   
+        
         foreach (Vector2 position in nearbyObstacles)
         {
-         
-            if ((position - pos).magnitude < detectCollisionRadius)
+
+            if ((position - pos).magnitude <= detectCollisionRadius)
             {
                 nAvoid++;
                 avoidanceMove += (pos - position);
-                if (!needsNewPath)
-                    setnewpath = true;
-                if (setnewpath/*&&isLeader*/)
+
+                if (!needsNewPath/*&&isLeader*/)
                 {
                     float cos = Vector2.Dot((position - pos).normalized, (targetPos - pos).normalized);
-                    if (cos > 0.707106781 && cos < 1)
+                    if (cos < Mathf.PI * 0.5f && cos >= 0)
                     {
                         obstacleCell = position;
                         needsNewPath = true;
-                        setnewpath = false;
+                        //return Vector2.zero;
 
                     }
 
                 }
             }
-            
+
         }
         if (nAvoid > 0)
         {
             avoidanceMove /= nAvoid;
             waitForTarget = true;
             oldDir = (targetPos - pos).normalized;
-            
+
         }
-       
 
 
+      
         return avoidanceMove;
     }
-    Vector2 Separation(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)
+    protected Vector2 AvoidStaticObstacles(Vector2 pos)
+    {
+        temp.Clear();
+        int depth = 0;
+        Utility.FindObstaclesFromNode(pos, rootNode,ref depth, ref temp);
+
+        if (temp.Count == 0)
+            return Vector2.zero;
+
+
+        Vector2 avoidanceMove = Vector2.zero;
+
+        
+        float sum = 0;
+        int c = 0;
+        foreach (Vector2 obstacle in temp)
+        {
+            if ((pos - obstacle).magnitude < avoidanceRadius)
+            {
+                c++;
+                sum += (pos - obstacle).magnitude;
+                temp2.Add((pos - obstacle));
+                temp3.Add((pos - obstacle).magnitude);
+            }
+        }
+     
+     
+        for (int i=0; i<c; i++)
+        {
+            float properMagnitude = temp3[i] / sum * 100;
+            avoidanceMove += (temp2[i].normalized * properMagnitude);
+            
+
+        }
+
+        return avoidanceMove.normalized;
+    }
+    //protected Vector2 SeparationObstacles2(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection)
+    //{
+    //    Vector2Int index = Vector2Int.zero;
+    //    Utility.GetAIGridIndex(pos, this.rootNode, ref index);
+    //    int columns = grid.GetCustomGrid().GetLength(1);
+    //    int rows = grid.GetCustomGrid().GetLength(0);
+    //    for (int i = 0; i < 8; i++)
+    //    {
+    //        bool obstacle = false;
+
+
+    //        if (index.y < columns - 1)
+    //        {
+    //            Utility.FindNearbyStaticObstacles(grid.GetCustomGrid()
+    //            [index.x, index.y + 1].pos, rootNode, grid, out obstacle);
+    //        }
+
+    //        if (y < columns - 1 && x < rows - 1)
+    //        {
+    //            Utility.FindNearbyStaticObstacles(grid.GetCustomGrid()
+    //          [index.x+1, index.y + 1].pos, rootNode, grid, out obstacle);
+    //        }
+
+    //        if (x < rows - 1)
+    //        {
+    //            Utility.FindNearbyStaticObstacles(grid.GetCustomGrid()
+    //          [index.x + 1, index.y + 1].pos, rootNode, grid, out obstacle);
+    //        }
+    //            customGrid[x + 1, y].obstacle = true;
+
+    //        if (x < rows - 1 && y > 0)
+    //        {
+
+    //        }
+    //            customGrid[x + 1, y - 1].obstacle = true;
+    //        if (y > 0)
+    //        {
+
+    //        }
+    //            customGrid[x, y - 1].obstacle = true;
+    //        if (x > 0 && y > 0)
+    //        {
+
+    //        }
+    //            customGrid[x - 1, y - 1].obstacle = true;
+    //        if (x > 0)
+    //        {
+
+    //        }
+    //            customGrid[x - 1, y].obstacle = true;
+    //        if (x > 0 && y < columns - 1)
+    //        {
+
+    //        }
+    //            customGrid[x - 1, y + 1].obstacle = true;
+    //    }
+
+    //}
+    protected Vector2 Separation(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)
     {
         if (nearbyAgents.Count == 0)
             return Vector2.zero;
@@ -293,7 +346,7 @@ public class FlockBehaviourChase : FlockBehaviour
 
         Vector2 avoidanceMove = Vector2.zero;
         int nAvoid = 0;
-    
+
         foreach (Transform t in nearbyAgents)
         {
 
@@ -307,23 +360,23 @@ public class FlockBehaviourChase : FlockBehaviour
         {
             avoidanceMove /= nAvoid;
 
-           
+
         }
-      
+
 
 
 
         return avoidanceMove;
     }
-    Vector2 Cohesion(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)
+    protected Vector2 Cohesion(Vector2 pos, Vector2 currentVelocity, Vector2 currentDirection)
     {
-     
+
         if (nearbyAgents.Count == 0)
             return Vector2.zero;
 
-   
+
         Vector2 cohesionMove = Vector2.zero;
-       //Filter();
+        //Filter();
         foreach (Transform item in nearbyAgents)
         {
             cohesionMove += (Vector2)item.position;
@@ -332,52 +385,51 @@ public class FlockBehaviourChase : FlockBehaviour
 
 
         cohesionMove -= pos;
-   
+
         return cohesionMove;
     }
-    Vector2 MoveToTarget(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    protected Vector2 MoveToTarget(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
     {
-        
+
         Vector2 dir = (targetPos - pos).normalized;
-        if (waitForTarget)
-        {
-            float dot = Vector2.Dot(dir, oldDir);
-            float angle = Mathf.Acos(dot);
-            angle *= Mathf.Rad2Deg;
+        //if (waitForTarget)
+        //{
+        //    float dot = Vector2.Dot(dir, oldDir);
+        //    float angle = Mathf.Acos(dot);
+        //    angle *= Mathf.Rad2Deg;
 
-            if (oldTargetpos != targetPos && Mathf.Abs(angle) > angleThreshold && angle != float.NaN)
-            {
+        //    if (oldTargetpos != targetPos && Mathf.Abs(angle) > angleThreshold && angle != float.NaN)
+        //    {
 
-                oldDir = dir;
-                waitForTarget = false;
-                oldTargetpos = targetPos;
-            }
-            else
-            {
-                return Vector2.zero;
-            }
+        //        oldDir = dir;
+        //        waitForTarget = false;
+        //        oldTargetpos = targetPos;
+        //    }
+        //    else
+        //    {
+        //        return Vector2.zero;
+        //    }
 
-
-
-
-        }
+        //}
 
 
 
-        foreach (RectangleFloat b in nearbyObstacleBoxes)
-        {
-            if (Utility.PointAABBIntersectionTest(b, (dir * b.Width) + pos))
-            {
+        //foreach (RectangleFloat b in nearbyObstacleBoxes)
+        //{
+        //    if (Utility.PointAABBIntersectionTest(b, (dir * b.Width) + pos))
+        //    {
 
-                return Vector2.zero;
+        //        return Vector2.zero;
 
-            }
-        }
+        //    }
+        //}
+
         //dir = Vector2.SmoothDamp(currentDirection, dir, ref currentVelocity, smoothTime);
+
         return dir;
     }
 
-    Vector2 MoveRandom(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    protected Vector2 MoveRandom(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
     {
 
         Vector2 randDir = Random.insideUnitCircle.normalized;
@@ -397,15 +449,90 @@ public class FlockBehaviourChase : FlockBehaviour
         randDir = Vector2.SmoothDamp(currentDirection, randDir, ref currentVelocity, smoothTime);
         return randDir;
     }
-    Vector2 FollowLeader(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
+    protected Vector2 FollowLeader(Vector2 pos, Vector2 targetPos, BoxCollider2D box, Vector2 currentVelocity, Vector2 currentDirection)
     {
-       
+
         Vector2 movement = (leaderPos - pos).normalized;
 
-    
+
         movement = Vector2.SmoothDamp(currentDirection, movement, ref currentVelocity, smoothTime);
 
         return movement;
     }
+    public FlockBehaviour(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag
+        ,int flockID, bool leader, QUAD_NODE root)
+    {
+        this.isLeader = leader;
+        flockTag = tag;
+        avoidanceRadius = box.size.x > box.size.y ? box.size.x : box.size.y;
+        avoidanceRadius *= 0.55f;
+        this.box = box;
+        this.flockID = flockID;
+        nearbyColliders = new Collider2D[flockAgentAmount];
+        //flockradius = this.box.size.x > this.box.size.y ?
+        //    this.box.size.x: this.box.size.y;
+        flockradius = this.box.size.x > this.box.size.y ?
+            3 * this.box.size.x : 3 * this.box.size.y;
+        separationWeight = weights.separateAgents;
+        separationObstWeight = weights.separateStatic;
+        targetWeight = weights.moveToTarget;
+        alignmentWeight = weights.align;
+        cohesionWeight = weights.cohesive;
+        moveRandomWeight = weights.random;
+        followLeaderWeight = weights.leader;
+        detectCollisionRadius = grid.GetCellSize();
+        AddCollision(grid);
 
+    }
+}
+
+public class FlockBehaviourChase : FlockBehaviour
+{
+    public FlockBehaviourChase(FlockWeights weights, AiGrid grid, BoxCollider2D box,int flockAgentAmount, string tag,
+        int flockid, bool leader, QUAD_NODE root) 
+        : base(weights, grid,box,flockAgentAmount, tag, flockid, leader, root)
+    {
+        
+    }
+
+    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos,  Vector2 currentVelocity, Vector2 currentDirection, Vector2 leaderPos)
+    {
+        GetNearbyObjects(pos, box);
+        newDirection = Vector2.zero;
+        this.leaderPos = leaderPos;
+
+        var coh = (Cohesion(pos, currentVelocity, currentDirection).normalized) * cohesionWeight;
+        newDirection += coh;
+        var align = (Alignment(currentVelocity, currentDirection).normalized) * alignmentWeight;
+        newDirection += align;
+        var sepA = (Separation(pos, currentVelocity, currentDirection).normalized) * separationWeight;
+        newDirection += sepA;
+        var sepO = (SeparationObstacles(pos, targetPos, currentVelocity, currentDirection).normalized) * separationObstWeight;
+        newDirection += sepO;
+        var moveT = (MoveToTarget(pos, targetPos, box, currentVelocity, currentDirection).normalized) * targetWeight;
+        newDirection += moveT;
+        newDirection = Vector2.SmoothDamp(currentDirection, newDirection, ref currentVelocity, smoothTime);
+        return newDirection.normalized;
+
+
+    }
+   
+
+}
+public class FlockBehaviourAvoidance : FlockBehaviour
+{
+    public FlockBehaviourAvoidance(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag,
+        int flockid, bool leader, QUAD_NODE root)
+        : base(weights, grid, box, flockAgentAmount, tag, flockid, leader, root)
+    {
+
+    }
+    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity,
+        Vector2 currentDirection, Vector2 leaderPos)
+    {
+
+        return AvoidStaticObstacles(pos);
+
+
+    }
 }

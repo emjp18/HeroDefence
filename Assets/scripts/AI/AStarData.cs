@@ -16,6 +16,7 @@ public struct A_STAR_NODE
     //public bool correctPath;
     public List<A_STAR_NODE> neighbours;
     public Vector2Int index;
+    public RectangleFloat bounds;
 
     public override bool Equals(object obj)
     {
