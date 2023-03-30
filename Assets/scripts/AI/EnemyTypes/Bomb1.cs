@@ -36,11 +36,11 @@ public class Bomb1 : EnemyBase
    
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == 7)
+        if (collision.gameObject.layer == 7&& !(bool)root.GetData("searching"))
         {
 
             root.SetData("newPath", true);
-
+            root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
             root.SetData("obstacleCell", collision.GetContact(0).point);
 
         }
@@ -79,6 +79,7 @@ public class Bomb1 : EnemyBase
         root.SetData("avoidance", Vector2.zero);
         root.SetData("avoidanceTemp", Vector2.zero);
         root.SetData("targetChange", false);
+        root.SetData("searching", false);
     }
    
     private void Update()
@@ -89,26 +90,20 @@ public class Bomb1 : EnemyBase
 
         if (Vector2.Distance(transform.position, player.position) < stats.ChasePlayerRange)
         {
-            if ((Vector2)root.GetData("targetPosition") != (Vector2)player.position)
+            if ((Vector2)root.GetData("targetPosition") == (Vector2)buildingTarget.position)
             {
                 root.SetData("targetChange", true);
             }
-            else
-            {
-                root.SetData("targetChange", false);
-            }
+            
             root.SetData("targetPosition", (Vector2)player.position);
         }
         else
         {
-            if ((Vector2)root.GetData("targetPosition") != (Vector2)buildingTarget.position)
+            if ((Vector2)root.GetData("targetPosition") == (Vector2)player.position)
             {
                 root.SetData("targetChange", true);
             }
-            else
-            {
-                root.SetData("targetChange", false);
-            }
+            
             root.SetData("targetPosition", (Vector2)buildingTarget.position);
         }
 
@@ -121,9 +116,9 @@ public class Bomb1 : EnemyBase
         root.SetData("position", (Vector2)transform.position);
 
 
-        Vector2 avoid = (flockingBehavior.CalculateDirection(transform.position, Vector2.zero, Vector2.zero,
-                Vector2.zero, Vector2.zero));
-        root.SetData("avoidance", avoid);
+        avoidanceForce = (flockingBehavior.CalculateDirection(transform.position, Vector2.zero, Vector2.zero,
+                Vector2.zero, Vector2.zero)).normalized;
+        root.SetData("avoidance", avoidanceForce);
         movementDirection = (Vector2)root.GetData("movementDirection");
 
         if ((bool)root.GetData("deactivate"))

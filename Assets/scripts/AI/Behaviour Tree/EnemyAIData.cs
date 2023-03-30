@@ -168,41 +168,48 @@ namespace BehaviorTree
             
             if ((bool)GetData("withinAttackRange"))
             {
-               
                 return NodeState.FAILURE;
             }
             if (((AStar2D)GetData("aStar")).GetPathFound())
             {
-                SetData("astarfail", false);
-                
+                Debug.Log("found");
+
                 var path = ((AStar2D)GetData("aStar")).GetPath();
-                
-                if ((int)GetData("pathIndex") >= path.Count|| (bool)GetData("targetChange"))
+                //Debug.Log(path[path.Count-1].pos);
+                if ((int)GetData("pathIndex") >= path.Count || (bool)GetData("targetChange"))
                 {
-                    SetData("newPath", false);
-                    SetData("avoidanceTemp", Vector2.zero);
+                    SetData("astarfail", false);
+                    SetData("searching", false);
                     SetData("pathIndex", 0);
                     ((AStar2D)GetData("aStar")).ResetPath();
-                  
-
+                    Debug.Log("reset");
+                    Debug.Log((bool)GetData("targetChange"));
+                    SetData("targetChange", false);
                 }
                 else
                 {
                     
+                        Vector2 avoidPos = ((Vector2)GetData("avoidance")) + (Vector2)GetData("position");
+
+                    Vector2 goal = path[(int)GetData("pathIndex")].pos;
+                    if ((Vector2)GetData("avoidance") != Vector2.zero)
+                    {
+                        goal += avoidPos;
+                    }
+                    SetData("movementDirection", ((goal - ((Vector2)GetData("position")).normalized)));
 
 
+                    //if ((Vector2)GetData("avoidance") != Vector2.zero)
+                    //{
+                    //    SetData("movementDirection", (Vector2)GetData("avoidance") * (float)GetData("cellSize")*2);
+                    //}
 
-                    Vector2 goal = path[(int)GetData("pathIndex")].pos + ((Vector2)GetData("avoidance") * ((float)GetData("cellSize")));
-
-                    SetData("movementDirection", (goal - (Vector2)GetData("position")).normalized);
-
-                    Debug.Log((goal - (Vector2)GetData("position")).normalized);
+                    Debug.Log((Vector2)GetData("movementDirection"));
+                        
                     if (Vector2.Distance((Vector2)GetData("position"), goal) 
                         < (float)GetData("cellSize") * 0.5f)
                     {
                         SetData("pathIndex", (int)GetData("pathIndex") + 1);
-                       
-
                     }
 
 
@@ -211,22 +218,28 @@ namespace BehaviorTree
             }
             else if ((bool)GetData("newPath")) 
             {
+                SetData("astarfail", true);
+                SetData("searching", true);
                 Vector2Int index;
                 index = Vector2Int.zero;
                 Vector2Int index2 = Vector2Int.zero;
-
+               
                 Utility.GetAIGridIndex((Vector2)GetData("position"), ((AStar2D)GetData("aStar")).Quadtree, ref index);
          
                 while (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
                 {
+                    Debug.Log("whilepath1");
                     bool negX = ((Vector2)GetData("obstacleCell")).x >
                         ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos.x;
                     bool negY = ((Vector2)GetData("obstacleCell")).y >
                         ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos.y;
                     Vector2 desiredDIr = (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos -
-                        (Vector2)GetData("obstacleCell")).normalized;
-                    
-                    if (desiredDIr.x >desiredDIr.y)//move cells in the direction of the target until one is found that is not an obstacle
+                        (Vector2)GetData("obstacleCell"));
+
+
+                    desiredDIr.Normalize();
+
+                    if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
                     {
                         if(negX)
                         {
@@ -240,7 +253,7 @@ namespace BehaviorTree
                         }
                         
                     }
-                    if (desiredDIr.x <  desiredDIr.y )//move cells in the direction of the target until one is found that is not an obstacle
+                    else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
                     {
                         if (negY)
                         {
@@ -254,7 +267,7 @@ namespace BehaviorTree
                         }
 
                     }
-                    else if(desiredDIr.x ==desiredDIr.y)
+                    else if(Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
                     {
                         if (negX)
                         {
@@ -271,9 +284,7 @@ namespace BehaviorTree
                     }
                     else
                     {
-                        Debug.Log("desired");
-                        Debug.Log(desiredDIr);
-                        Debug.Log("desiredend");
+                        
                         break;
                     }
 
@@ -285,23 +296,25 @@ namespace BehaviorTree
 
                 while (((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
                 {
-                    bool negX = ((Vector2)GetData("targetPosition")).x <
+                    Debug.Log("whilepath1");
+                    bool negX = ((Vector2)GetData("oldTarget")).x <
                         ((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].pos.x;
-                    bool negY = ((Vector2)GetData("targetPosition")).y <
+                    bool negY = ((Vector2)GetData("oldTarget")).y <
                         ((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].pos.y;
                     
                     
-                    Vector2 desiredDIr = ((Vector2)GetData("targetPosition") -
+                    Vector2 desiredDIr = ((Vector2)GetData("oldTarget") -
                         ((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].pos
-                        ).normalized;
+                        );
+
+
+
+                    desiredDIr.Normalize();
 
 
 
 
-
-                    
-
-                    if (desiredDIr.x >desiredDIr.y)//move cells in the direction of the target until one is found that is not an obstacle
+                    if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
                     {
                         if (negX)
                         {
@@ -315,7 +328,7 @@ namespace BehaviorTree
                         }
 
                     }
-                    if (desiredDIr.x < desiredDIr.y)//move cells in the direction of the target until one is found that is not an obstacle
+                    else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
                     {
                         if (negY)
                         {
@@ -329,7 +342,7 @@ namespace BehaviorTree
                         }
 
                     }
-                    else if (desiredDIr.x == desiredDIr.y)
+                    else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
                     {
                         if (negX)
                         {
@@ -342,13 +355,11 @@ namespace BehaviorTree
                                 index2.y++;
                         }
 
-                        //Start Here the index is wrong
+                      
                     }
                     else
                     {
-                        Debug.Log("desired");
-                        Debug.Log(desiredDIr);
-                        Debug.Log("desiredend");
+                        
                         break;
                     }
 
@@ -357,23 +368,39 @@ namespace BehaviorTree
                 SetData("movementDirection", Vector2.zero);
 
                 ((AStar2D)GetData("aStar")).AStarSearch(((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos,
-                    ((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].pos);
-                Debug.Log(((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos);
-                Debug.Log(((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].pos);
-                
-                SetData("astarfail", true);
+                    ((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].pos,200);
 
+                Debug.Log("This should not be spammed all the time");
+
+                SetData("newPath", false);
             }
             else if(!(bool)GetData("astarfail"))
             {
-                SetData("movementDirection",
-                    ((Vector2)GetData("targetPosition") - (Vector2)GetData("position")).normalized);
+                Vector2 avoidPos = ((Vector2)GetData("avoidance")) +(Vector2)GetData("position");
 
+                if ((Vector2)GetData("avoidance") != Vector2.zero)
+                {
+                    SetData("movementDirection",
+                    ((((Vector2)GetData("targetPosition") + avoidPos) - (Vector2)GetData("position")).normalized));
+                }
+                else
+                {
+                    SetData("movementDirection",
+                    ((((Vector2)GetData("targetPosition")) - (Vector2)GetData("position")).normalized));
+                }
+
+                
+
+                //if ((Vector2)GetData("avoidance") != Vector2.zero)
+                //{
+                //    SetData("movementDirection", (Vector2)GetData("avoidance") * (float)GetData("cellSize") * 2);
+                //}
 
             }
 
-            
 
+
+           
 
 
             state = NodeState.RUNNING;

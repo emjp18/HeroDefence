@@ -27,19 +27,25 @@ public abstract class EnemyBase : MonoBehaviour
     protected FlockWeights flockweights;
     protected Transform buildingTarget;
     protected int flockID;
+    protected Vector2 avoidanceForce = Vector2.zero;
     private void FixedUpdate()
     {
 
-        rb.velocity = movementDirection.normalized * stats.Speed * Time.fixedDeltaTime;
-        //Debug.Log(stats.Speed);
+       
+        rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
         
+
     }
     public void SetTarget(Transform target) { buildingTarget = target; }
     public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
         Transform movementRangePoint = null);
 
     public abstract void StartNightPhase(AiGrid grid);
-    
+    public Vector2 Avoidance
+    {
+        get { return avoidanceForce; }
+        set { avoidanceForce = value; }
+    }
     public Vector2 Movement
     {
         get { return movementDirection; }

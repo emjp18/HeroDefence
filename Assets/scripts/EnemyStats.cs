@@ -110,7 +110,7 @@ public class EnemyStats
             case ENEMY_TYPE.BOMB1:
                 {
 
-                    chasePlayerRange = 10;
+                    chasePlayerRange = 80;
 
                     movementSpeed = 200;
 

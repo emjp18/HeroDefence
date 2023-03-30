@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7998763725086788570}
   - component: {fileID: 7998763725086788569}
   - component: {fileID: 6689746881556753228}
+  - component: {fileID: 6830559069444011044}
   m_Layer: 6
   m_Name: Bomb 1
   m_TagString: Army
@@ -154,3 +155,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 4.04, y: 6.19}
   m_EdgeRadius: 0
+--- !u!114 &6830559069444011044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7998763725086788572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac8a1905a9d2c0d43b27a399d4ef7fb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 6

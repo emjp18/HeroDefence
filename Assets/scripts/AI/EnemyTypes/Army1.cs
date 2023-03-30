@@ -26,7 +26,7 @@ public class Army1 : EnemyBase
         var box = GetComponent<BoxCollider2D>();
         //flockingBehavior = new FlockBehaviourChase(flockweights, grid, box,
         //    flockamount,gameObject.tag, flockID, flockLeader);
-        root = new Root(new List<Node> { new ChaseFindPathFlock(), new AttackFast()});
+        root = new Root(new List<Node> { new ChaseFindPathFlock()});
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         stats.AttackRange = player.GetComponent<BoxCollider2D>().size.x;
@@ -71,7 +71,7 @@ public class Army1 : EnemyBase
 
         if (Vector2.Distance(transform.position, player.position) < stats.ChasePlayerRange)
         {
-            if ((Vector2)root.GetData("targetPosition") != (Vector2)player.position)
+            if ((Vector2)root.GetData("targetPosition") == (Vector2)buildingTarget.position)
             {
                 root.SetData("targetChanged", true);
             }
@@ -83,7 +83,7 @@ public class Army1 : EnemyBase
         }
         else
         {
-            if((Vector2)root.GetData("targetPosition")!= (Vector2)buildingTarget.position)
+            if((Vector2)root.GetData("targetPosition")== (Vector2)player.position)
             {
                 root.SetData("targetChanged", true);
             }
@@ -125,17 +125,17 @@ public class Army1 : EnemyBase
 
         if ((bool)root.GetData("withinAttackRange"))
         {
-            isAttacking = true;
-            int r = Random.Range(0, 2);
-            if (r == 0)
-            {
-                root.SetData("attackHeavy", true);
-            }
-            else
-            {
-                root.SetData("attackHeavy", false);
-            }
-            root.SetData("movementDirection", Vector2.zero);
+            //isAttacking = true;
+            //int r = Random.Range(0, 2);
+            //if (r == 0)
+            //{
+            //    root.SetData("attackHeavy", true);
+            //}
+            //else
+            //{
+            //    root.SetData("attackHeavy", false);
+            //}
+            //root.SetData("movementDirection", Vector2.zero);
          
         }
         else

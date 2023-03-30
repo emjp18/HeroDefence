@@ -78,8 +78,10 @@ public static class Utility
         {
             if (currentDepth==maxDepth)
             {
-                Debug.Log(node.bounds);
+           
+              
                 nearbyCollisions = staticObstacles[node.bounds];
+                Debug.Log(nearbyCollisions.Count);
                 return;
 
             }

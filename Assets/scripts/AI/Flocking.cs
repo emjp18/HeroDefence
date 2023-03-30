@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 
@@ -11,6 +12,10 @@ using UnityEngine;
 
 public abstract class FlockBehaviour
 {
+    protected List<Vector2> tempa0 = new List<Vector2>();
+    protected List<Vector2> tempa1 = new List<Vector2>();
+    protected List<Vector2> tempa2 = new List<Vector2>();
+    protected List<Vector2> tempa3 = new List<Vector2>();
     protected List<Transform> nearbyAgents = new List<Transform>();
     protected List<Vector2> nearbyObstacles = new List<Vector2>();
     protected List<RectangleFloat> nearbyObstacleBoxes = new List<RectangleFloat>();
@@ -104,41 +109,46 @@ public abstract class FlockBehaviour
     }
     public void UpdateStaticCollision()
     {
-        List<Vector2> temp0 = new List<Vector2>();
-        List<Vector2> temp1 = new List<Vector2>();
-        List<Vector2> temp2 = new List<Vector2>();
-        List<Vector2> temp3 = new List<Vector2>();
-      
-        
-        
+       
+
+        Utility.staticObstacles.Clear();
+
+        Utility.staticObstacles.Add(rootNode.children[0].bounds, tempa0);
+        Utility.staticObstacles.Add(rootNode.children[3].bounds, tempa3);
+        Utility.staticObstacles.Add(rootNode.children[2].bounds, tempa2);
+        Utility.staticObstacles.Add(rootNode.children[1].bounds, tempa1);
         foreach (A_STAR_NODE node in grid.GetCustomGrid())
         {
-            if (node.obstacle && node.pos.x <= node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f//left, down
-                || node.obstacle && node.pos.y <= node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
+            
+
+            if(node.obstacle)
             {
-                temp0.Add(node.pos);
-            }
-            if (node.obstacle && node.pos.x > node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f //right, down
-               || node.obstacle && node.pos.y <= node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
-            {
-                temp1.Add(node.pos);
-            }
-            if (node.obstacle && node.pos.x <= node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f //left up
-                || node.obstacle && node.pos.y > node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
-            {
-                temp2.Add(node.pos);
-            }
-            if (node.obstacle && node.pos.x > node.bounds.Width * grid.GetCustomGrid().GetLength(0) * 0.5f //right, up
-                || node.obstacle && node.pos.y > node.bounds.Height * grid.GetCustomGrid().GetLength(1) * 0.5f)
-            {
-                temp3.Add(node.pos);
+              
+                if (Utility.PointAABBIntersectionTest(rootNode.children[0].bounds,node.pos))
+                {
+                    Utility.staticObstacles[rootNode.children[0].bounds].Add(node.pos);
+                  
+                }
+                else if (Utility.PointAABBIntersectionTest(rootNode.children[1].bounds, node.pos))
+                {
+                    Utility.staticObstacles[rootNode.children[1].bounds].Add(node.pos);
+
+                }
+                else if (Utility.PointAABBIntersectionTest(rootNode.children[2].bounds, node.pos))
+                {
+                    Utility.staticObstacles[rootNode.children[2].bounds].Add(node.pos);
+
+                }
+                else if (Utility.PointAABBIntersectionTest(rootNode.children[3].bounds, node.pos))
+                {
+                    Utility.staticObstacles[rootNode.children[3].bounds].Add(node.pos);
+
+                }
             }
         }
-        Debug.Log(rootNode.children[0].bounds);
-        Utility.staticObstacles.Add(rootNode.children[0].bounds,temp2);
-        Utility.staticObstacles.Add(rootNode.children[3].bounds, temp0);
-        Utility.staticObstacles.Add(rootNode.children[2].bounds,temp1);
-        Utility.staticObstacles.Add(rootNode.children[1].bounds,temp3);
+      
+       
+        
     }
     public void UpdateGrid(AiGrid grid)
     {
@@ -245,11 +255,20 @@ public abstract class FlockBehaviour
     }
     protected Vector2 AvoidStaticObstacles(Vector2 pos)
     {
-        temp.Clear();
-        int depth = 0;
-        Utility.FindObstaclesFromNode(pos, rootNode,ref depth, ref temp);
+        
+        int box = -1;
+        for(int i=0; i<4; i ++)
+        {
+            if (Utility.PointAABBIntersectionTest(rootNode.children[i].bounds, pos))
+            {
+                box = i;
+                break;
+            }
+        }
+       
 
-        if (temp.Count == 0)
+    
+        if (box == -1)
             return Vector2.zero;
 
 
@@ -258,9 +277,9 @@ public abstract class FlockBehaviour
         
         float sum = 0;
         int c = 0;
-        foreach (Vector2 obstacle in temp)
+        foreach (Vector2 obstacle in Utility.staticObstacles[rootNode.children[box].bounds])
         {
-            if ((pos - obstacle).magnitude < avoidanceRadius)
+            if ((pos - obstacle).magnitude < detectCollisionRadius)
             {
                 c++;
                 sum += (pos - obstacle).magnitude;
@@ -278,7 +297,7 @@ public abstract class FlockBehaviour
 
         }
 
-        return avoidanceMove.normalized;
+        return avoidanceMove;
     }
     //protected Vector2 SeparationObstacles2(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection)
     //{
