@@ -220,7 +220,7 @@ public static class Utility
     }
     
 
-    public static Vector2 Avoid(Vector2 pos, QUAD_NODE root, Vector2 direction)//Meant to make target points further away not for the character pos
+    public static Vector2 Avoid(Vector2 pos, QUAD_NODE root, Vector2 direction, float radius = 2, float power = 2)//Meant to make target points further away not for the character pos
     {
         int boxi = -1;
         int boxj =-1;
@@ -254,7 +254,7 @@ public static class Utility
             
             
             float cos = Vector2.Dot((pos - obstacle).normalized, direction.normalized);
-            if ((pos - obstacle).magnitude < GRID_CELL_SIZE * 2 && cos <= 1 && cos > 0)
+            if ((pos - obstacle).magnitude < GRID_CELL_SIZE * radius && cos <= 1 && cos > 0)
             {
 
                 c++;
@@ -269,7 +269,7 @@ public static class Utility
         for (int i = 0; i < c; i++)
         {
         
-            avoidanceMove += (temp[i].normalized * GRID_CELL_SIZE*2);
+            avoidanceMove += (temp[i].normalized * GRID_CELL_SIZE* power);
 
 
         }

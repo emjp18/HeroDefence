@@ -193,7 +193,7 @@ namespace BehaviorTree
                     if ((int)GetData("pathIndex")<path.Count-1)
                     {
                         Vector2 avoid = Utility.Avoid(goal, ((AiGrid)GetData("grid")).Getroot(),
-                       path[(int)GetData("pathIndex")+1].pos - goal);
+                       path[(int)GetData("pathIndex")+1].pos - goal,2,4);
                         goal += avoid;
                     }
                    
@@ -370,237 +370,322 @@ namespace BehaviorTree
                 //    }
 
                 //}
-                Utility.GetAIGridIndex((Vector2)GetData("position"), ((AStar2D)GetData("aStar")).Quadtree, ref index2);
-
-
-                while (!((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
-                {
-
-                    bool negX = ((Vector2)GetData("oldTarget")).x <
-                        ((Vector2)GetData("position")).x;
-                    bool negY = ((Vector2)GetData("oldTarget")).y <
-                        ((Vector2)GetData("position")).y;
-
-
-                    Vector2 desiredDIr = ((Vector2)GetData("oldTarget") -
-                        (Vector2)GetData("position"));
-
-
-
-                    desiredDIr.Normalize();
-
-                    if (desiredDIr == Vector2.zero)
-                    {
-                        desiredDIr = Vector2.one;
-                    }
-
-
-
-                    if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
-                    {
-                        if (negX)
-                        {
-                            if (index2.x > 0)
-                                index2.x--;
-                        }
-                        else
-                        {
-                            if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index2.x++;
-                        }
-
-                    }
-                    else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
-                    {
-                        if (negY)
-                        {
-                            if (index2.y > 0)
-                                index2.y--;
-                        }
-                        else
-                        {
-                            if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index2.y++;
-                        }
-
-                    }
-                    else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
-                    {
-                        if (negX)
-                        {
-                            if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index2.x++;
-                        }
-                        if (negY)
-                        {
-                            if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
-                                index2.y++;
-                        }
-
-
-                    }
-                    else
-                    {
-
-                        break;
-                    }
-
-                }
-
-
+                Utility.GetAIGridIndex((Vector2)GetData("position"), ((AStar2D)GetData("aStar")).Quadtree, ref index);
                 index2 = index;
-                Vector2 obcell = ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos;
-
-                while (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
+                if (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
                 {
-                    
-                    bool negX = (obcell).x >
-                        ((Vector2)GetData("position")).x;
-                    bool negY = (obcell).y >
-                       ((Vector2)GetData("position")).y;
-                    Vector2 desiredDIr = ((Vector2)GetData("position") -
-                        obcell);
-
-                    if (desiredDIr == Vector2.zero)
+                    while (((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle)
                     {
-                        desiredDIr = Vector2.one;
-                    }
 
-                    desiredDIr.Normalize();
+                        bool negX = ((Vector2)GetData("position")).x <
+                            ((Vector2)GetData("oldTarget")).x;
+                        bool negY = ((Vector2)GetData("position")).y <
+                            ((Vector2)GetData("oldTarget")).y;
 
-                    if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
-                    {
-                        if (negX)
+
+                        Vector2 desiredDIr = ((Vector2)GetData("position") -
+                            (Vector2)GetData("oldTarget")).normalized;
+
+
+                      
+
+                        if (desiredDIr == Vector2.zero)
                         {
-                            if (index.x > 0)
-                                index.x--;
+                            desiredDIr = Vector2.one;
+                        }
+
+
+
+                        if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index.x > 0)
+                                    index.x--;
+                            }
+                            else
+                            {
+                                if (index.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index.x++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
+                        {
+                            if (negY)
+                            {
+                                if (index.y > 0)
+                                    index.y--;
+                            }
+                            else
+                            {
+                                if (index.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index.y++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index.x++;
+                            }
+                            if (negY)
+                            {
+                                if (index.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
+                                    index.y++;
+                            }
+
+
                         }
                         else
                         {
-                            if (index.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index.x++;
+
+                            break;
                         }
 
                     }
-                    else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
+                    while (((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
                     {
-                        if (negY)
+
+                        bool negX = ((Vector2)GetData("oldTarget")).x <
+                            ((Vector2)GetData("position")).x;
+                        bool negY = ((Vector2)GetData("oldTarget")).y <
+                            ((Vector2)GetData("position")).y;
+
+
+                        Vector2 desiredDIr = ((Vector2)GetData("oldTarget") -
+                            (Vector2)GetData("position")).normalized;
+
+
+
+
+                        if (desiredDIr == Vector2.zero)
                         {
-                            if (index.y > 0)
-                                index.y--;
+                            desiredDIr = Vector2.one;
+                        }
+
+
+
+                        if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index2.x > 0)
+                                    index2.x--;
+                            }
+                            else
+                            {
+                                if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.x++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
+                        {
+                            if (negY)
+                            {
+                                if (index2.y > 0)
+                                    index2.y--;
+                            }
+                            else
+                            {
+                                if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.y++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.x++;
+                            }
+                            if (negY)
+                            {
+                                if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
+                                    index2.y++;
+                            }
+
+
                         }
                         else
                         {
-                            if (index.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index.y++;
+
+                            break;
                         }
 
                     }
-                    else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
-                    {
-                        if (negX)
-                        {
-                            if (index.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index.x++;
-                        }
-                        if (negY)
-                        {
-                            if (index.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
-                                index.y++;
-                        }
-
-
-                    }
-                    else
+                }
+                else
+                {
+                    while (!((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
                     {
 
-                        break;
+                        bool negX = ((Vector2)GetData("oldTarget")).x <
+                            ((Vector2)GetData("position")).x;
+                        bool negY = ((Vector2)GetData("oldTarget")).y <
+                            ((Vector2)GetData("position")).y;
+
+
+                        Vector2 desiredDIr = ((Vector2)GetData("oldTarget") -
+                            (Vector2)GetData("position")).normalized;
+
+
+
+
+                        if (desiredDIr == Vector2.zero)
+                        {
+                            desiredDIr = Vector2.one;
+                        }
+
+
+
+                        if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index2.x > 0)
+                                    index2.x--;
+                            }
+                            else
+                            {
+                                if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.x++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
+                        {
+                            if (negY)
+                            {
+                                if (index2.y > 0)
+                                    index2.y--;
+                            }
+                            else
+                            {
+                                if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.y++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.x++;
+                            }
+                            if (negY)
+                            {
+                                if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
+                                    index2.y++;
+                            }
+
+
+                        }
+                        else
+                        {
+
+                            break;
+                        }
+
                     }
 
+                    while (((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
+                    {
+
+                        bool negX = ((Vector2)GetData("oldTarget")).x <
+                            ((Vector2)GetData("position")).x;
+                        bool negY = ((Vector2)GetData("oldTarget")).y <
+                            ((Vector2)GetData("position")).y;
+
+
+                        Vector2 desiredDIr = ((Vector2)GetData("oldTarget") -
+                            (Vector2)GetData("position")).normalized;
+
+
+
+
+                        if (desiredDIr == Vector2.zero)
+                        {
+                            desiredDIr = Vector2.one;
+                        }
+
+
+
+                        if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index2.x > 0)
+                                    index2.x--;
+                            }
+                            else
+                            {
+                                if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.x++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
+                        {
+                            if (negY)
+                            {
+                                if (index2.y > 0)
+                                    index2.y--;
+                            }
+                            else
+                            {
+                                if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.y++;
+                            }
+
+                        }
+                        else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
+                        {
+                            if (negX)
+                            {
+                                if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
+                                    index2.x++;
+                            }
+                            if (negY)
+                            {
+                                if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
+                                    index2.y++;
+                            }
+
+
+                        }
+                        else
+                        {
+
+                            break;
+                        }
+
+                    }
                 }
 
-                Vector2 startingcell = ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].pos;
-
-                while (((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
-                {
-
-                    bool negX = ((Vector2)GetData("oldTarget")).x <
-                        (startingcell).x;
-                    bool negY = ((Vector2)GetData("oldTarget")).y <
-                        (startingcell).y;
 
 
-                    Vector2 desiredDIr = ((Vector2)GetData("oldTarget") -
-                        startingcell);
+               
 
 
+             
+               
 
-                    desiredDIr.Normalize();
-
-                    if (desiredDIr == Vector2.zero)
-                    {
-                        desiredDIr = Vector2.one;
-                    }
-
-
-
-                    if (Mathf.Abs(desiredDIr.x) > Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
-                    {
-                        if (negX)
-                        {
-                            if (index2.x > 0)
-                                index2.x--;
-                        }
-                        else
-                        {
-                            if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index2.x++;
-                        }
-
-                    }
-                    else if (Mathf.Abs(desiredDIr.x) < Mathf.Abs(desiredDIr.y))//move cells in the direction of the target until one is found that is not an obstacle
-                    {
-                        if (negY)
-                        {
-                            if (index2.y > 0)
-                                index2.y--;
-                        }
-                        else
-                        {
-                            if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index2.y++;
-                        }
-
-                    }
-                    else if (Mathf.Abs(desiredDIr.x) == Mathf.Abs(desiredDIr.y))
-                    {
-                        if (negX)
-                        {
-                            if (index2.x <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(0))
-                                index2.x++;
-                        }
-                        if (negY)
-                        {
-                            if (index2.y <= ((AiGrid)GetData("grid")).GetCustomGrid().GetLength(1))
-                                index2.y++;
-                        }
-
-
-                    }
-                    else
-                    {
-
-                        break;
-                    }
-
-                }
+                
                 SetData("movementDirection", Vector2.zero);
                
                 ((AStar2D)GetData("aStar")).AStarSearch((
                     ((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y]).pos,
                     (((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y]).pos,int.MaxValue);
 
-              
+
+                Debug.Log(((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle);
+                Debug.Log(((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle);
                 Debug.Log("search");
                 SetData("newPath", false);
             }

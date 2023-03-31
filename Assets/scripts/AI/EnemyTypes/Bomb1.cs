@@ -146,7 +146,7 @@ public class Bomb1 : EnemyBase
         if ((bool)root.GetData("checkCollision"))
         {
             avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree, 
-                (Vector2)root.GetData("movementDirection"));
+                (Vector2)root.GetData("movementDirection"),2);
             if(avoidanceForce != Vector2.zero) 
             {
                 root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
@@ -155,6 +155,10 @@ public class Bomb1 : EnemyBase
             }
 
             
+        }
+        else
+        {
+            avoidanceForce= Vector2.zero;
         }
       
         movementDirection = (Vector2)root.GetData("movementDirection");

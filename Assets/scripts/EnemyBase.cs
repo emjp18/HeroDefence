@@ -35,7 +35,7 @@ public abstract class EnemyBase : MonoBehaviour
         rb.velocity = movementDirection.normalized * stats.Speed *
             Time.fixedDeltaTime + avoidanceForce.normalized * stats.Speed * Time.fixedDeltaTime;
 
-       
+        //Debug.Log(rb.velocity);
     }
     public void SetTarget(Transform target) { buildingTarget = target; }
     public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
