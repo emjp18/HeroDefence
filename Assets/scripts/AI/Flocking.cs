@@ -107,49 +107,7 @@ public abstract class FlockBehaviour
         get => separationObstWeight;
         set => separationObstWeight = value;
     }
-    public void UpdateStaticCollision()
-    {
-       
-
-        Utility.staticObstacles.Clear();
-
-        Utility.staticObstacles.Add(rootNode.children[0].bounds, tempa0);
-        Utility.staticObstacles.Add(rootNode.children[3].bounds, tempa3);
-        Utility.staticObstacles.Add(rootNode.children[2].bounds, tempa2);
-        Utility.staticObstacles.Add(rootNode.children[1].bounds, tempa1);
-        foreach (A_STAR_NODE node in grid.GetCustomGrid())
-        {
-            
-
-            if(node.obstacle)
-            {
-              
-                if (Utility.PointAABBIntersectionTest(rootNode.children[0].bounds,node.pos))
-                {
-                    Utility.staticObstacles[rootNode.children[0].bounds].Add(node.pos);
-                  
-                }
-                else if (Utility.PointAABBIntersectionTest(rootNode.children[1].bounds, node.pos))
-                {
-                    Utility.staticObstacles[rootNode.children[1].bounds].Add(node.pos);
-
-                }
-                else if (Utility.PointAABBIntersectionTest(rootNode.children[2].bounds, node.pos))
-                {
-                    Utility.staticObstacles[rootNode.children[2].bounds].Add(node.pos);
-
-                }
-                else if (Utility.PointAABBIntersectionTest(rootNode.children[3].bounds, node.pos))
-                {
-                    Utility.staticObstacles[rootNode.children[3].bounds].Add(node.pos);
-
-                }
-            }
-        }
-      
-       
-        
-    }
+   
     public void UpdateGrid(AiGrid grid)
     {
         this.grid = grid;
@@ -253,52 +211,52 @@ public abstract class FlockBehaviour
       
         return avoidanceMove;
     }
-    protected Vector2 AvoidStaticObstacles(Vector2 pos)
-    {
+    //protected Vector2 AvoidStaticObstacles(Vector2 pos)
+    //{
         
-        int box = -1;
-        for(int i=0; i<4; i ++)
-        {
-            if (Utility.PointAABBIntersectionTest(rootNode.children[i].bounds, pos))
-            {
-                box = i;
-                break;
-            }
-        }
+    //    //int box = -1;
+    //    //for(int i=0; i<4; i ++)
+    //    //{
+    //    //    if (Utility.PointAABBIntersectionTest(rootNode.children[i].bounds, pos))
+    //    //    {
+    //    //        box = i;
+    //    //        break;
+    //    //    }
+    //    //}
        
 
     
-        if (box == -1)
-            return Vector2.zero;
+    //    //if (box == -1)
+    //    //    return Vector2.zero;
 
 
-        Vector2 avoidanceMove = Vector2.zero;
+    //    //Vector2 avoidanceMove = Vector2.zero;
 
         
-        float sum = 0;
-        int c = 0;
-        foreach (Vector2 obstacle in Utility.staticObstacles[rootNode.children[box].bounds])
-        {
-            if ((pos - obstacle).magnitude < detectCollisionRadius)
-            {
-                c++;
-                sum += (pos - obstacle).magnitude;
-                temp2.Add((pos - obstacle));
-                temp3.Add((pos - obstacle).magnitude);
-            }
-        }
+    //    //float sum = 0;
+    //    //int c = 0;
+    //    //foreach (Vector2 obstacle in Utility.staticObstacles[rootNode.children[box].bounds])
+    //    //{
+    //    //    if ((pos - obstacle).magnitude < detectCollisionRadius)
+    //    //    {
+    //    //        c++;
+    //    //        sum += (pos - obstacle).magnitude;
+    //    //        temp2.Add((pos - obstacle));
+    //    //        temp3.Add((pos - obstacle).magnitude);
+    //    //    }
+    //    //}
      
      
-        for (int i=0; i<c; i++)
-        {
-            float properMagnitude = temp3[i] / sum * 100;
-            avoidanceMove += (temp2[i].normalized * properMagnitude);
+    //    //for (int i=0; i<c; i++)
+    //    //{
+    //    //    float properMagnitude = temp3[i] / sum * 100;
+    //    //    avoidanceMove += (temp2[i].normalized * properMagnitude);
             
 
-        }
+    //    //}
 
-        return avoidanceMove;
-    }
+    //    return avoidanceMove;
+    //}
     //protected Vector2 SeparationObstacles2(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity, Vector2 currentDirection)
     //{
     //    Vector2Int index = Vector2Int.zero;
@@ -538,20 +496,20 @@ public class FlockBehaviourChase : FlockBehaviour
    
 
 }
-public class FlockBehaviourAvoidance : FlockBehaviour
-{
-    public FlockBehaviourAvoidance(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag,
-        int flockid, bool leader, QUAD_NODE root)
-        : base(weights, grid, box, flockAgentAmount, tag, flockid, leader, root)
-    {
+//public class FlockBehaviourAvoidance : FlockBehaviour
+//{
+//    public FlockBehaviourAvoidance(FlockWeights weights, AiGrid grid, BoxCollider2D box, int flockAgentAmount, string tag,
+//        int flockid, bool leader, QUAD_NODE root)
+//        : base(weights, grid, box, flockAgentAmount, tag, flockid, leader, root)
+//    {
 
-    }
-    public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity,
-        Vector2 currentDirection, Vector2 leaderPos)
-    {
+//    }
+//    //public override Vector2 CalculateDirection(Vector2 pos, Vector2 targetPos, Vector2 currentVelocity,
+//    //    Vector2 currentDirection, Vector2 leaderPos)
+//    //{
 
-        return AvoidStaticObstacles(pos);
+//    //    return AvoidStaticObstacles(pos);
 
 
-    }
-}
+//    //}
+//}

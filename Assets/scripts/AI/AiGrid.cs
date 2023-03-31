@@ -204,8 +204,8 @@ public class AiGrid : MonoBehaviour
         root.bounds.X -= cellSize * 0.5f;
         root.bounds.Y -= cellSize * 0.5f;
         root.bounds.Width = root.bounds.Height = rows * cellSize;
+        Utility.GRID_CELL_SIZE = cellSize;
 
-        
         //
         CreateQuadTree(ref root);
 

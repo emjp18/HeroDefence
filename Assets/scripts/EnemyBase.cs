@@ -31,10 +31,11 @@ public abstract class EnemyBase : MonoBehaviour
     private void FixedUpdate()
     {
 
-       
-        rb.velocity = movementDirection * stats.Speed * Time.fixedDeltaTime;
-        
 
+        rb.velocity = movementDirection.normalized * stats.Speed *
+            Time.fixedDeltaTime + avoidanceForce.normalized * stats.Speed * Time.fixedDeltaTime;
+
+       
     }
     public void SetTarget(Transform target) { buildingTarget = target; }
     public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,

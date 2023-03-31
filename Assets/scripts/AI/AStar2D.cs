@@ -89,7 +89,8 @@ public class AStar2D
             return;
         }
         var copy = customGrid;
-        
+        Debug.Log(startIndex);
+        Debug.Log(endIndex);
         start = copy[startIndex.x, startIndex.y];
         end = copy[endIndex.x, endIndex.y];
    
@@ -123,17 +124,22 @@ public class AStar2D
                
                 //customGrid[temp.index.x, temp.index.y].correctPath = true;
                 path.Add(copy[temp.index.x, temp.index.y]);
-                
-                while (temp.prevIndex.x != int.MaxValue)
+                for(int i=0; i<customGrid.Length; i++)
                 {
                     Vector2Int prevCopy = temp.prevIndex;
-                    temp.prevIndex.Set(int.MaxValue, int.MaxValue);
-                    //temp.previous[0].isNull = true; //instead of this add an index list
+                    
                     temp = copy[prevCopy.x, prevCopy.y];
-                    //customGrid[temp.index.x, temp.index.y].correctPath = true;
+                    
                     path.Add(copy[temp.index.x, temp.index.y]);
-
+                    if (temp.prevIndex.x == int.MaxValue)
+                        break;
                 }
+                //while (temp.prevIndex.x != int.MaxValue)
+                //{
+                //    //temp.prevIndex.Set(int.MaxValue, int.MaxValue);
+                //    //temp.previous[0].isNull = true; //instead of this add an index list
+                //    //customGrid[temp.index.x, temp.index.y].correctPath = true;
+                //}
                 path.Reverse();
                 isFinding = false;
                 //
