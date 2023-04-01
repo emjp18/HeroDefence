@@ -57,6 +57,7 @@ public struct QUAD_NODE
 public enum Row_Count{ONE=1, TWO=2, FOUR=4, EIGHT=8, SIXTYFOUR=64 };
 public class AiGrid : MonoBehaviour
 {
+    Vector3Int tilePos;
     float z = 100;
     //[SerializeField] int collisionLayerInteger;
     //LayerMask collisionLayer = new LayerMask();
@@ -72,12 +73,9 @@ public class AiGrid : MonoBehaviour
     
     [SerializeField] Transform gridCenterTransform; //Use a transform to mark where the grid center should be in worldspace
                                                      // Use Integegrs
-    Vector2 gridCenter; 
-    BoxCollider2D colliderBox; //This is the only alternative I could think of to find collisio where tiles overlap
-                  //cells. In Unity it can only find a sprite with collision per tile, so if it overlaps
-                  // Unity wont find it from the tile map or the grid. So Instead I make a new grid that
-                  //checks for collision in each custom cell assuming the sprites are there before the Awake()
-                  //function, and that the physics engine generates a callback for collision
+    Vector2 gridCenter;
+    Vector2 boundSize;
+    BoxCollider2D boxCollider;
     public QUAD_NODE Getroot() { return root; }
     public A_STAR_NODE[,] GetCustomGrid()
     {
@@ -185,14 +183,15 @@ public class AiGrid : MonoBehaviour
         rows = columns;
         gridCenter = gridCenterTransform.position;
         //contactFilter.SetLayerMask(collisionLayer);
-        contactFilter.NoFilter();
-        colliderBox = GetComponent<BoxCollider2D>();
-        colliderBox.size = new Vector2(cellSize, cellSize);
-
-       //1,2,4,8,64
-
-        GenerateGrid();
        
+        contactFilter.NoFilter();
+        contactFilter.layerMask = 7;
+        boundSize = new Vector2(cellSize, cellSize);
+        boxCollider = GetComponent<BoxCollider2D>();
+        //1,2,4,8,64
+        boxCollider.size = boundSize;
+        GenerateGrid();
+        tilePos = new Vector3Int(0, 0, 0);
         root = new QUAD_NODE();
         //x and y is upper left corner
         Vector2 c = gridCenter;
@@ -211,71 +210,31 @@ public class AiGrid : MonoBehaviour
 
     }
 
-    public void RegenerateGrid() //Can be done before every night phase in case new obstacles have been placed
+    public void RegenerateGrid() 
     {
+        
+    
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
             {
 
-                customGrid[x, y].obstacle = false;
-            }
-        }
-        float center = rows / 2.0f;
-        for (int x = 0; x < rows; x++)
-        {
-            for (int y = 0; y < columns; y++)
-            {
-                colliderBox.offset = customGrid[x, y].pos;
+                boxCollider.offset = customGrid[x, y].pos;
 
-
-
-
+                colliderResult = Physics2D.OverlapBoxAll(boxCollider.offset, boxCollider.size, 0);
                 bool obstacle = false;
-                if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
+                foreach (Collider2D collision in colliderResult)
                 {
-                    if (colliderResult != null)
-                    {
+                    if (collision == boxCollider)
+                        continue;
 
-                        foreach (Collider2D collider in colliderResult)
-                        {
-                            if (collider == null)
-                                continue;
-                            if (collider.gameObject.layer==7)
-                            {
-
-                                obstacle = true;
-                                //if (y < columns - 1)
-                                //    customGrid[x, y + 1].obstacle = true;
-                                //if (y < columns - 1 && x < rows - 1)
-                                //    customGrid[x + 1, y + 1].obstacle = true;
-                                //if (x < rows - 1)
-                                //    customGrid[x + 1, y].obstacle = true;
-
-                                //if (x < rows - 1 && y > 0)
-                                //    customGrid[x + 1, y - 1].obstacle = true;
-                                //if (y > 0)
-                                //    customGrid[x, y - 1].obstacle = true;
-                                //if (x > 0 && y > 0)
-                                //    customGrid[x - 1, y - 1].obstacle = true;
-                                //if (x > 0)
-                                //    customGrid[x - 1, y].obstacle = true;
-                                //if (x > 0 && y < columns - 1)
-                                //    customGrid[x - 1, y + 1].obstacle = true;
-                                break;
-
-                            }
-                            
-                        }
-
-                    }
-
-
-
+                    obstacle = collision.gameObject.layer == 7;
+                    if (obstacle)
+                        break;
 
                 }
-                if (!customGrid[x, y].obstacle)
-                    customGrid[x, y].obstacle = obstacle;
+                customGrid[x, y].obstacle = obstacle;
+
 
 
             }
@@ -326,80 +285,44 @@ public class AiGrid : MonoBehaviour
                 {
                     worldPos.y = gridCenter.y + cellSize * (y - center);
                 }
+
+
                
-               //
-              
-              
-               
+
+
+
+
+                boxCollider.offset = worldPos;
+            
+                colliderResult = Physics2D.OverlapBoxAll(boxCollider.offset, boxCollider.size,0);
+                bool obstacle = false;
+                foreach(Collider2D collision in colliderResult)
+                {
+                    if (collision == boxCollider)
+                        continue;
+
+                    obstacle = collision.gameObject.layer == 7;
+                    if (obstacle)
+                        break;
+                        
+                }
+               customGrid[x, y].obstacle = obstacle;
+                
                 Vector2 pos = new Vector2(worldPos.x, worldPos.y);
                 customGrid[x, y].pos = pos;
                 customGrid[x, y].bounds = new RectangleFloat();
                 customGrid[x, y].bounds.Width = customGrid[x, y].bounds.Height = cellSize;
                 customGrid[x, y].bounds.X = pos.x - cellSize * 0.5f;
                 customGrid[x, y].bounds.Y = pos.y + cellSize * 0.5f;
-                customGrid[x, y].obstacle = false;
-
-
-                
+               
                 customGrid[x, y].neighbours = new List<Vector2Int>();
-           
+
                 customGrid[x, y].index = new Vector2Int(x,y);
 
                 customGrid[x, y].prevIndex = new Vector2Int(int.MaxValue, int.MaxValue);
             }
         }
-        for (int x = 0; x < rows; x++)
-        {
-            for (int y = 0; y < columns; y++)
-            {
-                colliderBox.offset = customGrid[x, y].pos;
-                bool obstacle = false;
-                if (colliderBox.OverlapCollider(contactFilter, colliderResult) > 0)
-                {
-                    if (colliderResult != null)
-                    {
-
-                        foreach (Collider2D collider in colliderResult)
-                        {
-                            if (collider == null)
-                                continue;
-                            if (collider.gameObject.layer==7)
-                            {
-                                
-                                obstacle = true;
-                                //if (y < columns - 1)
-                                //    customGrid[x, y + 1].obstacle = true;
-                                //if (y < columns - 1 && x < rows - 1)
-                                //    customGrid[x + 1, y + 1].obstacle = true;
-                                //if (x < rows - 1)
-                                //    customGrid[x + 1, y].obstacle = true;
-
-                                //if (x < rows - 1 && y > 0)
-                                //    customGrid[x + 1, y - 1].obstacle = true;
-                                //if (y > 0)
-                                //    customGrid[x, y - 1].obstacle = true;
-                                //if (x > 0 && y > 0)
-                                //    customGrid[x - 1, y - 1].obstacle = true;
-                                //if (x > 0)
-                                //    customGrid[x - 1, y].obstacle = true;
-                                //if (x > 0 && y < columns - 1)
-                                //    customGrid[x - 1, y + 1].obstacle = true;
-                                break;
-
-                            }
-                            
-                        }
-
-                    }
-
-
-
-
-                }
-                if (!customGrid[x, y].obstacle)
-                    customGrid[x, y].obstacle = obstacle;
-            }
-        }
+       
 
 
         for (int x = 0; x < rows; x++)

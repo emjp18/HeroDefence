@@ -207,22 +207,22 @@ public class EnemySpawner : MonoBehaviour
     {
         grid.RegenerateGrid();
 
-        if (enemiesBomb1.Count > 0)
-        {
+        //if (enemiesBomb1.Count > 0)
+        //{
 
-            for (int i = 0; i < bomb1AmountPerSpawn; i++)
-            {
+        //    for (int i = 0; i < bomb1AmountPerSpawn; i++)
+        //    {
 
-                enemiesBomb1[i].gameObject.SetActive(true);
-                enemiesBomb1[i].gameObject.transform.position =
-                    (Vector2)spawnPoints[0].position;
-                enemiesBomb1[i].SetTarget(targetPoints[0]);
-                enemiesBomb1[i].StartNightPhase(grid);
+        //        enemiesBomb1[i].gameObject.SetActive(true);
+        //        enemiesBomb1[i].gameObject.transform.position =
+        //            (Vector2)spawnPoints[0].position;
+        //        enemiesBomb1[i].SetTarget(targetPoints[0]);
+        //        enemiesBomb1[i].StartNightPhase(grid);
 
 
 
-            }
-        }
+        //    }
+        //}
 
 
 

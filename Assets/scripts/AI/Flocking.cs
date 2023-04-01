@@ -118,8 +118,8 @@ public abstract class FlockBehaviour
 
         nearbyAgents.Clear();
 
-        int nr = Physics2D.OverlapCircleNonAlloc(pos, flockradius, nearbyColliders);
-        for (int i = 0; i < nr; i++)
+        nearbyColliders = Physics2D.OverlapCircleAll(pos, flockradius);
+        for (int i = 0; i < nearbyColliders.Length; i++)
         {
 
             if (nearbyColliders[i].gameObject.GetComponent<EnemyBase>() == null)
