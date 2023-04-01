@@ -10,10 +10,22 @@ public struct A_STAR_NODE
     public float h;
     public float f;
     public bool obstacle;
-    public List<A_STAR_NODE> neighbours;
+    public List<Vector2Int> neighbours;
     public Vector2Int index;
     public RectangleFloat bounds;
     public Vector2Int prevIndex;
+    public A_STAR_NODE(A_STAR_NODE copy)
+    {
+        pos = copy.pos;
+        g = copy.g;
+        h = copy.h;
+        f = copy.f;
+        obstacle = copy.obstacle;
+        neighbours = copy.neighbours;
+        index = copy.index;
+        bounds = copy.bounds;
+        prevIndex = copy.prevIndex;
+    }
 
     public override bool Equals(object obj)
     {

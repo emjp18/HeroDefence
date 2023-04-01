@@ -341,7 +341,7 @@ public class AiGrid : MonoBehaviour
 
 
                 
-                customGrid[x, y].neighbours = new List<A_STAR_NODE>();
+                customGrid[x, y].neighbours = new List<Vector2Int>();
            
                 customGrid[x, y].index = new Vector2Int(x,y);
 
@@ -418,24 +418,24 @@ public class AiGrid : MonoBehaviour
 
         
         if (node.index.x < (rows - 1))
-            node.neighbours.Add(customGrid[node.index.x + 1, node.index.y]);
+            node.neighbours.Add(new(node.index.x + 1, node.index.y));
         if (node.index.x > 0)
-            node.neighbours.Add(customGrid[node.index.x - 1, node.index.y]);
+            node.neighbours.Add(new(node.index.x - 1, node.index.y));
         if (node.index.y < (columns - 1))
-            node.neighbours.Add(customGrid[node.index.x, node.index.y + 1]);
+            node.neighbours.Add(new(node.index.x, node.index.y + 1));
         if (node.index.y > 0)
-            node.neighbours.Add(customGrid[node.index.x, node.index.y - 1]);
+            node.neighbours.Add(new(node.index.x, node.index.y - 1));
 
         //If there is a problem with enemies walking diagonally just comment out below
 
         if (node.index.x < (rows - 1) && node.index.y < (columns - 1))
-            node.neighbours.Add(customGrid[node.index.x + 1, node.index.y + 1]);
+            node.neighbours.Add(new(node.index.x + 1, node.index.y + 1));
         if (node.index.x > 0 && node.index.y > 0)
-            node.neighbours.Add(customGrid[node.index.x - 1, node.index.y - 1]);
+            node.neighbours.Add(new(node.index.x - 1, node.index.y - 1));
         if (node.index.y < (columns - 1) && node.index.x > 0)
-            node.neighbours.Add(customGrid[node.index.x - 1, node.index.y + 1]);
+            node.neighbours.Add(new(node.index.x - 1, node.index.y + 1));
         if (node.index.y > 0 && node.index.x < (rows - 1))
-            node.neighbours.Add(customGrid[node.index.x + 1, node.index.y - 1]);
+            node.neighbours.Add(new(node.index.x + 1, node.index.y - 1));
 
     }
     

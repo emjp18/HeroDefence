@@ -33,28 +33,31 @@ public class Bomb1 : EnemyBase
 
 
     }
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (collision.gameObject.layer == 7 && !(bool)root.GetData("searching"))
-    //    {
-    //        collision.GetContacts(contacts);
-    //        root.SetData("newPath", true);
-    //        root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
-    //        root.SetData("obstacleCell", contacts[0].point);
-
-    //    }
-    //}
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
-        if (collision.gameObject.layer == 7)
+        if (collision.gameObject.layer == 7 && (bool)root.GetData("checkCollision"))
         {
             root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
             root.SetData("newPath", true);
-          
+            root.SetData("checkCollision", false);
             root.SetData("movementDirection", Vector2.zero);
 
-            Debug.Log("helllo");
+
+
+
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+        if (collision.gameObject.layer == 7&& (bool)root.GetData("checkCollision"))
+        {
+            root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
+            root.SetData("newPath", true);
+            root.SetData("checkCollision", false);
+            root.SetData("movementDirection", Vector2.zero);
+
+     
 
 
         }
@@ -129,24 +132,25 @@ public class Bomb1 : EnemyBase
 
         root.SetData("position", (Vector2)transform.position);
 
-        //if ((bool)root.GetData("checkCollision"))
-        //{
-        //    avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree, 
-        //        (Vector2)root.GetData("movementDirection"),1);
-        //    if(avoidanceForce != Vector2.zero) 
-        //    {
-        //        root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
-        //        root.SetData("newPath", true);
-        //        root.SetData("checkCollision", false);
-        //    }
+        if ((bool)root.GetData("checkCollision"))
+        {
+            avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree,
+                (Vector2)root.GetData("movementDirection"), 0.6f);
+            if (avoidanceForce != Vector2.zero)
+            {
+                root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
+                root.SetData("newPath", true);
+                root.SetData("checkCollision", false);
+                root.SetData("movementDirection", Vector2.zero);
+            }
 
-            
-        //}
-        //else
-        //{
-        //    avoidanceForce= Vector2.zero;
-        //}
-      
+
+        }
+        else
+        {
+            avoidanceForce = Vector2.zero;
+        }
+
         movementDirection = (Vector2)root.GetData("movementDirection");
 
         if ((bool)root.GetData("deactivate"))

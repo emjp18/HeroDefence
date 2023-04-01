@@ -189,31 +189,16 @@ namespace BehaviorTree
                 }
                 else
                 {
-                    SetData("subGoal", path[(int)GetData("pathIndex")].pos);
-                    Vector2 avoid = Utility.Avoid((Vector2)GetData("position"),
-                     ((AiGrid)GetData("grid")).Getroot(),
-                    (path[(int)GetData("pathIndex")].pos - (Vector2)GetData("position")).normalized, 2, 2);
-               
-
-                    if (avoid != Vector2.zero)
-                    {
-                        SetData("subGoal", ((Vector2)GetData("position") + avoid));
-                    }
-
-                   
-
-
-                    
+                    Vector2 goal = path[(int)GetData("pathIndex")].pos;
                     SetData("movementDirection",
-                      ((Vector2)GetData("subGoal") - (Vector2)GetData("position")).normalized);
+                      ((goal - (Vector2)GetData("position"))).normalized);
 
 
-                    if (Vector2.Distance((Vector2)GetData("position"),(Vector2)GetData("subGoal"))<
+                    if (Vector2.Distance((Vector2)GetData("position"), goal) <
                         (float)GetData("cellSize")*0.5f)
                     {
-                        if(path[(int)GetData("pathIndex")].pos == (Vector2)GetData("subGoal"))
-                            SetData("pathIndex", (int)GetData("pathIndex")+1);
-                        
+                        SetData("pathIndex", (int)GetData("pathIndex") + 1);
+                       
                     }
 
                 }
@@ -317,7 +302,7 @@ namespace BehaviorTree
                 ((AStar2D)GetData("aStar")).Reset = false;
                  ((AStar2D)GetData("aStar")).FindPath(
                    index,
-                   index2, int.MaxValue);
+                   index2, 200);
                
                 SetData("newPath", false);
             }

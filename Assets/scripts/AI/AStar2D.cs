@@ -27,6 +27,7 @@ public class AStar2D
     bool isFinding = false;
     A_STAR_NODE[,] customGrid;
     QUAD_NODE rootQuadNode;
+    A_STAR_NODE[,] copy;
 
     public QUAD_NODE Quadtree
     {
@@ -40,7 +41,7 @@ public class AStar2D
     }
     public AStar2D(AiGrid grid)
     {
-
+        copy = new A_STAR_NODE[grid.GetCustomGrid().GetLength(0), grid.GetCustomGrid().GetLength(1)];
         rootQuadNode = grid.Getroot();
         customGrid = grid.GetCustomGrid();
     }
@@ -88,8 +89,11 @@ public class AStar2D
             isFinding = false;
             return;
         }
-        var copy = customGrid;
-      
+
+        Array.Copy(customGrid, copy, customGrid.Length);
+       
+
+
         start = copy[startIndex.x, startIndex.y];
         end = copy[endIndex.x, endIndex.y];
         if (start.obstacle || end.obstacle)
@@ -104,7 +108,7 @@ public class AStar2D
         path.Clear();
         int c = 0;
         int nr = 0;
-        //customGrid[start.index.x, start.index.y].openSet = true;
+
         while (open.Count > 0 && !pathFound)
         {
             c++;
@@ -134,16 +138,18 @@ public class AStar2D
 
                 for (int i=0; i< nr; i++)
                 {
-
+                   
                     if (index.x == int.MaxValue)
                         break;
-
+                    
                     path.Add(copy[index.x, index.y]);
                     index = copy[index.x, index.y].prevIndex;
                     
 
 
                 }
+               
+               
                 //path.Add(copy[startIndex.x, startIndex.y]);
                 path.Reverse();
                 isFinding = false;
@@ -159,49 +165,55 @@ public class AStar2D
 
                 for (int i = 0; i < current.neighbours.Count; i++)
                 {
-                    if ((!closed.Any() || !closed.Contains(current.neighbours[i]))
-                        && !current.neighbours[i].obstacle)        //Closes the entire Cell if there is a tile inside of it.
+                    if ((!closed.Any() || !closed.Contains(copy[current.neighbours[i].x,
+                                current.neighbours[i].y]))
+                        && !copy[current.neighbours[i].x,
+                                current.neighbours[i].y].obstacle)        //Closes the entire Cell if there is a tile inside of it.
                     {
                         float tempG = current.g + 1;
 
                        
-                        if (open.Contains(current.neighbours[i]))
+                        if (open.Contains(copy[current.neighbours[i].x,
+                                current.neighbours[i].y]))
                         {
-                            if (tempG < current.neighbours[i].g)
+                            if (tempG < copy[current.neighbours[i].x,
+                                current.neighbours[i].y].g)
                             {
                                 
+                               
+                                copy[current.neighbours[i].x,
+                                current.neighbours[i].y].g = tempG;
 
-                                A_STAR_NODE a_STAR_NODE = current.neighbours[i];
-                                a_STAR_NODE.g = tempG;
-                                a_STAR_NODE.h = GetDistance(current.neighbours[i].neighbours[i], end);
-                                a_STAR_NODE.f = current.neighbours[i].neighbours[i].g + current.neighbours[i].h;
-                                a_STAR_NODE.bounds = current.neighbours[i].neighbours[i].bounds;
-                                a_STAR_NODE.index = current.neighbours[i].index;
-                                a_STAR_NODE.pos = current.neighbours[i].pos;
-                                a_STAR_NODE.neighbours = current.neighbours[i].neighbours;
-                                a_STAR_NODE.obstacle = current.neighbours[i].obstacle;
-                                a_STAR_NODE.prevIndex = current.index;
-                                current.neighbours[i] = a_STAR_NODE;
-                                copy[a_STAR_NODE.index.x, a_STAR_NODE.index.y].prevIndex = a_STAR_NODE.prevIndex;
+                                copy[current.neighbours[i].x,
+                               current.neighbours[i].y].h = GetDistance(copy[current.neighbours[i].x,
+                               current.neighbours[i].y], end);
+                                copy[current.neighbours[i].x,
+                               current.neighbours[i].y].f = copy[current.neighbours[i].x,
+                                current.neighbours[i].y].g + copy[current.neighbours[i].x,
+                               current.neighbours[i].y].h;
+                                copy[current.neighbours[i].x,
+                                current.neighbours[i].y].prevIndex = current.index;
+
+
+
                             }
                         }
                         else
                         {
-                           
-                           
-                            A_STAR_NODE a_STAR_NODE = current.neighbours[i];
-                            a_STAR_NODE.g = tempG;
-                            a_STAR_NODE.h = GetDistance(current.neighbours[i].neighbours[i], end);
-                            a_STAR_NODE.f = current.neighbours[i].neighbours[i].g + current.neighbours[i].h;
-                            a_STAR_NODE.bounds = current.neighbours[i].neighbours[i].bounds;
-                            a_STAR_NODE.index = current.neighbours[i].index;
-                            a_STAR_NODE.pos = current.neighbours[i].pos;
-                            a_STAR_NODE.neighbours = current.neighbours[i].neighbours;
-                            a_STAR_NODE.obstacle = current.neighbours[i].obstacle;
-                            a_STAR_NODE.prevIndex = current.index;
-                            current.neighbours[i] = a_STAR_NODE;
-                            open.Add(current.neighbours[i]);
-                            copy[a_STAR_NODE.index.x, a_STAR_NODE.index.y].prevIndex = a_STAR_NODE.prevIndex;
+                            copy[current.neighbours[i].x,
+                               current.neighbours[i].y].g = tempG;
+
+                            copy[current.neighbours[i].x,
+                           current.neighbours[i].y].h = GetDistance(copy[current.neighbours[i].x,
+                           current.neighbours[i].y], end);
+                            copy[current.neighbours[i].x,
+                           current.neighbours[i].y].f = copy[current.neighbours[i].x,
+                            current.neighbours[i].y].g + copy[current.neighbours[i].x,
+                           current.neighbours[i].y].h;
+                            copy[current.neighbours[i].x,
+                            current.neighbours[i].y].prevIndex = current.index;
+                            open.Add(copy[current.neighbours[i].x,
+                            current.neighbours[i].y]);
                             nr++;
                         }
                         
