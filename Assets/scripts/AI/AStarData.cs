@@ -4,16 +4,12 @@ using UnityEngine;
 
 public struct A_STAR_NODE
 {
-    //public bool isNull;
-    //public A_STAR_NODE[] previous;
+   
     public Vector2 pos;
     public float g;
     public float h;
     public float f;
     public bool obstacle;
-    //public bool openSet;
-    //public bool closedSet;
-    //public bool correctPath;
     public List<A_STAR_NODE> neighbours;
     public Vector2Int index;
     public RectangleFloat bounds;

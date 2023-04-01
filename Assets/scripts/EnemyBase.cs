@@ -18,7 +18,7 @@ public struct FlockWeights
 public abstract class EnemyBase : MonoBehaviour
 {
     [SerializeField] ENEMY_TYPE type;
-   
+   Ray ray = new Ray();
     protected Animator anim;
     protected Vector2 movementDirection = Vector2.zero;
     protected Rigidbody2D rb;
@@ -30,12 +30,25 @@ public abstract class EnemyBase : MonoBehaviour
     protected Vector2 avoidanceForce = Vector2.zero;
     private void FixedUpdate()
     {
+        if(this as Bomb1 != null)
+        {
+            if((bool)(this as Bomb1).root.GetData("raycast"))
+            {
+                ray.direction = movementDirection.normalized;
+                ray.origin = transform.position;
+                if (!Physics.Raycast(ray, (float)(this as Bomb1).root.GetData("playerDistance"), 7 ))
+                {
+                    (this as Bomb1).root.SetData("reset", true);
+                   
+                }
 
+                 (this as Bomb1).root.SetData("raycast", false);
+            }
+        }
 
-        rb.velocity = movementDirection.normalized * stats.Speed *
-            Time.fixedDeltaTime + avoidanceForce.normalized * stats.Speed * Time.fixedDeltaTime;
+        rb.velocity = movementDirection.normalized * stats.Speed * Time.fixedDeltaTime;
 
-        //Debug.Log(rb.velocity);
+        
     }
     public void SetTarget(Transform target) { buildingTarget = target; }
     public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,

@@ -81,7 +81,7 @@ public class AStar2D
     {
         return (int)MathF.Abs(nodeA.pos.x - nodeB.pos.x) + (int)MathF.Abs(nodeA.pos.y - nodeB.pos.y);
     }
-    void FindPath(Vector2Int startIndex, Vector2Int endIndex, int maxiumNodes)
+    public void FindPath(Vector2Int startIndex, Vector2Int endIndex, int maxiumNodes)
     {
         if(resetPath)
         {
@@ -89,16 +89,21 @@ public class AStar2D
             return;
         }
         var copy = customGrid;
-        Debug.Log(startIndex);
-        Debug.Log(endIndex);
+      
         start = copy[startIndex.x, startIndex.y];
         end = copy[endIndex.x, endIndex.y];
-   
+        if (start.obstacle || end.obstacle)
+        {
+            isFinding = false;
+            return;
+        }
+           
         open.Clear();
         closed.Clear();
         open.Add(start);
         path.Clear();
         int c = 0;
+        int nr = 0;
         //customGrid[start.index.x, start.index.y].openSet = true;
         while (open.Count > 0 && !pathFound)
         {
@@ -116,30 +121,30 @@ public class AStar2D
             }
 
             A_STAR_NODE current = open[0];
+          
+           
             if (current.pos.x == end.pos.x && current.pos.y == end.pos.y)
             {
                 pathFound = true;
-    
-                A_STAR_NODE temp = current;
-               
-                //customGrid[temp.index.x, temp.index.y].correctPath = true;
-                path.Add(copy[temp.index.x, temp.index.y]);
-                for(int i=0; i<customGrid.Length; i++)
+            
+
+
+                Vector2Int index = current.index;
+
+
+                for (int i=0; i< nr; i++)
                 {
-                    Vector2Int prevCopy = temp.prevIndex;
-                    
-                    temp = copy[prevCopy.x, prevCopy.y];
-                    
-                    path.Add(copy[temp.index.x, temp.index.y]);
-                    if (temp.prevIndex.x == int.MaxValue)
+
+                    if (index.x == int.MaxValue)
                         break;
+
+                    path.Add(copy[index.x, index.y]);
+                    index = copy[index.x, index.y].prevIndex;
+                    
+
+
                 }
-                //while (temp.prevIndex.x != int.MaxValue)
-                //{
-                //    //temp.prevIndex.Set(int.MaxValue, int.MaxValue);
-                //    //temp.previous[0].isNull = true; //instead of this add an index list
-                //    //customGrid[temp.index.x, temp.index.y].correctPath = true;
-                //}
+                //path.Add(copy[startIndex.x, startIndex.y]);
                 path.Reverse();
                 isFinding = false;
                 //
@@ -148,9 +153,9 @@ public class AStar2D
             else
             {
                 open.Remove(open.First());
-                //customGrid[current.index.x, current.index.y].openSet = false;
+           
                 closed.Add(current);
-                //customGrid[current.index.x, current.index.y].closedSet = true;
+               
 
                 for (int i = 0; i < current.neighbours.Count; i++)
                 {
@@ -159,55 +164,47 @@ public class AStar2D
                     {
                         float tempG = current.g + 1;
 
-                        //bool newPath = false;
+                       
                         if (open.Contains(current.neighbours[i]))
                         {
                             if (tempG < current.neighbours[i].g)
                             {
-                                A_STAR_NODE a_STAR_NODE1 = current.neighbours[i];
-                                a_STAR_NODE1.g = tempG;
-                                current.neighbours[i] = a_STAR_NODE1;
-                                //newPath = true;
-                                //
-                                A_STAR_NODE a_STAR_NODE = current.neighbours[i];
-                                a_STAR_NODE.h = GetDistance(current.neighbours[i], end);
-                                a_STAR_NODE.f = current.neighbours[i].g + current.neighbours[i].h;
-                                //a_STAR_NODE.previous[0] = current;
-                                a_STAR_NODE.prevIndex = current.index;
+                                
 
+                                A_STAR_NODE a_STAR_NODE = current.neighbours[i];
+                                a_STAR_NODE.g = tempG;
+                                a_STAR_NODE.h = GetDistance(current.neighbours[i].neighbours[i], end);
+                                a_STAR_NODE.f = current.neighbours[i].neighbours[i].g + current.neighbours[i].h;
+                                a_STAR_NODE.bounds = current.neighbours[i].neighbours[i].bounds;
+                                a_STAR_NODE.index = current.neighbours[i].index;
+                                a_STAR_NODE.pos = current.neighbours[i].pos;
+                                a_STAR_NODE.neighbours = current.neighbours[i].neighbours;
+                                a_STAR_NODE.obstacle = current.neighbours[i].obstacle;
+                                a_STAR_NODE.prevIndex = current.index;
                                 current.neighbours[i] = a_STAR_NODE;
+                                copy[a_STAR_NODE.index.x, a_STAR_NODE.index.y].prevIndex = a_STAR_NODE.prevIndex;
                             }
                         }
                         else
                         {
-                            A_STAR_NODE a_STAR_NODE1 = current.neighbours[i];
-                            a_STAR_NODE1.g = tempG;
-                            current.neighbours[i] = a_STAR_NODE1;
                            
-                            //customGrid[current.neighbours[i].index.x,
-                            //    current.neighbours[i].index.y].openSet = true;
-                            //newPath = true;
+                           
                             A_STAR_NODE a_STAR_NODE = current.neighbours[i];
-                            a_STAR_NODE.h = GetDistance(current.neighbours[i], end);
-                            a_STAR_NODE.f = current.neighbours[i].g + current.neighbours[i].h;
-                            //a_STAR_NODE.previous[0] = current;
+                            a_STAR_NODE.g = tempG;
+                            a_STAR_NODE.h = GetDistance(current.neighbours[i].neighbours[i], end);
+                            a_STAR_NODE.f = current.neighbours[i].neighbours[i].g + current.neighbours[i].h;
+                            a_STAR_NODE.bounds = current.neighbours[i].neighbours[i].bounds;
+                            a_STAR_NODE.index = current.neighbours[i].index;
+                            a_STAR_NODE.pos = current.neighbours[i].pos;
+                            a_STAR_NODE.neighbours = current.neighbours[i].neighbours;
+                            a_STAR_NODE.obstacle = current.neighbours[i].obstacle;
                             a_STAR_NODE.prevIndex = current.index;
-
                             current.neighbours[i] = a_STAR_NODE;
-
                             open.Add(current.neighbours[i]);
+                            copy[a_STAR_NODE.index.x, a_STAR_NODE.index.y].prevIndex = a_STAR_NODE.prevIndex;
+                            nr++;
                         }
-                        //if (newPath)
-                        //{
-                        //    A_STAR_NODE a_STAR_NODE = current.neighbours[i];
-                        //    a_STAR_NODE.h = GetDistance(current.neighbours[i], end);
-                        //    a_STAR_NODE.f = current.neighbours[i].g + current.neighbours[i].h;
-                        //    //a_STAR_NODE.previous[0] = current;
-                        //    a_STAR_NODE.prevIndex = current.index;
-                           
-                        //    current.neighbours[i] = a_STAR_NODE;
-                            
-                        //}
+                        
                     }
                 }
             }

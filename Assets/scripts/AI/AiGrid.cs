@@ -340,15 +340,11 @@ public class AiGrid : MonoBehaviour
                 customGrid[x, y].obstacle = false;
 
 
-                //if (customGrid[x, y].obstacle)
-                //    DrawDebugBounds(colliderBox.bounds);
-                //
-                //customGrid[x, y].previous = new A_STAR_NODE[1];
-                //customGrid[x, y].previous[0] = new A_STAR_NODE();
+                
                 customGrid[x, y].neighbours = new List<A_STAR_NODE>();
-                //customGrid[x, y].previous[0].isNull = true;
+           
                 customGrid[x, y].index = new Vector2Int(x,y);
-                //customGrid[x, y].isNull = false;
+
                 customGrid[x, y].prevIndex = new Vector2Int(int.MaxValue, int.MaxValue);
             }
         }

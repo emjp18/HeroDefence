@@ -46,32 +46,19 @@ public class Bomb1 : EnemyBase
     //}
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //if (collision.gameObject.layer == 7)
-        //{
-        //    avoidanceForce = ((Vector2)transform.position - collision.GetContact(0).point).normalized
-        //   * Utility.GRID_CELL_SIZE * 4;
-        //}
-        //if (collision.gameObject.layer == 7&& !(bool)root.GetData("searching"))
-        //{
-
-        //    root.SetData("newPath", true);
-        //    if((Vector2)root.GetData("targetPosition")== (Vector2)player.transform.position)
-        //    {
-        //        root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
-        //    }
-        //    else
-        //    {
-        //        //Vector2 vel = player.gameObject.GetComponent<Rigidbody2D>().velocity;
-        //        root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
-        //    }
-
-          
-        //    root.SetData("obstacleCell", collision.GetContact(0).point);
-
-
-
-        //}
         
+        if (collision.gameObject.layer == 7)
+        {
+            root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
+            root.SetData("newPath", true);
+          
+            root.SetData("movementDirection", Vector2.zero);
+
+            Debug.Log("helllo");
+
+
+        }
+
     }
 
     public void SetLeader(Vector2 pos)
@@ -86,7 +73,7 @@ public class Bomb1 : EnemyBase
         movementDirection = Vector2.zero;
         root.SetData("targetPosition", (Vector2)buildingTarget.position);
         root.SetData("movementDirection", movementDirection);
-
+        root.SetData("subGoal", Vector2.zero);
         root.SetData("position", (Vector2)transform.position);
         root.SetData("dead", false);
         root.SetData("withinAttackRange", false);
@@ -108,6 +95,11 @@ public class Bomb1 : EnemyBase
         root.SetData("avoidanceTemp", Vector2.zero);
         root.SetData("targetChange", false);
         root.SetData("searching", false);
+        root.SetData("raycast", false);
+        root.SetData("targetPlayer", false);
+        root.SetData("playerDistance", 0);
+        root.SetData("reset", false);
+        root.SetData("playerTarget", false);
     }
    
     private void Update()
@@ -115,23 +107,17 @@ public class Bomb1 : EnemyBase
       
         root.SetData("leader", leader);
         root.SetData("velocity", rb.velocity);
-
-        if (Vector2.Distance(transform.position, player.position) < stats.ChasePlayerRange)
+        float pd = Vector2.Distance(transform.position, player.position);
+        if (pd < stats.ChasePlayerRange)
         {
-            //if ((Vector2)root.GetData("targetPosition") == (Vector2)buildingTarget.position)
-            //{
-            //    root.SetData("targetChange", true);
-            //}
-            
+            root.SetData("playerDistance", pd);
+            root.SetData("targetPlayer", true);
             root.SetData("targetPosition", (Vector2)player.position);
         }
         else
         {
-            //if ((Vector2)root.GetData("targetPosition") == (Vector2)player.position)
-            //{
-            //    root.SetData("targetChange", true);
-            //}
-            
+
+            root.SetData("targetPlayer", false);
             root.SetData("targetPosition", (Vector2)buildingTarget.position);
         }
 
@@ -143,23 +129,23 @@ public class Bomb1 : EnemyBase
 
         root.SetData("position", (Vector2)transform.position);
 
-        if ((bool)root.GetData("checkCollision"))
-        {
-            avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree, 
-                (Vector2)root.GetData("movementDirection"),2);
-            if(avoidanceForce != Vector2.zero) 
-            {
-                root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
-                root.SetData("newPath", true);
-                root.SetData("checkCollision", false);
-            }
+        //if ((bool)root.GetData("checkCollision"))
+        //{
+        //    avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree, 
+        //        (Vector2)root.GetData("movementDirection"),1);
+        //    if(avoidanceForce != Vector2.zero) 
+        //    {
+        //        root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
+        //        root.SetData("newPath", true);
+        //        root.SetData("checkCollision", false);
+        //    }
 
             
-        }
-        else
-        {
-            avoidanceForce= Vector2.zero;
-        }
+        //}
+        //else
+        //{
+        //    avoidanceForce= Vector2.zero;
+        //}
       
         movementDirection = (Vector2)root.GetData("movementDirection");
 
@@ -204,5 +190,6 @@ public class Bomb1 : EnemyBase
    public bool GetIsAttacking() { return isAttacking; }
     public void SetIsAttacking(bool attacking) { isAnyoneAttacking = attacking; }
 
-    
+   
+
 }
