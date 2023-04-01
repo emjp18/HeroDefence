@@ -49,19 +49,16 @@ public class Bomb1 : EnemyBase
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
-        if (collision.gameObject.layer == 7&& (bool)root.GetData("checkCollision"))
+        avoidanceForce = (Vector2)transform.position - collision.GetContact(0).point;
+        if (collision.gameObject.layer == 7 && (bool)root.GetData("checkCollision"))
         {
             root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
             root.SetData("newPath", true);
             root.SetData("checkCollision", false);
             root.SetData("movementDirection", Vector2.zero);
 
-     
-
-
         }
-
+       
     }
 
     public void SetLeader(Vector2 pos)
@@ -132,24 +129,24 @@ public class Bomb1 : EnemyBase
 
         root.SetData("position", (Vector2)transform.position);
 
-        if ((bool)root.GetData("checkCollision"))
-        {
-            avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree,
-                (Vector2)root.GetData("movementDirection"), 0.6f);
-            if (avoidanceForce != Vector2.zero)
-            {
-                root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
-                root.SetData("newPath", true);
-                root.SetData("checkCollision", false);
-                root.SetData("movementDirection", Vector2.zero);
-            }
+        //if ((bool)root.GetData("checkCollision"))
+        //{
+        //    avoidanceForce = Utility.Avoid(transform.position, pathfinding.Quadtree,
+        //        (Vector2)root.GetData("movementDirection"), 1.5f);
+        //    if (avoidanceForce != Vector2.zero)
+        //    {
+        //        root.SetData("oldTarget", (Vector2)root.GetData("targetPosition"));
+        //        root.SetData("newPath", true);
+        //        root.SetData("checkCollision", false);
+        //        root.SetData("movementDirection", Vector2.zero);
+        //    }
 
 
-        }
-        else
-        {
-            avoidanceForce = Vector2.zero;
-        }
+        //}
+        //else
+        //{
+        //    avoidanceForce = Vector2.zero;
+        //}
 
         movementDirection = (Vector2)root.GetData("movementDirection");
 

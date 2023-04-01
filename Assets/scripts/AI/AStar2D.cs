@@ -150,7 +150,7 @@ public class AStar2D
                 }
                
                
-                //path.Add(copy[startIndex.x, startIndex.y]);
+                path.Add(copy[startIndex.x, startIndex.y]);
                 path.Reverse();
                 isFinding = false;
                 //

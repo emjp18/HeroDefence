@@ -5,6 +5,7 @@ using System.IO;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace BehaviorTree
 {
@@ -88,8 +89,8 @@ namespace BehaviorTree
                 }
                 else
                 {
+                   
 
-                    SetData("movementDirection", (path[(int)GetData("pathIndex")].pos - (Vector2)GetData("position")).normalized);
 
                     if (Vector2.Distance((Vector2)GetData("position"), path[(int)GetData("pathIndex")].pos) < (float)GetData("cellSize") * 0.5f)
                     {
@@ -190,6 +191,10 @@ namespace BehaviorTree
                 else
                 {
                     Vector2 goal = path[(int)GetData("pathIndex")].pos;
+                    
+
+
+                    
                     SetData("movementDirection",
                       ((goal - (Vector2)GetData("position"))).normalized);
 
@@ -215,10 +220,10 @@ namespace BehaviorTree
                 Vector2Int index;
                 index = Vector2Int.zero;
                 Vector2Int index2 = Vector2Int.zero;
+                Utility.GetAIGridIndex((Vector2)GetData("position") +
+                   ((((Vector2)GetData("position") -
+                       (Vector2)GetData("oldTarget")).normalized) * Utility.GRID_CELL_SIZE * 1), ((AStar2D)GetData("aStar")).Quadtree, ref index);
 
-                Utility.GetAIGridIndex((Vector2)GetData("position")+
-                    ((((Vector2)GetData("position") -
-                        (Vector2)GetData("oldTarget")).normalized) * Utility.GRID_CELL_SIZE*2), ((AStar2D)GetData("aStar")).Quadtree, ref index);
                 //Debug.Log(((AiGrid)GetData("grid")).GetCustomGrid()[index.x, index.y].obstacle);
                 Utility.GetAIGridIndex((Vector2)GetData("position") +
                   ((((Vector2)GetData("oldTarget") -
