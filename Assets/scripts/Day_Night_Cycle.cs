@@ -21,7 +21,7 @@ public class Day_Night_Cycle : MonoBehaviour
     [SerializeField] GameObject[] lights; // all the lights we want on when its dark
     [SerializeField] float dawnLight;
     [SerializeField] float eveningLight;
-    bool daytime = false;
+    public bool daytime = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +30,10 @@ public class Day_Night_Cycle : MonoBehaviour
     }
     private void Update()
     {
+        if (StateNameController.testnr == "Ranger")
+        {
+            daytime = true;
+        }
         if (Input.GetKeyDown(KeyCode.F))
         {
             daytime = true;
