@@ -4,7 +4,7 @@ using UnityEditor;
 
 public class DebuggingEditor : EditorWindow
 {
-    AiGrid grid;
+    AiGrid[] grid;
     [MenuItem("Window/DebuggingEditor")]
    
     public static void ShowWindow()
@@ -19,19 +19,30 @@ public class DebuggingEditor : EditorWindow
        
         if (GUILayout.Button("Fetch Grid"))
         {
-            grid = FindObjectOfType<AiGrid>();
+            grid = FindObjectsOfType<AiGrid>();
         }
-        if (GUILayout.Button("Visualize AI Nodes"))
+        if (GUILayout.Button("Visualize grid 1 AI Nodes"))
         {
-            grid.VisualizeAINodes();
+            grid[0].VisualizeAINodes();
             
         }
-        if (GUILayout.Button("Visualize Quad Tree"))
+        if (GUILayout.Button("Visualize grid 1 Quad Tree"))
         {
-            grid.VisualizeQuadNodes();
+            grid[0].VisualizeQuadNodes();
             
+        }
+        if (GUILayout.Button("Visualize grid 2 AI Nodes"))
+        {
+            grid[1].VisualizeAINodes();
+
+        }
+        if (GUILayout.Button("Visualize grid 2 Quad Tree"))
+        {
+            grid[1].VisualizeQuadNodes();
+
         }
     }
    
 
 }
+//

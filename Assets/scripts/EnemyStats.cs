@@ -4,119 +4,61 @@ using UnityEngine;
 
 public class EnemyStats
 {
-    float health;
-    float quickDamage;
-    float heavyDamage;
-    float attackRange;
     float movementSpeed;
+    float attackRangePlayer;
+    float attackRangeBuilding;
     float chasePlayerRange;
-    float chaseTargetRange;
-    float movementRestrictionRange;
-    public float Health
-    {
-        get { return health; }
-        set { health = value; }
-    }
-    public float MovementRange
-    {
-        get { return movementRestrictionRange; }
-        set { movementRestrictionRange = value; }
-    }
-    public float ChaseTargetRange
-    {
-        get { return chaseTargetRange; }
-        set { chaseTargetRange = value; }
-    }
+    
     public float ChasePlayerRange
     {
-        get { return chasePlayerRange; }
-        set { chasePlayerRange = value; }
+        get => chasePlayerRange;
+        set => chasePlayerRange = value;
     }
-    public float AttackRange
+    public float AttackBuildingRange
     {
-        get { return attackRange; }
-        set { attackRange = value; }
+        get => attackRangeBuilding;
+        set => attackRangeBuilding = value;
     }
-    public float Speed
+    public float AttackPlayerRange
     {
-        get { return movementSpeed; }
-        set { movementSpeed = value; }
+        get => attackRangePlayer;
+        set => attackRangePlayer = value;
     }
-    public float QuickDamage
+    public float MovementSpeed
     {
-        get { return quickDamage; }
-        set { quickDamage = value; }
-    }
-    public float HeavyDamage
-    {
-        get { return heavyDamage; }
-        set { heavyDamage = value; }
+        get => movementSpeed;
+        set => movementSpeed = value;
     }
     public EnemyStats(ENEMY_TYPE type)
     {
         switch(type)
         {
-
-            case ENEMY_TYPE.SWARM:
+            case ENEMY_TYPE.BASIC:
                 {
-                 
-                  
                     movementSpeed = 150;
-           
-                    break;
-                }
-            case ENEMY_TYPE.ARMY:
-                {
                     chasePlayerRange = 10;
-                 
-                    movementSpeed = 100;
-                
-                    break;
-                }
-            case ENEMY_TYPE.BOMB:
-                {
-
-                    attackRange = 2;
-                    movementSpeed = 200;
-               
                     break;
                 }
             case ENEMY_TYPE.RANGE:
                 {
-
-                    attackRange = 10;
-                    movementSpeed = 200;
-               
+                    movementSpeed = 100;
+                    chasePlayerRange = 20;
+                    break;
+                }
+            case ENEMY_TYPE.EXPLOSIVE:
+                {
+                    movementSpeed = 175;
+                    chasePlayerRange = -1;
                     break;
                 }
             case ENEMY_TYPE.BOSS:
                 {
-
-                    
                     movementSpeed = 50;
+                    chasePlayerRange = Utility.GRID_CELL_SIZE_LARGE*1.5f;
 
                     break;
                 }
-            case ENEMY_TYPE.ARMY1:
-                {
 
-                    chasePlayerRange = 10;
-
-                    movementSpeed = 200;
-             
-
-                    break;
-                }
-            case ENEMY_TYPE.BOMB1:
-                {
-
-                    chasePlayerRange = 10;
-
-                    movementSpeed = 400;
-
-
-                    break;
-                }
         }
     }
     

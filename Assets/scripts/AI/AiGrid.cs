@@ -11,50 +11,7 @@ using UnityEngine.Tilemaps;
 using static Unity.VisualScripting.Metadata;
 using static UnityEditor.PlayerSettings;
 
-public struct RectangleFloat
-{
-    public float X;
-    public float Y;
-    public float Width;
-    public float Height;
-    public static bool operator ==(RectangleFloat left, RectangleFloat right)
-    {
-        return left.Width==right.Width && left.Height==right.Height&&left.Y==right.Y&&left.X==right.X;
-    }
-    public static bool operator !=(RectangleFloat left, RectangleFloat right)
-    {
-        return left.Width != right.Width || left.Height != right.Height || left.Y != right.Y || left.X != right.X;
-    }
-    public override bool Equals(object obj)
-    {
-        var convObj = (RectangleFloat)obj;
-        return this.Width == convObj.Width && this.Height == convObj.Height && this.Y
-            == convObj.Y && this.X == convObj.X;
-    }
 
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            int hash = 1430287;
-
-            hash = hash * 7302013 ^ Width.GetHashCode();
-            hash = hash * 7302013 ^ Height.GetHashCode();
-            hash = hash * 7302013 ^ X.GetHashCode();
-            hash = hash * 7302013 ^ Y.GetHashCode();
-            return hash;
-        }
-    }
-}
-
-public struct QUAD_NODE
-{
-    public QUAD_NODE[] children;
-    public RectangleFloat bounds;
-    public bool leaf;
-    public List<Vector2Int> gridIndices;
-}
-public enum Row_Count{ONE=1, TWO=2, FOUR=4, EIGHT=8, SIXTYFOUR=64 };
 public class AiGrid : MonoBehaviour
 {
     Vector3Int tilePos;
@@ -70,7 +27,7 @@ public class AiGrid : MonoBehaviour
     [SerializeField] float cellSize = 5.0f;
     QUAD_NODE root;
     A_STAR_NODE[,] customGrid;
-    
+    [SerializeField] bool large = false;
     [SerializeField] Transform gridCenterTransform; //Use a transform to mark where the grid center should be in worldspace
                                                      // Use Integegrs
     Vector2 gridCenter;
@@ -203,9 +160,11 @@ public class AiGrid : MonoBehaviour
         root.bounds.X -= cellSize * 0.5f;
         root.bounds.Y -= cellSize * 0.5f;
         root.bounds.Width = root.bounds.Height = rows * cellSize;
-        Utility.GRID_CELL_SIZE = cellSize;
+        if(!large)
+            Utility.GRID_CELL_SIZE = cellSize;
+        else
+            Utility.GRID_CELL_SIZE_LARGE = cellSize;
 
-        //
         CreateQuadTree(ref root);
 
     }

@@ -2,163 +2,74 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ENEMY_TYPE {  SWARM,ARMY,BOMB,RANGE,BOSS, ARMY1, BOMB1  }
+public enum ENEMY_TYPE {  BASIC,EXPLOSIVE, RANGE,BOSS  }
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] Transform player;
+    [SerializeField] Transform buildingTarget;
     [SerializeField] AiGrid grid;
-    [SerializeField] List<Transform> hidePoints;
-    [SerializeField] List<Transform> hideDistancePoints;
+    [SerializeField] AiGrid bossGrid;
     [SerializeField] List<Transform> spawnPoints;
-    [SerializeField] List<Transform> targetPoints;
-    [SerializeField] int maxSwarmerAmount = 40;
-    int swarmAmountPerHidePoint;
-    [SerializeField] int maxArmyamount = 40;
-    int armyAmountPerSpawnPoint;
-    [SerializeField] int maxBombAmount = 16;
-    int bombamountperSpawn;
-    [SerializeField] int maxRangeamount = 16;
-    int rangeamountperSpawn;
-    [SerializeField] int maxArmy1amount = 10;
-    int army1AmountPerSpawn;
-    [SerializeField] int maxBomb1amount = 10;
-    int bomb1AmountPerSpawn;
+
+    [SerializeField] int enemiesBasicPerSpawn = 5;
+    [SerializeField] int explosivePerSpawn = 3;
+    [SerializeField] int rangePerSpawn = 5;
+    [SerializeField] int bossPerSpawn = 1;
     [SerializeField] List<EnemyBase> enemyPrefabTemplates;
-    List<EnemyBase> enemiesArmy = new List<EnemyBase>();
-    List<EnemyBase> enemiesSwarm = new List<EnemyBase>();
-    List<EnemyBase> enemiesBomb = new List<EnemyBase>();
+    List<EnemyBase> enemiesBasic = new List<EnemyBase>();
+    List<EnemyBase> enemiesBoss= new List<EnemyBase>();
     List<EnemyBase> enemiesRange = new List<EnemyBase>();
-    List<EnemyBase> enemiesboss = new List<EnemyBase>();
-    List<EnemyBase> enemiesarmy1s = new List<EnemyBase>();
-    List<EnemyBase> enemiesBomb1 = new List<EnemyBase>();
+    List<EnemyBase> enemiesExplosive = new List<EnemyBase>();
+    [SerializeField]  int nightphase = 0;
     public bool startNight = true;
     public bool endNight = false;
    
     private void Start()
     {
-        if(spawnPoints.Count>0)
-        {
-            army1AmountPerSpawn = maxArmy1amount / spawnPoints.Count;
-            bomb1AmountPerSpawn = maxBomb1amount / spawnPoints.Count;
-        }
+       
        
         foreach( EnemyBase enemy in enemyPrefabTemplates)
         {
             switch (enemy.Enemytype)
             {
-                case ENEMY_TYPE.SWARM:
+                case ENEMY_TYPE.BASIC:
                     {
-                        int id = 0;
-                        for (int i = 0; i < maxSwarmerAmount; i++)
+                        for(int i=0; i< enemiesBasicPerSpawn* spawnPoints.Count; i++)
                         {
-                            if (i == swarmAmountPerHidePoint * (id+1))
-                                id++;
-                            enemiesSwarm.Add(Instantiate(enemy));
-                            enemiesSwarm[i].Init( grid, swarmAmountPerHidePoint, id, hidePoints[id],
-                                hideDistancePoints[id],player);
-                            enemiesSwarm[i].gameObject.SetActive(false);
-
+                            enemiesBasic.Add(Instantiate(enemy));
+                            enemiesBasic[i].Init(grid, player, buildingTarget);
+                            enemiesBasic[i].gameObject.SetActive(false);
                         }
-
-
-                        break;
-                    }
-                case ENEMY_TYPE.ARMY:
-                    {
-                        int id = 0;
-                        for (int i = 0; i < maxArmyamount; i++)
-                        {
-                            if (i == armyAmountPerSpawnPoint * (id + 1))
-                                id++;
-                            enemiesArmy.Add(Instantiate(enemy));
-                            enemiesArmy[i].Init(grid, armyAmountPerSpawnPoint, id, hidePoints[id],
-                                hideDistancePoints[id], player);
-                            enemiesArmy[i].gameObject.SetActive(false);
-
-                        }
-
-
-                        break;
-                    }
-                case ENEMY_TYPE.BOMB:
-                    {
-                        int id = 0;
-                        for (int i = 0; i < maxBombAmount; i++)
-                        {
-                            if (i == bombamountperSpawn * (id + 1))
-                                id++;
-                            enemiesBomb.Add(Instantiate(enemy));
-                            enemiesBomb[i].Init(grid, bombamountperSpawn, id, hidePoints[id],
-                                hideDistancePoints[id], player);
-                            enemiesBomb[i].gameObject.SetActive(false);
-
-                        }
-
-
                         break;
                     }
                 case ENEMY_TYPE.RANGE:
                     {
-                        int id = 0;
-                        for (int i = 0; i < maxRangeamount; i++)
+                        for (int i = 0; i < rangePerSpawn * spawnPoints.Count; i++)
                         {
-                            if (i == rangeamountperSpawn * (id + 1))
-                                id++;
-                            enemiesRange.Add(Instantiate(enemy));
-                            enemiesRange[i].Init(grid, rangeamountperSpawn, id, hidePoints[id],
-                                hideDistancePoints[id], player);
+                           enemiesRange.Add(Instantiate(enemy));
+                            enemiesRange[i].Init(grid, player, buildingTarget);
                             enemiesRange[i].gameObject.SetActive(false);
-
                         }
-
-
+                        break;
+                    }
+                case ENEMY_TYPE.EXPLOSIVE:
+                    {
+                        for (int i = 0; i < explosivePerSpawn * spawnPoints.Count; i++)
+                        {
+                            enemiesExplosive.Add(Instantiate(enemy));
+                            enemiesExplosive[i].Init(grid, player, buildingTarget);
+                            enemiesExplosive[i].gameObject.SetActive(false);
+                        }
                         break;
                     }
                 case ENEMY_TYPE.BOSS:
                     {
-                        for(int i=0; i<4;i++ )
+                        for (int i = 0; i < bossPerSpawn * spawnPoints.Count; i++)
                         {
-                            enemiesboss.Add(Instantiate(enemy));
-                            enemiesboss[i].Init(grid, 0, 0, hidePoints[0],
-                                hideDistancePoints[0], player);
-                            enemiesboss[i].gameObject.SetActive(false);
+                            enemiesBoss.Add(Instantiate(enemy));
+                            enemiesBoss[enemiesBoss.Count-1].Init(bossGrid, player, buildingTarget);
+                            enemiesBoss[enemiesBoss.Count - 1].gameObject.SetActive(false);
                         }
-                  
-
-
-                        break;
-                    }
-                case ENEMY_TYPE.ARMY1:
-                    {
-                        for (int i = 0; i < maxArmy1amount; i++)
-                        {
-                            enemiesarmy1s.Add(Instantiate(enemy));
-                            if(i==0)
-                            {
-                                enemiesarmy1s[i].Init(grid,army1AmountPerSpawn, 0,player,true);
-                            }
-                            else
-                            {
-                                enemiesarmy1s[i].Init(grid, army1AmountPerSpawn, 0, player);
-                            }
-                            enemiesarmy1s[i].gameObject.SetActive(false);
-                        }
-
-
-
-                        break;
-                    }
-                case ENEMY_TYPE.BOMB1:
-                    {
-                        for (int i = 0; i < maxBomb1amount; i++)
-                        {
-                            enemiesBomb1.Add(Instantiate(enemy));
-                            enemiesBomb1[i].Init(grid, bomb1AmountPerSpawn, 0, player);
-                            enemiesBomb1[i].gameObject.SetActive(false);
-                        }
-
-
-
                         break;
                     }
             }
@@ -173,172 +84,100 @@ public class EnemySpawner : MonoBehaviour
     public void EndNightPhase()
     {
 
-        for (int i = 0; i < swarmAmountPerHidePoint; i++)
+       foreach (EnemyBase enemy in enemiesBasic)
         {
-            enemiesSwarm[i].gameObject.SetActive(false);
+            enemy.gameObject.SetActive(false);
         }
-        for (int i = 0; i < bombamountperSpawn; i++)
+        foreach (EnemyBase enemy in enemiesBoss)
         {
-            enemiesBomb[i].gameObject.SetActive(false);
+            enemy.gameObject.SetActive(false);
         }
-        for (int i = 0; i < armyAmountPerSpawnPoint; i++)
+        foreach (EnemyBase enemy in  enemiesExplosive)
         {
-            enemiesArmy[i].gameObject.SetActive(false);
+            enemy.gameObject.SetActive(false);
         }
-        for (int i = 0; i < rangeamountperSpawn; i++)
+        foreach (EnemyBase enemy in enemiesRange)
         {
-            enemiesRange[i].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < 4; i++)
-        {
-            enemiesboss[i].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < army1AmountPerSpawn; i++)
-        {
-            enemiesarmy1s[i].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < bomb1AmountPerSpawn; i++)
-        {
-            enemiesBomb1[i].gameObject.SetActive(false);
+            enemy.gameObject.SetActive(false);
         }
 
     }
     public void StartNightPhase()
     {
         grid.RegenerateGrid();
+        bossGrid.RegenerateGrid();
+        Utility.UpdateStaticCollision(grid);
+        Utility.UpdateStaticCollisionLarge(bossGrid);
+        int sp = spawnPoints.Count;
 
-        //if (enemiesBomb1.Count > 0)
-        //{
+        switch(nightphase)
+        {
+            case 0:
+                {
+                    for (int i = 0; i < sp; i++)
+                    {
+                        for (int j = 0; j < enemiesBasicPerSpawn; j++)
+                        {
+                            enemiesBasic[j + i * enemiesBasicPerSpawn].transform.position = spawnPoints[i].position;
+                            enemiesBasic[j + i * enemiesBasicPerSpawn].gameObject.SetActive(true);
+                            enemiesBasic[j + i * enemiesBasicPerSpawn].StartNightPhase(grid);
+                        }
 
-        //    for (int i = 0; i < bomb1AmountPerSpawn; i++)
-        //    {
+                    }
+                    break;
+                }
+            case 1:
+                {
+                    for (int i = 0; i < sp; i++)
+                    {
+                        for (int j = 0; j < bossPerSpawn; j++)
+                        {
+                            enemiesBoss[j + i * bossPerSpawn].transform.position = spawnPoints[i].position;
+                            enemiesBoss[j + i * bossPerSpawn].gameObject.SetActive(true);
+                            enemiesBoss[j + i * bossPerSpawn].StartNightPhase(bossGrid);
+                        }
 
-        //        enemiesBomb1[i].gameObject.SetActive(true);
-        //        enemiesBomb1[i].gameObject.transform.position =
-        //            (Vector2)spawnPoints[0].position;
-        //        enemiesBomb1[i].SetTarget(targetPoints[0]);
-        //        enemiesBomb1[i].StartNightPhase(grid);
+                    }
+                    break;
+                }
+            case 2:
+                {
+                    for (int i = 0; i < sp; i++)
+                    {
+                        for (int j = 0; j < rangePerSpawn; j++)
+                        {
+                            enemiesRange[j + i * rangePerSpawn].transform.position = spawnPoints[i].position;
+                            enemiesRange[j + i * rangePerSpawn].gameObject.SetActive(true);
+                            enemiesRange[j + i * rangePerSpawn].StartNightPhase(grid);
+                        }
 
+                    }
+                    break;
+                }
+            case 3:
+                {
+                    for (int i = 0; i < sp; i++)
+                    {
+                        for (int j = 0; j < explosivePerSpawn; j++)
+                        {
+                            enemiesExplosive[j + i * explosivePerSpawn].transform.position = spawnPoints[i].position;
+                            enemiesExplosive[j + i * explosivePerSpawn].gameObject.SetActive(true);
+                            enemiesExplosive[j + i * explosivePerSpawn].StartNightPhase(grid);
+                        }
 
-
-        //    }
-        //}
-
-
-
-
-        //for(int j=0; j<hidePoints.Count; j++)
-        //{
-        //    if(spawnRange==false&&spawnBomb==false&&spawnBoss==false)
-        //    {
-        //        for (int i = 0; i < swarmAmountPerHidePoint; i++)
-        //        {
-
-        //            enemiesSwarm[i + (swarmAmountPerHidePoint * j)].gameObject.SetActive(true);
-        //            enemiesSwarm[i + (swarmAmountPerHidePoint * j)].gameObject.transform.position =
-        //                (Vector2)hidePoints[j].position;
-
-        //            enemiesSwarm[i + (swarmAmountPerHidePoint * j)].StartNightPhase(grid);
-
-
-
-        //        }
-
-        //    }
-        //    else if(spawnRange == true&&spawnBomb==false && spawnBoss == false)
-        //    {
-        //        for (int i = 0; i < rangeamountperSpawn; i++)
-        //        {
-
-        //            enemiesRange[i + (rangeamountperSpawn * j)].gameObject.SetActive(true);
-        //            enemiesRange[i + (rangeamountperSpawn * j)].gameObject.transform.position =
-        //                (Vector2)hidePoints[j].position + Random.insideUnitCircle.normalized * i;
-
-        //            enemiesRange[i + (rangeamountperSpawn * j)].SetTarget(targetPoints[j]);
-        //            enemiesRange[i + (rangeamountperSpawn * j)].StartNightPhase(grid);
-        //            enemiesRange[i + (rangeamountperSpawn * j)].eStats().Speed =
-        //              enemiesRange[i + (rangeamountperSpawn * j)].eStats().Speed + Random.Range(-30, 30);
-
-        //        }
-        //    }
-        //    else if (spawnRange ==false && spawnBomb == true && spawnBoss == false)
-        //    {
-        //        for (int i = 0; i < bombamountperSpawn; i++)
-        //        {
-
-
-        //            enemiesBomb[i + (bombamountperSpawn * j)].gameObject.SetActive(true);
-        //            enemiesBomb[i + (bombamountperSpawn * j)].gameObject.transform.position =
-        //                (Vector2)hidePoints[j].position + Random.insideUnitCircle.normalized * i;
-
-
-
-        //            enemiesBomb[i + (bombamountperSpawn * j)].SetTarget(targetPoints[j]);
-        //            enemiesBomb[i + (bombamountperSpawn * j)].StartNightPhase(grid);
-        //            enemiesBomb[i + (bombamountperSpawn * j)].eStats().Speed =
-        //                 enemiesBomb[i + (bombamountperSpawn * j)].eStats().Speed + Random.Range(-30, 30);
-
-        //        }
-        //    }
+                    }
+                    break;
+                }
+        }
 
 
-
-
-        //}
-        //    for (int j = 0; j < spawnPoints.Count; j++)
-        //    {
-        //        Vector2 dir = (targetPoints[j].position - spawnPoints[j].position).normalized;
-        //        dir *= -1;
-        //        if(enemiesarmy1s.Count>0)
-        //        {
-        //            for (int i = 0; i < army1AmountPerSpawn; i++)
-        //            {
-
-        //                enemiesarmy1s[i + (army1AmountPerSpawn * j)].gameObject.SetActive(true);
-        //                enemiesarmy1s[i + (army1AmountPerSpawn * j)].gameObject.transform.position =
-        //                    (Vector2)spawnPoints[j].position + dir * i;
-        //                enemiesarmy1s[i + (army1AmountPerSpawn * j)].SetTarget(targetPoints[j]);
-        //                enemiesarmy1s[i + (army1AmountPerSpawn * j)].StartNightPhase(grid);
-
-
-
-        //            }
-        //        }
-        //        
-        //    }
+       
 
     }
 
 
     private void Update()
     {
-        //int index = -1;
-        //for (int i = 1; i < army1AmountPerSpawn; i++)
-        //{
-        //    if((enemiesarmy1s[i] as Army1).GetIsAttacking())
-        //    {
-        //        index = i;
-        //        break;
-        //    }
-          
-        //}
-        //int c = 0;
-        //for (int i = 1; i < army1AmountPerSpawn; i++)
-        //{
-        //    if (i == index)
-        //        continue;
-        //    if (index>=0)
-        //    {
-        //        (enemiesarmy1s[i] as Army1).SetLeader(enemiesarmy1s[index].transform.position);
-        //        (enemiesarmy1s[i] as Army1).SetIsAttacking(true);
-        //        c++;
-        //    }
-        //    else
-        //    {
-        //        (enemiesarmy1s[i] as Army1).SetIsAttacking(false);
-        //    }
-
-        //}
         
         if (startNight)
         {

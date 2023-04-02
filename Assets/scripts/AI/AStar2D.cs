@@ -82,6 +82,8 @@ public class AStar2D
     {
         return (int)MathF.Abs(nodeA.pos.x - nodeB.pos.x) + (int)MathF.Abs(nodeA.pos.y - nodeB.pos.y);
     }
+
+  
     public void FindPath(Vector2Int startIndex, Vector2Int endIndex, int maxiumNodes)
     {
         if(resetPath)

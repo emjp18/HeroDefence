@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public struct FlockWeights
 {
@@ -18,41 +19,30 @@ public struct FlockWeights
 public abstract class EnemyBase : MonoBehaviour
 {
     [SerializeField] ENEMY_TYPE type;
-   Ray ray = new Ray();
     protected Animator anim;
     protected Vector2 movementDirection = Vector2.zero;
     protected Rigidbody2D rb;
+    protected BoxCollider2D box;
     protected Root root;
     protected EnemyStats stats;
-    protected FlockWeights flockweights;
     protected Transform buildingTarget;
     protected int flockID;
     protected Vector2 avoidanceForce = Vector2.zero;
+    protected Vector2 avoidanceForceEnemies = Vector2.zero;
+    protected Transform player;
+    protected AStar2D pathfinding;
     private void FixedUpdate()
     {
-        if(this as Bomb1 != null)
-        {
-            if((bool)(this as Bomb1).root.GetData("raycast"))
-            {
-                ray.direction = movementDirection.normalized;
-                ray.origin = transform.position;
-                if (!Physics.Raycast(ray, (float)(this as Bomb1).root.GetData("playerDistance"), 7 ))
-                {
-                    (this as Bomb1).root.SetData("reset", true);
-                   
-                }
-
-                 (this as Bomb1).root.SetData("raycast", false);
-            }
-        }
-
-        rb.velocity = movementDirection.normalized * stats.Speed * Time.fixedDeltaTime
-            + (avoidanceForce.normalized * Utility.GRID_CELL_SIZE*2* stats.Speed * Time.fixedDeltaTime);
+       
+        rb.velocity = movementDirection.normalized * stats.MovementSpeed * Time.fixedDeltaTime
+            + (avoidanceForce.normalized * Utility.GRID_CELL_SIZE*2* stats.MovementSpeed * Time.fixedDeltaTime
+             + (avoidanceForceEnemies.normalized * box.size.x*0.3f * stats.MovementSpeed * Time.fixedDeltaTime));
 
         avoidanceForce = Vector2.zero;
+        avoidanceForceEnemies = Vector2.zero;
     }
-    public void SetTarget(Transform target) { buildingTarget = target; }
-    public abstract void Init(AiGrid grid, int flockamount, int flockID, Transform player, bool flockLeader = false, Transform hidePoint = null,
+
+    public abstract void Init(AiGrid grid,  Transform player,Transform building, int flockamount=0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null,
         Transform movementRangePoint = null);
 
     public abstract void StartNightPhase(AiGrid grid);
@@ -79,6 +69,24 @@ public abstract class EnemyBase : MonoBehaviour
     {
         return ref stats;
     }
-    
-    
+    protected void AvoidNearbyEnemies()
+    {
+        
+        var colliders = Physics2D.OverlapCircleAll(transform.position, box.size.x*0.5f);
+        Vector2 separate = Vector2.zero;
+       foreach(Collider2D collision in colliders)
+        {
+            if (collision.gameObject.layer != 6)
+                continue;
+
+          
+            separate += ((Vector2)transform.position - (Vector2)collision.gameObject.transform.position).normalized;
+        }
+     
+        avoidanceForceEnemies = separate;
+        Vector2 vel = rb.velocity;
+        Vector2.SmoothDamp(avoidanceForceEnemies, separate, ref vel, 0.3f);
+    }
+
+
 }

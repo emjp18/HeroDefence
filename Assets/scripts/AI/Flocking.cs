@@ -107,7 +107,7 @@ public abstract class FlockBehaviour
         get => separationObstWeight;
         set => separationObstWeight = value;
     }
-   
+   //
     public void UpdateGrid(AiGrid grid)
     {
         this.grid = grid;
