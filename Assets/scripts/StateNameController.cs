@@ -11,4 +11,11 @@ public class StateNameController : MonoBehaviour
     {
         //script.daytime = true;
     }
+    private void Update()
+    {
+        if (script.daytime==false)
+        {
+            FindObjectOfType<AudioManager>().Play("DayMusic");
+        }
+    }
 }
