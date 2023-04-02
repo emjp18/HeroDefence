@@ -16,10 +16,12 @@ namespace BehaviorTree
         {
             if ((bool)GetData("withinAttackRange") || !(bool)GetData("idle"))
             {
-
                 return NodeState.FAILURE;
             }
             SetData("movementDirection", Vector2.zero);
+            SetData("attacking", false);
+            SetData("moving", false);
+      
             return NodeState.RUNNING;
         }
     }
@@ -32,19 +34,10 @@ namespace BehaviorTree
         {
             if (!(bool)GetData("withinAttackRange"))
             {
-
+                time = 0;
                 return NodeState.FAILURE;
             }
-            if ((float)GetData("attackDelay") > time)
-            {
-                ((Animator)GetData("animator")).SetBool("attacking", false);
-                time += Time.deltaTime;
-            }
-            else
-            {
-                time = 0;
-                ((Animator)GetData("animator")).SetBool("attacking", true);
-            }
+            SetData("attacking", true);
             return NodeState.RUNNING;
         }
     }
@@ -58,15 +51,17 @@ namespace BehaviorTree
 
                 return NodeState.FAILURE;
             }
-
+            SetData("attacking", false);
             if ((float)GetData("health") <= 0)
             {
-                ((Animator)GetData("animator")).SetBool("dead", true);
+                SetData("hurt", false);
+              
 
             }
             else
             {
-                ((Animator)GetData("animator")).SetBool("hurt", true);
+                SetData("hurt", true);
+          
                 SetData("oldHealth", GetData("health"));
             }
 
@@ -82,22 +77,26 @@ namespace BehaviorTree
     
         public override NodeState Evaluate()
         {
-            
-            if ((bool)GetData("withinAttackRange"))
+         //   
+            if ((bool)GetData("withinAttackRange") || (bool)GetData("idle"))
             {
+                SetData("moving", false);
                 SetData("movementDirection", Vector2.zero);
                   pathIndex = 0;
                  ((AStar2D)GetData("aStar")).ResetPath();
-         
+               
                 return NodeState.FAILURE;
             }
+            SetData("moving", true);
+            SetData("attacking", false);
             if (((AStar2D)GetData("aStar")).GetPathFound())
             {
+                SetData("checkCollision", true);
                 var path = ((AStar2D)GetData("aStar")).GetPath();
-             
+              
                 if (pathIndex >= path.Count || (bool)GetData("reset"))
                 {
-                   
+                  
                     pathIndex = 0;
                     ((AStar2D)GetData("aStar")).ResetPath();
 
@@ -105,8 +104,8 @@ namespace BehaviorTree
                 else
                 {
                     Vector2 goal = path[pathIndex].pos;
-                    
 
+                    
 
                     
                     SetData("movementDirection",
@@ -117,7 +116,7 @@ namespace BehaviorTree
                         (float)GetData("cellSize")*0.5f)
                     {
                         pathIndex++;
-
+                      
 
                     }
 
@@ -126,21 +125,30 @@ namespace BehaviorTree
             }
             else if ((bool)GetData("newPath")) 
             {
-           
-     
-              
 
+                
                 Vector2Int index;
                 index = Vector2Int.zero;
                 Vector2Int index2 = Vector2Int.zero;
-
-                Utility.GetAIGridIndex((Vector2)GetData("position") +
-    ((((Vector2)GetData("position") -
-        (Vector2)GetData("oldTarget")).normalized) * Utility.GRID_CELL_SIZE * 1), ((AStar2D)GetData("aStar")).Quadtree, ref index);
-
-                Utility.GetAIGridIndex((Vector2)GetData("position") +
-                  ((((Vector2)GetData("oldTarget") -
-                        (Vector2)GetData("position")).normalized) * Utility.GRID_CELL_SIZE), ((AStar2D)GetData("aStar")).Quadtree, ref index2);
+                if((ENEMY_TYPE)(GetData("type"))!=ENEMY_TYPE.BOSS)
+                {
+                    Utility.GetAIGridIndex((Vector2)GetData("position") +
+((((Vector2)GetData("position") -
+  (Vector2)GetData("oldTarget")).normalized) * Utility.GRID_CELL_SIZE * 1), ((AStar2D)GetData("aStar")).Quadtree, ref index);
+                    Utility.GetAIGridIndex((Vector2)GetData("position") +
+            ((((Vector2)GetData("oldTarget") -
+                  (Vector2)GetData("position")).normalized) * Utility.GRID_CELL_SIZE), ((AStar2D)GetData("aStar")).Quadtree, ref index2);
+                }
+                else
+                {
+                    Utility.GetAIGridIndex((Vector2)GetData("position") +
+((((Vector2)GetData("position") -
+  (Vector2)GetData("oldTarget")).normalized) * Utility.GRID_CELL_SIZE_LARGE * 1), ((AStar2D)GetData("aStar")).Quadtree, ref index);
+                    Utility.GetAIGridIndex((Vector2)GetData("position") +
+            ((((Vector2)GetData("oldTarget") -
+                  (Vector2)GetData("position")).normalized) * Utility.GRID_CELL_SIZE_LARGE), ((AStar2D)GetData("aStar")).Quadtree, ref index2);
+                }
+          
                 int x = 0;
                 while (((AiGrid)GetData("grid")).GetCustomGrid()[index2.x, index2.y].obstacle)
                 {
@@ -229,7 +237,11 @@ namespace BehaviorTree
                 SetData("movementDirection",
                     ((((Vector2)GetData("targetPosition")) - (Vector2)GetData("position")).normalized));
 
-            
+            if(!(bool)GetData("checkCollision"))
+                {
+                    SetData("reachable", false);
+
+                }
                     SetData("checkCollision", true);
 
 

@@ -131,7 +131,7 @@ public class AStar2D
            
             if (current.pos.x == end.pos.x && current.pos.y == end.pos.y)
             {
-                pathFound = true;
+                
             
 
 
@@ -145,15 +145,18 @@ public class AStar2D
                         break;
                     
                     path.Add(copy[index.x, index.y]);
+                    
                     index = copy[index.x, index.y].prevIndex;
+
                     
 
-
                 }
-               
-               
-                path.Add(copy[startIndex.x, startIndex.y]);
+
+
+              
                 path.Reverse();
+             
+                pathFound = true;
                 isFinding = false;
                 //
                 return;

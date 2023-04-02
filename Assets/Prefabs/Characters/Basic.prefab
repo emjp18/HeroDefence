@@ -129,7 +129,7 @@ Rigidbody2D:
   m_Mass: 1.6961062
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -145,7 +145,7 @@ Animator:
   m_GameObject: {fileID: 6366727717555014584}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 294d2c145fb7f7749b20fc66d6582730, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7d77a20cbd0630840b610b5e1ecb4f0e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6366727717555014584}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40a4ebbb753e0454a9e0f038f22f4526, type: 3}
+  m_Script: {fileID: 11500000, guid: 3613c688e48249e4db5ce80de72b38f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0

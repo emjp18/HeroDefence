@@ -8,7 +8,12 @@ public class EnemyStats
     float attackRangePlayer;
     float attackRangeBuilding;
     float chasePlayerRange;
-    
+    float health;
+    public float Health
+    {
+        get => health;
+        set => health = value;
+    }
     public float ChasePlayerRange
     {
         get => chasePlayerRange;
@@ -37,28 +42,31 @@ public class EnemyStats
                 {
                     movementSpeed = 150;
                     chasePlayerRange = 10;
+                    health = 50;
                     break;
                 }
             case ENEMY_TYPE.RANGE:
                 {
                     movementSpeed = 100;
                     chasePlayerRange = 20;
+                    health = 50;
                     break;
                 }
             case ENEMY_TYPE.EXPLOSIVE:
                 {
                     movementSpeed = 175;
                     chasePlayerRange = -1;
+                    health = 50;
                     break;
                 }
             case ENEMY_TYPE.BOSS:
                 {
                     movementSpeed = 50;
                     chasePlayerRange = Utility.GRID_CELL_SIZE_LARGE*1.5f;
-
+                    health = 100;
                     break;
                 }
-
+            
         }
     }
     

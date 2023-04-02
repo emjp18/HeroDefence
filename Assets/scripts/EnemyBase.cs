@@ -31,12 +31,22 @@ public abstract class EnemyBase : MonoBehaviour
     protected Vector2 avoidanceForceEnemies = Vector2.zero;
     protected Transform player;
     protected AStar2D pathfinding;
+    protected SpriteRenderer spriteRend;
     private void FixedUpdate()
     {
-       
-        rb.velocity = movementDirection.normalized * stats.MovementSpeed * Time.fixedDeltaTime
-            + (avoidanceForce.normalized * Utility.GRID_CELL_SIZE*2* stats.MovementSpeed * Time.fixedDeltaTime
-             + (avoidanceForceEnemies.normalized * box.size.x*0.3f * stats.MovementSpeed * Time.fixedDeltaTime));
+       if(this as Boss!=null)
+        {
+            rb.velocity = movementDirection.normalized * stats.MovementSpeed * Time.fixedDeltaTime
+            + (avoidanceForce.normalized * Utility.GRID_CELL_SIZE_LARGE *2* stats.MovementSpeed * Time.fixedDeltaTime
+             + (avoidanceForceEnemies.normalized * box.size.x * 0.3f * stats.MovementSpeed * Time.fixedDeltaTime));
+        }
+       else
+        {
+            rb.velocity = movementDirection.normalized * stats.MovementSpeed * Time.fixedDeltaTime
+            + (avoidanceForce.normalized * Utility.GRID_CELL_SIZE * 2 * stats.MovementSpeed * Time.fixedDeltaTime
+             + (avoidanceForceEnemies.normalized * box.size.x * 0.3f * stats.MovementSpeed * Time.fixedDeltaTime));
+        }
+        
 
         avoidanceForce = Vector2.zero;
         avoidanceForceEnemies = Vector2.zero;
