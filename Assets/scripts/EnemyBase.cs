@@ -19,6 +19,7 @@ public struct FlockWeights
 public abstract class EnemyBase : MonoBehaviour
 {
     [SerializeField] ENEMY_TYPE type;
+    [SerializeField] GameObject hitBody;
     protected Animator anim;
     protected Vector2 movementDirection = Vector2.zero;
     protected Rigidbody2D rb;
@@ -32,6 +33,8 @@ public abstract class EnemyBase : MonoBehaviour
     protected Transform player;
     protected AStar2D pathfinding;
     protected SpriteRenderer spriteRend;
+    protected bool hit = false;
+    protected float hitTime = 0;
     private void FixedUpdate()
     {
        if(this as Boss!=null)
@@ -50,6 +53,22 @@ public abstract class EnemyBase : MonoBehaviour
 
         avoidanceForce = Vector2.zero;
         avoidanceForceEnemies = Vector2.zero;
+
+
+        if(hit)
+        {
+
+            
+            hitBody.SetActive(true);
+            hitBody.GetComponent<Rigidbody2D>().velocity =((player.position-transform.position).normalized * 100* Time.fixedDeltaTime);
+
+
+        }
+        else
+        {
+            hitBody.transform.position = transform.position;
+            hitBody.SetActive(false);
+        }
     }
 
     public abstract void Init(AiGrid grid,  Transform player,Transform building, int flockamount=0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null,
@@ -69,7 +88,11 @@ public abstract class EnemyBase : MonoBehaviour
     {
         get { return type; }
     }
-    
+    public bool Hit
+    {
+        get => hit;
+        set => hit = value;
+    }
     public int FlockID
     {
         get => flockID;
@@ -78,6 +101,10 @@ public abstract class EnemyBase : MonoBehaviour
     public ref EnemyStats eStats()
     {
         return ref stats;
+    }
+    protected ref GameObject HitObject()
+    {
+        return ref hitBody;
     }
     protected void AvoidNearbyEnemies()
     {

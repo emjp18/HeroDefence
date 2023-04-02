@@ -146,6 +146,7 @@ public class Basic : EnemyBase
             spriteRend.flipX = false;
 
         root.Evaluate();
+        
     }
 
     public override void Init(AiGrid grid, Transform player, Transform building,
@@ -162,6 +163,6 @@ public class Basic : EnemyBase
         stats.AttackBuildingRange = Utility.GRID_CELL_SIZE * 2.5f;
         box = GetComponent<BoxCollider2D>();
         spriteRend = GetComponent<SpriteRenderer>();
-        
+        HitObject().SetActive(false);
     }
 }

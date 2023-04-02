@@ -4,12 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Swarm
-  - Army
-  - Boss
-  - Range
-  - Bomb
-  - destructable
+  - EnemyAttack
   layers:
   - Default
   - TransparentFX
@@ -20,8 +15,8 @@ TagManager:
   - EnemyWithPhysics
   - Sprite Obstacles
   - NPC
-  - EnemyWithNoPhysics
   - 
+  - HitBody
   - 
   - 
   - 
