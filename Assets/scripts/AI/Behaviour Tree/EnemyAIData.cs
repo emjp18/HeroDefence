@@ -9,7 +9,72 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace BehaviorTree
 {
-    
+    public class Idle : Node
+    {
+        public Idle() : base() { }
+        public override NodeState Evaluate()
+        {
+            if ((bool)GetData("withinAttackRange") || !(bool)GetData("idle"))
+            {
+
+                return NodeState.FAILURE;
+            }
+            SetData("movementDirection", Vector2.zero);
+            return NodeState.RUNNING;
+        }
+    }
+    public class Attack : Node
+    {
+        float time = 0;
+
+        public Attack() : base() { }
+        public override NodeState Evaluate()
+        {
+            if (!(bool)GetData("withinAttackRange"))
+            {
+
+                return NodeState.FAILURE;
+            }
+            if ((float)GetData("attackDelay") > time)
+            {
+                ((Animator)GetData("animator")).SetBool("attacking", false);
+                time += Time.deltaTime;
+            }
+            else
+            {
+                time = 0;
+                ((Animator)GetData("animator")).SetBool("attacking", true);
+            }
+            return NodeState.RUNNING;
+        }
+    }
+    public class TakeDamage : Node
+    {
+        public TakeDamage() : base() { }
+        public override NodeState Evaluate()
+        {
+            if ((float)GetData("health") == (float)GetData("oldHealth"))
+            {
+
+                return NodeState.FAILURE;
+            }
+
+            if ((float)GetData("health") <= 0)
+            {
+                ((Animator)GetData("animator")).SetBool("dead", true);
+
+            }
+            else
+            {
+                ((Animator)GetData("animator")).SetBool("hurt", true);
+                SetData("oldHealth", GetData("health"));
+            }
+
+            return NodeState.RUNNING;
+
+        }
+    }
+
     public class Chase : Node
     {
         public Chase() : base() { }
