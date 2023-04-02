@@ -36,6 +36,9 @@ public class Boss : EnemyBase
         root.SetData("newPath", false);
         root.SetData("reset", false);
         root.SetData("grid", grid);
+        root.SetData("health", stats.);
+        root.SetData("boss", true);
+        root.SetData("boss", true);
         root.SetData("boss", true);
     }
 
