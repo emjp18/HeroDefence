@@ -19,6 +19,43 @@ public class PlayerMovement : MonoBehaviour
         animatorWarrior.SetFloat("Horizontal", movement.x);
         animatorWarrior.SetFloat("Vertical", movement.y);
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            FindObjectOfType<AudioManager>().Play("Steps");
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            FindObjectOfType<AudioManager>().Play("Steps");
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            FindObjectOfType<AudioManager>().Play("Steps");
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            FindObjectOfType<AudioManager>().Play("Steps");
+        }
+        if (Input.GetKeyUp(KeyCode.D)) 
+        {
+            FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        }
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        }
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        }
+        //if (Input.GetKeyUp(KeyCode.A))
+        //{
+        //    FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        //}
+
         if (Input.GetMouseButtonDown(0))
         {
             animatorWarrior.SetBool("Attack",true);
