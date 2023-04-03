@@ -106,7 +106,7 @@ public class PlayerInteract : MonoBehaviour, IShopCustomer
         }
         else
         {
-            Debug.Log("du är fattig neiger");
+            Debug.Log("du är fattig");
             return false;
         }
     }
