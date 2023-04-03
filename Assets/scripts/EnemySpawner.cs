@@ -10,7 +10,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] AiGrid grid;
     [SerializeField] AiGrid bossGrid;
     [SerializeField] List<Transform> spawnPoints;
-
+    [SerializeField] GameObject hitObject;
     [SerializeField] int enemiesBasicPerSpawn = 5;
     [SerializeField] int explosivePerSpawn = 3;
     [SerializeField] int rangePerSpawn = 5;
@@ -26,7 +26,7 @@ public class EnemySpawner : MonoBehaviour
    
     private void Start()
     {
-       
+
        
         foreach( EnemyBase enemy in enemyPrefabTemplates)
         {
@@ -37,7 +37,7 @@ public class EnemySpawner : MonoBehaviour
                         for(int i=0; i< enemiesBasicPerSpawn* spawnPoints.Count; i++)
                         {
                             enemiesBasic.Add(Instantiate(enemy));
-                            enemiesBasic[i].Init(grid, player, buildingTarget);
+                            enemiesBasic[i].Init(grid, player, buildingTarget,Instantiate(hitObject));
                             enemiesBasic[i].gameObject.SetActive(false);
                         }
                         break;
@@ -47,7 +47,7 @@ public class EnemySpawner : MonoBehaviour
                         for (int i = 0; i < rangePerSpawn * spawnPoints.Count; i++)
                         {
                            enemiesRange.Add(Instantiate(enemy));
-                            enemiesRange[i].Init(grid, player, buildingTarget);
+                            enemiesRange[i].Init(grid, player, buildingTarget, Instantiate(hitObject));
                             enemiesRange[i].gameObject.SetActive(false);
                         }
                         break;
@@ -57,7 +57,7 @@ public class EnemySpawner : MonoBehaviour
                         for (int i = 0; i < explosivePerSpawn * spawnPoints.Count; i++)
                         {
                             enemiesExplosive.Add(Instantiate(enemy));
-                            enemiesExplosive[i].Init(grid, player, buildingTarget);
+                            enemiesExplosive[i].Init(grid, player, buildingTarget, Instantiate(hitObject));
                             enemiesExplosive[i].gameObject.SetActive(false);
                         }
                         break;
@@ -67,13 +67,14 @@ public class EnemySpawner : MonoBehaviour
                         for (int i = 0; i < bossPerSpawn * spawnPoints.Count; i++)
                         {
                             enemiesBoss.Add(Instantiate(enemy));
-                            enemiesBoss[enemiesBoss.Count-1].Init(bossGrid, player, buildingTarget);
+                            enemiesBoss[enemiesBoss.Count-1].Init(bossGrid, player, buildingTarget,
+                                Instantiate(hitObject));
                             enemiesBoss[enemiesBoss.Count - 1].gameObject.SetActive(false);
                         }
                         break;
                     }
             }
-
+            hitObject.SetActive(false);
             enemy.gameObject.SetActive(false);
         }
         

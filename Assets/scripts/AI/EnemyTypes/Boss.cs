@@ -120,7 +120,7 @@ public class Boss : EnemyBase
             if (jitteringTestTime >= jitteringTestTimeDelay)
             {
                 jitteringTestTime = 0;
-                if (Vector2.Distance((Vector2)transform.position, oldPosition) <= Utility.GRID_CELL_SIZE_LARGE)
+                if (Vector2.Distance((Vector2)transform.position, oldPosition) <= Utility.GRID_CELL_SIZE_LARGE*0.25f)
                 {
                     root.SetData("idle", true);
                 }
@@ -146,9 +146,10 @@ public class Boss : EnemyBase
         root.Evaluate();
     }
 
-    public override void Init(AiGrid grid, Transform player, Transform building,
-        int flockamount = 0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null, Transform movementRangePoint = null)
+    public override void Init(AiGrid grid, Transform player, Transform building, GameObject hitbody, int flockamount = 0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null,
+        Transform movementRangePoint = null)
     {
+        HitObject() = hitbody;
         pathfinding = new AStar2D(grid);
         this.player = player;
         this.buildingTarget = building;
@@ -156,10 +157,12 @@ public class Boss : EnemyBase
         root = new Root(new List<Node> { new Chase(), new Attack(), new TakeDamage(), new Idle() });
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.x * 0.75f;
+        stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.y * 1;
         stats.AttackBuildingRange = Utility.GRID_CELL_SIZE_LARGE * 1.5f;
         box = GetComponent<BoxCollider2D>();
         spriteRend = GetComponent<SpriteRenderer>();
-
+        HitObject().transform.localScale = Vector2.one * 4;
+        //HitObject().GetComponent<Rigidbody2D>().mass = HitObject().GetComponent<Rigidbody2D>().mass * 4;
+        HitObject().SetActive(false);
     }
 }

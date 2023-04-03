@@ -19,7 +19,7 @@ public struct FlockWeights
 public abstract class EnemyBase : MonoBehaviour
 {
     [SerializeField] ENEMY_TYPE type;
-    [SerializeField] GameObject hitBody;
+    GameObject hitBody;
     protected Animator anim;
     protected Vector2 movementDirection = Vector2.zero;
     protected Rigidbody2D rb;
@@ -35,6 +35,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected SpriteRenderer spriteRend;
     protected bool hit = false;
     protected float hitTime = 0;
+    protected float hitTimeDelay = 1.1f;
     private void FixedUpdate()
     {
        if(this as Boss!=null)
@@ -58,20 +59,38 @@ public abstract class EnemyBase : MonoBehaviour
         if(hit)
         {
 
-            
-            hitBody.SetActive(true);
-            hitBody.GetComponent<Rigidbody2D>().velocity =((player.position-transform.position).normalized * 100* Time.fixedDeltaTime);
+            if(hitTime>hitTimeDelay)
+            {
+                hitTime = 0;
+                if (!hitBody.activeSelf)
+                {
+                    hitBody.SetActive(true);
+                    hitBody.transform.position = transform.position;
 
+                }
+
+                hitBody.GetComponent<disappearOnHit>().Vel
+                    = (((Vector2)root.GetData("targetPosition") - (Vector2)transform.position).normalized * stats.MovementSpeed * 2.5f
+                    );
+            }
+            else
+            {
+                hitTime += Time.fixedDeltaTime;
+            }
+            
+            if((hitBody.transform.position-transform.position).magnitude>box.size.x)
+                hitBody.SetActive(false);
 
         }
         else
         {
-            hitBody.transform.position = transform.position;
             hitBody.SetActive(false);
+            hitBody.GetComponent<disappearOnHit>().Vel = Vector2.zero;
+            
         }
     }
 
-    public abstract void Init(AiGrid grid,  Transform player,Transform building, int flockamount=0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null,
+    public abstract void Init(AiGrid grid,  Transform player,Transform building,GameObject hitbody, int flockamount=0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null,
         Transform movementRangePoint = null);
 
     public abstract void StartNightPhase(AiGrid grid);

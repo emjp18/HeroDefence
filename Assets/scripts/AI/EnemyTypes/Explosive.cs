@@ -137,8 +137,8 @@ public class Explosive : EnemyBase
         root.Evaluate();
     }
 
-    public override void Init(AiGrid grid, Transform player, Transform building,
-        int flockamount = 0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null, Transform movementRangePoint = null)
+    public override void Init(AiGrid grid, Transform player, Transform building, GameObject hitbody, int flockamount = 0, int flockID = 0, bool flockLeader = false, Transform hidePoint = null,
+        Transform movementRangePoint = null)
     {
         pathfinding = new AStar2D(grid);
         this.player = player;

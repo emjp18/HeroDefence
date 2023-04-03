@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
         if(collision.gameObject.tag=="EnemyAttack")
         {
             health -= 1;
-            Debug.Log("sdgds");
+           
         }
     }
     void Update()
