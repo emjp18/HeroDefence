@@ -157,7 +157,7 @@ public class Boss : EnemyBase
         root = new Root(new List<Node> { new Chase(), new Attack(), new TakeDamage(), new Idle() });
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.y * 1;
+        stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.y * 2;
         stats.AttackBuildingRange = Utility.GRID_CELL_SIZE_LARGE * 1.5f;
         box = GetComponent<BoxCollider2D>();
         spriteRend = GetComponent<SpriteRenderer>();

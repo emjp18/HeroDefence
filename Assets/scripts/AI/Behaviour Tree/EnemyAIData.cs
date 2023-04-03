@@ -28,7 +28,6 @@ namespace BehaviorTree
     public class Attack : Node
     {
         float time = 0;
-
         public Attack() : base() { }
         public override NodeState Evaluate()
         {
@@ -37,6 +36,7 @@ namespace BehaviorTree
                 time = 0;
                 return NodeState.FAILURE;
             }
+            Debug.Log("Attack");
             SetData("attacking", true);
             return NodeState.RUNNING;
         }

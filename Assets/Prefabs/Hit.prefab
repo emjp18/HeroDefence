@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2557562661259718142}
   - component: {fileID: -2176847825433211588}
   - component: {fileID: 6977215213103910748}
-  - component: {fileID: 6275760227351344015}
+  - component: {fileID: 1957561905877871103}
   m_Layer: 10
   m_Name: Hit
   m_TagString: Untagged
@@ -124,7 +124,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6275760227351344015
+--- !u!114 &1957561905877871103
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,6 +133,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 493681420103463310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60b2359f4d5200e4aa81479d5ccc24a6, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e215a39ace03cd43b804a4c8a4054be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

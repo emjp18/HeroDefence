@@ -6,23 +6,34 @@ public class ShopTriggerCollider : MonoBehaviour
 {
 
     [SerializeField] private UI_Shop uiShop;
+    bool insideRange=false;
+    IShopCustomer range;
 
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        IShopCustomer shopCustomer = collider.GetComponent<IShopCustomer>();
-        if(shopCustomer != null)
+        range = collider.GetComponent<IShopCustomer>();
+        if(range != null )
         {
-            uiShop.Show(shopCustomer);
+            
+            insideRange = true;
         }
-    }
 
+    }
+    private void Update()
+    {
+            if (insideRange&& Input.GetKeyDown(KeyCode.R))
+            {
+            uiShop.Show(range);
+            }
+    }
     private void OnTriggerExit2D(Collider2D collider)
     {
         IShopCustomer shopCustomer = collider.GetComponent<IShopCustomer>();
         if(shopCustomer != null)
         {
             uiShop.Hide();
+            insideRange = false;
         }
     }
 
