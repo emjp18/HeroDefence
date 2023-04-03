@@ -9,13 +9,20 @@ public class StateNameController : MonoBehaviour
     public Day_Night_Cycle script;
     private void Start()
     {
-        //script.daytime = true;
+        
     }
     private void Update()
     {
         if (script.daytime==false)
         {
             FindObjectOfType<AudioManager>().Play("DayMusic");
+        }
+
+        if (testnr == "Warrior")
+        {
+            //script.daytime = true;
+            FindObjectOfType<AudioManager>().Play("MenuMusic");
+            
         }
     }
 }

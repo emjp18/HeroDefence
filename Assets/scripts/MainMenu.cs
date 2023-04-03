@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         SceneManager.LoadScene("PrototypeV1");
+        FindObjectOfType<AudioManager>().StopPlaying("MenuMusic");
 
     }
     public void ClassSelection(string test )

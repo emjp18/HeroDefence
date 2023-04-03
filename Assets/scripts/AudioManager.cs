@@ -20,15 +20,22 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         foreach(Sound s in sounds)
         {
             DontDestroyOnLoad(gameObject);
             s.source=gameObject.AddComponent<AudioSource>();
             s.source.clip = s.clip;
-
             s.source.loop= s.loop;
         }
-
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            Play("MenuMusic");
+        }
+        if(SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            StopPlaying("MenuMusic");
+        }
     }
     public void StopPlaying(string sound)
     {
@@ -45,6 +52,14 @@ public class AudioManager : MonoBehaviour
         s.source.Stop();
     }
 
+    void Start()
+    {
+      
+    }
+    private void Update()
+    {
+       
+    }
 
     public void Play(string Name)
     {
