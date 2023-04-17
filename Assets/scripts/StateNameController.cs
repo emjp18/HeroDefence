@@ -9,7 +9,12 @@ public class StateNameController : MonoBehaviour
     public Day_Night_Cycle script;
     private void Start()
     {
-        
+        if (testnr == "Warrior")
+        {
+            //script.daytime = true;
+            FindObjectOfType<AudioManager>().Play("MenuMusic");
+
+        }
     }
     private void Update()
     {
@@ -18,11 +23,5 @@ public class StateNameController : MonoBehaviour
             FindObjectOfType<AudioManager>().Play("DayMusic");
         }
 
-        if (testnr == "Warrior")
-        {
-            //script.daytime = true;
-            FindObjectOfType<AudioManager>().Play("MenuMusic");
-            
-        }
     }
 }
