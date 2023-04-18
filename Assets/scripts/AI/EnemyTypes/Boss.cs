@@ -138,7 +138,7 @@ public class Boss : EnemyBase
             }
 
         }
-        if (movementDirection.x < 0)
+        if (movementDirection.x < 0f)
             spriteRend.flipX = true;
         else
             spriteRend.flipX = false;
@@ -157,8 +157,8 @@ public class Boss : EnemyBase
         root = new Root(new List<Node> { new Chase(), new Attack(), new TakeDamage(), new Idle() });
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.y * 2;
-        stats.AttackBuildingRange = Utility.GRID_CELL_SIZE_LARGE * 1.5f;
+        stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.y * 0.5f;
+        stats.AttackBuildingRange = Utility.GRID_CELL_SIZE_LARGE * 0.65f;
         box = GetComponent<BoxCollider2D>();
         spriteRend = GetComponent<SpriteRenderer>();
         HitObject().transform.localScale = Vector2.one * 4;

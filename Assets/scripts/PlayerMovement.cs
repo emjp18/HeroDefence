@@ -85,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            animatorWarrior.SetBool("Attack",true);
+            //animatorWarrior.SetBool("Attack",true);
         }
         //else
         //{
@@ -94,8 +94,8 @@ public class PlayerMovement : MonoBehaviour
         //}
         if (Input.GetMouseButtonUp(0))
         {
-            animatorWarrior.SetBool("FrontAttack", false);
-            animatorWarrior.SetBool("StopAttack",true) ;
+            //animatorWarrior.SetBool("FrontAttack", false);
+            //animatorWarrior.SetBool("StopAttack",true) ;
         }
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {

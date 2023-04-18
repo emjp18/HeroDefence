@@ -14,8 +14,8 @@ public class Basic : EnemyBase
     float reachabletime = 0;
     float reachableDelay = 6;
     float idleDelay = 10;
-    int idleCount = 0;
-    int idleMaxCount = 3;
+    //int idleCount = 0;
+    //int idleMaxCount = 3;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

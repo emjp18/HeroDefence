@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum ENEMY_TYPE {  BASIC,EXPLOSIVE, RANGE,BOSS  }
@@ -14,20 +15,24 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] int enemiesBasicPerSpawn = 5;
     [SerializeField] int explosivePerSpawn = 3;
     [SerializeField] int rangePerSpawn = 5;
-    [SerializeField] int bossPerSpawn = 1;
+    public int bossPerSpawn = Random.Range(1, 5);
+    public float timer = 2;
+    [SerializeField] Animator anim;
+    EnemyStats eStats;
+    
     [SerializeField] List<EnemyBase> enemyPrefabTemplates;
     List<EnemyBase> enemiesBasic = new List<EnemyBase>();
-    List<EnemyBase> enemiesBoss= new List<EnemyBase>();
+    public List<EnemyBase> enemiesBoss= new List<EnemyBase>();
     List<EnemyBase> enemiesRange = new List<EnemyBase>();
     List<EnemyBase> enemiesExplosive = new List<EnemyBase>();
     [SerializeField]  int nightphase = 0;
-    public bool startNight = true;
+    public bool startNight = false;
     public bool endNight = false;
+    public bool timerBool = false;
    
     private void Start()
     {
 
-       
         foreach( EnemyBase enemy in enemyPrefabTemplates)
         {
             switch (enemy.Enemytype)
@@ -179,9 +184,11 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        
+        NumberOfEnemies(bossPerSpawn);
+       
         if (startNight)
         {
+        Debug.Log(timer + "timer");
             StartNightPhase();
             startNight = false;
         }
@@ -190,5 +197,32 @@ public class EnemySpawner : MonoBehaviour
             EndNightPhase();
             endNight = false;
         }
+
+    }
+
+    public void ClearAll()
+    {
+        //anim = GetComponent<Animator>();
+
+        foreach (EnemyBase enemy in enemiesBoss)
+        {
+ 
+            enemy.gameObject.SetActive(false);
+        }
+        
+    }
+    public void ActivateAll()
+    {
+
+        foreach (EnemyBase enemy in enemiesBoss)
+        {
+            enemy.gameObject.SetActive(true);
+            
+        }
+    }
+    public void NumberOfEnemies(int count)
+    {
+        bossPerSpawn = count;
+        
     }
 }
