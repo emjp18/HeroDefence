@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7998763725086788550}
   - component: {fileID: 7998763725086788551}
   - component: {fileID: 8288595077607132611}
+  - component: {fileID: 4086513254767371531}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -171,6 +172,8 @@ MonoBehaviour:
   moveSpeed: 200
   rb: {fileID: 7998763725086788570}
   animatorWarrior: {fileID: 7998763725086788569}
+  tr: {fileID: 0}
+  maxHealth: 100
 --- !u!82 &8288595077607132611
 AudioSource:
   m_ObjectHideFlags: 0
@@ -267,3 +270,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4086513254767371531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7998763725086788572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5db195e99dbbc94fbd910b6a8dd431e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+  attackPointDown: {fileID: 0}
+  attackPointUp: {fileID: 0}
+  attackPointRight: {fileID: 0}
+  attackPointLeft: {fileID: 0}
+  attackRange: 0.5
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  attackDamage: 40
+  attackRate: 1

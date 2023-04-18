@@ -15,7 +15,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] int enemiesBasicPerSpawn = 5;
     [SerializeField] int explosivePerSpawn = 3;
     [SerializeField] int rangePerSpawn = 5;
-    public int bossPerSpawn = Random.Range(1, 5);
+    public int bossPerSpawn =1;
     public float timer = 2;
     [SerializeField] Animator anim;
     EnemyStats eStats;

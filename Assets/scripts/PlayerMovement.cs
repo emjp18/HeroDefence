@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TrailRenderer tr;
     Vector2 movement;
     int currentHealth;
-    public int pMaxHealth = 100;
+    public int maxHealth = 100;
 
     private bool canDash = true;
     private bool isDashing;
