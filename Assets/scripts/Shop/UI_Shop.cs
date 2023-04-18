@@ -51,7 +51,7 @@ public class UI_Shop : MonoBehaviour
     {
         if (shopCustomer.TrySpendGoldAmount(Item.GetCost(itemType)))
         {      
-            // Can afford cost
+            // Kollar om du har råd
             shopCustomer.BoughtItem(itemType);
         }
     }

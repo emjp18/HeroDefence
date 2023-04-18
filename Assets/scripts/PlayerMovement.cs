@@ -9,7 +9,25 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Rigidbody2D rb;
     [SerializeField] Animator animatorWarrior;
     Vector2 movement;
-    float health = 100;
+    public int health = 100; // ändra till maxhealth?
+    public int currentHealth;
+
+    public HealthBar healthBar;
+
+    private void Start()
+    {
+        currentHealth = health;
+        healthBar.SetMaxHealth(health);
+    }
+
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+
+        healthBar.SetHealth(currentHealth);
+    }
+
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag=="EnemyAttack")
@@ -77,6 +95,13 @@ public class PlayerMovement : MonoBehaviour
         {
             animatorWarrior.SetBool("FrontAttack", false);
             animatorWarrior.SetBool("StopAttack",true) ;
+        }
+
+
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamage(5);
         }
     }
     void FixedUpdate()
