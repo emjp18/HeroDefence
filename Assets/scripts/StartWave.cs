@@ -9,13 +9,16 @@ public class StartWave : MonoBehaviour
 
     }
     public Day_Night_Cycle dayNigScript;
+  
+    private int counter = 0;
     public GameObject startWaveUI;
     void Update()
     {
-        if (dayNigScript.daytime)
+        if (dayNigScript.daytime && counter <1)
         {
             startWaveUI.SetActive(true);
             Debug.Log("KNAPP TEST");
+ 
         }
         else
         {
@@ -26,9 +29,18 @@ public class StartWave : MonoBehaviour
     }
     public void StartNextWave()
     {
-        dayNigScript.daytime = false;
-        dayNigScript.changeTime= false;
-        startWaveUI.SetActive(false);
-        Debug.Log("KNAPP HÄST");
+        if(counter == 0 )
+        {
+            dayNigScript.daytime = false;
+            dayNigScript.changeTime = false;
+            startWaveUI.SetActive(false);
+            Debug.Log("KNAPP HÄST");
+            counter++;
+        }
+        if(counter >= 1 )
+        {
+            startWaveUI.SetActive(false);
+        }
+   
     }
 }

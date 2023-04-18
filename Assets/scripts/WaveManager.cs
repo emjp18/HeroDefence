@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Unity.Burst.Intrinsics.X86;
 using static WaveManager;
@@ -24,12 +25,13 @@ public class WaveManager : MonoBehaviour
 
     //public List<Wave> waves = new List<Wave>();
     public Wave[] waves;
-    private int nextWave=0;
+    public int nextWave=0;
     private int amountOfEnemies;
     public SpawnState spawnState = SpawnState.Night;
     public float timeBetweenWaves = 5f;
     public float searchCountdown=1f;
     public bool waveComplete = true;
+    public GameObject Player;
 
     public void Start()
     {
@@ -43,7 +45,7 @@ public class WaveManager : MonoBehaviour
 
         if (!dayNitCycle.daytime && spawnState == SpawnState.Night)
         {
-            Debug.Log(spawnerScript.enemiesBoss.Count + "Count");
+            //Debug.Log(spawnerScript.enemiesBoss.Count + "Count");
             StartCoroutine(SpawningTimer(waves[nextWave]));
             spawnState = SpawnState.Day;
             //dayNitCycle.daytime = true;
@@ -60,18 +62,19 @@ public class WaveManager : MonoBehaviour
             completeWave();
             if (!EnemyIsAlive())
             {
-                Debug.Log("HEJHOPP");
+                //Debug.Log("HEJHOPP");
+                Player.SetActive(false);
                 spawnState = SpawnState.Night;
             }
             else
             {
-                Debug.Log("Satan");
+                //Debug.Log("Satan");
                 return;
             }
            
         }
 
-        Debug.Log(nextWave + " Next wave");
+        //Debug.Log(nextWave + " Next wave");
 
     }
     IEnumerator SpawningTimer(Wave wave)

@@ -25,9 +25,11 @@ public class EndMenu : MonoBehaviour
     }
     public void YouWin()
     {
-        if (!WaveManager.EnemyIsAlive() && WaveManager.spawnState == WaveManager.SpawnState.Waiting)
+        if (!WaveManager.EnemyIsAlive() && WaveManager.nextWave + 1 > WaveManager.waves.Length -1)
         {
+            Debug.Log("winSenario");
             youWinUI.SetActive(true);
+            WaveManager.nextWave = 0;
         }
     }
 }
