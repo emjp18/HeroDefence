@@ -26,6 +26,6 @@ public class enemyHp : MonoBehaviour
     }
     void Die()
     {
-
+        gameObject.SetActive(false);
     }
 }

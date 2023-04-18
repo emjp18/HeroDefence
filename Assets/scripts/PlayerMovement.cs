@@ -10,7 +10,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Animator animatorWarrior;
     [SerializeField] private TrailRenderer tr;
     Vector2 movement;
-    float health = 100;
+    int currentHealth;
+    public int pMaxHealth = 100;
 
     private bool canDash = true;
     private bool isDashing;
@@ -22,10 +23,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if(collision.gameObject.tag=="EnemyAttack")
         {
-            health -= 1;
+            
            
         }
     }
+
+    void Start()
+    {
+        currentHealth = maxHealth;
+    }
+
     void Update()
     {
         if(isDashing)
@@ -131,5 +138,19 @@ public class PlayerMovement : MonoBehaviour
         isDashing= false;
         yield return new WaitForSeconds(dashingCooldown);
         canDash=true;
+    }
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+
+    }
+    void Die()
+    {
+        gameObject.SetActive(false);
     }
 }
