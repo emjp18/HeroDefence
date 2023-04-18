@@ -10,7 +10,8 @@ public class LightIntensity : MonoBehaviour
     [SerializeField] Light2D lightIntensity;
     [SerializeField] float lowerSpeed;  // 0.005
     [SerializeField] float increaseSpeed; // 0.002
-    bool dimLights = false;
+    bool dimLights = true;
+    public Day_Night_Cycle script;
     void Start()
     {
         lightIntensity  = gameObject.GetComponent<Light2D>();
@@ -26,14 +27,22 @@ public class LightIntensity : MonoBehaviour
     }
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.F))
+        if (script.daytime== true) 
         {
             dimLights = true;
+            Debug.Log(" Testing Light");
+        }
+        else if (script.daytime==false && script.ppv.weight > 0.1) 
+        {
+            dimLights = false;
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+         
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            dimLights = false;
+           
         }
         if (lightIntensity.intensity <= 0f)
         {

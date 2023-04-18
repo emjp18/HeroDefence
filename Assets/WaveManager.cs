@@ -20,80 +20,87 @@ public class WaveManager : MonoBehaviour
         
         public string name;
         public int amountOfEnemies;
-        public int waveNr;
     }
 
     //public List<Wave> waves = new List<Wave>();
     public Wave[] waves;
     private int nextWave=0;
     private int amountOfEnemies;
-
     private SpawnState spawnState = SpawnState.Night;
-     void Start()
-     {
-        dayNitCycle.daytime = false;
+    public float timeBetweenWaves = 5f;
+    public float waveCountDown;
+
+    public void Start()
+    {
         enemyCounter();
 
-     }
-    void Update()
-    {
+        waveCountDown = timeBetweenWaves;
 
-        Debug.Log(spawnerScript.enemiesBoss.Count + "Count");
+    }
+    public void Update()
+    {
+        
         if (!dayNitCycle.daytime && spawnState == SpawnState.Night)
         {
-            StartCoroutine(SpawningWave(waves[nextWave]));
+        Debug.Log(spawnerScript.enemiesBoss.Count + "Count");
+          
+            StartCoroutine(SpawningTimer(waves[nextWave]));
             spawnState = SpawnState.Day;
+            //dayNitCycle.daytime = true;
+
         }
-        if(dayNitCycle.daytime)
+        if (dayNitCycle.daytime && spawnState == SpawnState.Day)
         {
             spawnerScript.ClearAll();
-            completeWave();
+           
             spawnState = SpawnState.Waiting;
         }
         if (spawnState == SpawnState.Waiting)
         {
-            
-
+            completeWave();
             spawnState = SpawnState.Night;
         }
 
+        Debug.Log(nextWave + " Next wave");
 
     }
-    IEnumerator SpawningWave(Wave wave)
+    IEnumerator SpawningTimer(Wave wave)
     {
         SpawnMobs();
 
         yield break;
     }
-    void SpawnMobs()
+    public void SpawnMobs()
     {
         spawnerScript.StartNightPhase();
         spawnerScript.startNight = false;
     }
-    void enemyCounter()
+    public void enemyCounter()
     {
+        //foreach (var wave in waves)
+        //{
+            amountOfEnemies = waves[nextWave].amountOfEnemies;
+            spawnerScript.NumberOfEnemies(amountOfEnemies);
 
-        amountOfEnemies = waves[nextWave].amountOfEnemies;
-        spawnerScript.NumberOfEnemies(amountOfEnemies);
-
+        //}
     }
-    void completeWave()
+    public void completeWave()
     {
-        Debug.Log("TESTING");
-        if (nextWave+1> waves.Length-1)
+        if (nextWave + 1 > waves.Length - 1)
         {
-            Debug.LogWarning("Compeleted all waves");
+            Debug.Log("Compeleted all waves");
             nextWave = 0;
-            enemyCounter();
 
 
         }
         else
         {
-            nextWave = 1;
+        Debug.Log("TESTING");
+            nextWave++;
             enemyCounter();
 
         }
+       
     }
 
 }

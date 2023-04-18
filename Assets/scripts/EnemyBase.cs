@@ -128,7 +128,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected void AvoidNearbyEnemies()
     {
         
-        var colliders = Physics2D.OverlapCircleAll(transform.position, box.size.x*0.5f);
+        var colliders = Physics2D.OverlapCircleAll(transform.position, box.size.x*0.2f);
         Vector2 separate = Vector2.zero;
        foreach(Collider2D collision in colliders)
         {

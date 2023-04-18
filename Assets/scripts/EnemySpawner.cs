@@ -15,7 +15,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] int enemiesBasicPerSpawn = 5;
     [SerializeField] int explosivePerSpawn = 3;
     [SerializeField] int rangePerSpawn = 5;
-    public int bossPerSpawn = 1;
+    public int bossPerSpawn = Random.Range(1, 5);
     public float timer = 2;
     [SerializeField] Animator anim;
     EnemyStats eStats;
@@ -26,13 +26,13 @@ public class EnemySpawner : MonoBehaviour
     List<EnemyBase> enemiesRange = new List<EnemyBase>();
     List<EnemyBase> enemiesExplosive = new List<EnemyBase>();
     [SerializeField]  int nightphase = 0;
-    public bool startNight = true;
+    public bool startNight = false;
     public bool endNight = false;
     public bool timerBool = false;
    
     private void Start()
     {
-       
+
         foreach( EnemyBase enemy in enemyPrefabTemplates)
         {
             switch (enemy.Enemytype)
@@ -184,9 +184,11 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(timer+"timer");
+        NumberOfEnemies(bossPerSpawn);
+       
         if (startNight)
         {
+        Debug.Log(timer + "timer");
             StartNightPhase();
             startNight = false;
         }
@@ -195,29 +197,22 @@ public class EnemySpawner : MonoBehaviour
             EndNightPhase();
             endNight = false;
         }
-        if(timerBool)
-        {
-        timer -=Time.deltaTime;
+        //if(timerBool)
+        //{
+        //timer -=Time.deltaTime;
+       
   
-        }
+        //}
     }
 
     public void ClearAll()
     {
         anim = GetComponent<Animator>();
-        timerBool = true;
+        //timerBool = true;
         foreach (EnemyBase enemy in enemiesBoss)
         {
             enemy.eStats().Health=0;
-            //if(timer <=0)
-            //{
-                timerBool = false;
             enemy.gameObject.SetActive(false);
-            timer = 2;
-                
-           
-                
-            //}
 
         }
     }
@@ -233,5 +228,6 @@ public class EnemySpawner : MonoBehaviour
     public void NumberOfEnemies(int count)
     {
         bossPerSpawn = count;
+        
     }
 }

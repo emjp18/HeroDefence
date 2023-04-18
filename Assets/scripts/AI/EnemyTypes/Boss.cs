@@ -138,7 +138,7 @@ public class Boss : EnemyBase
             }
 
         }
-        if (movementDirection.x < -0.001f)
+        if (movementDirection.x < 0f)
             spriteRend.flipX = true;
         else
             spriteRend.flipX = false;
