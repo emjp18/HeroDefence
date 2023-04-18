@@ -45,7 +45,7 @@ public class Day_Night_Cycle : MonoBehaviour
             changeTime = false;
             daytime = false;
         }
-        if(changeTime== false )
+        if (changeTime== false )
         {
             if (daytime)
             {

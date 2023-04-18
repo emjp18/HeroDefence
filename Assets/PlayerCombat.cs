@@ -28,12 +28,14 @@ public class PlayerCombat : MonoBehaviour
             }
             else if (Input.GetKey(KeyCode.D))
             {
+                
                 animator.SetTrigger("attackRight");
                 hitEnemies = Physics2D.OverlapCircleAll(attackPointRight.position, attackRange, enemyLayers);
 
             }
             else if (Input.GetKey(KeyCode.W))
             {
+                
                 animator.SetTrigger("attackUp");
                 hitEnemies = Physics2D.OverlapCircleAll(attackPointUp.position, attackRange, enemyLayers);
             }

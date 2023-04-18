@@ -197,24 +197,19 @@ public class EnemySpawner : MonoBehaviour
             EndNightPhase();
             endNight = false;
         }
-        //if(timerBool)
-        //{
-        //timer -=Time.deltaTime;
-       
-  
-        //}
+
     }
 
     public void ClearAll()
     {
-        anim = GetComponent<Animator>();
-        //timerBool = true;
+        //anim = GetComponent<Animator>();
+
         foreach (EnemyBase enemy in enemiesBoss)
         {
-            enemy.eStats().Health=0;
+ 
             enemy.gameObject.SetActive(false);
-
         }
+        
     }
     public void ActivateAll()
     {
