@@ -36,10 +36,10 @@ public class Day_Night_Cycle : MonoBehaviour
         //{
         //    daytime = true;
         //}
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            daytime = true;
-        }
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    daytime = true;
+        //}
         if (Input.GetKeyDown(KeyCode.E))
         {
             changeTime = false;

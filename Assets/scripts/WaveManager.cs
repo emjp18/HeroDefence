@@ -30,7 +30,8 @@ public class WaveManager : MonoBehaviour
     public SpawnState spawnState = SpawnState.Night;
     public float timeBetweenWaves = 5f;
     public float searchCountdown=1f;
-    public bool waveComplete = true;
+    public bool waveComplete = false;
+    
     public GameObject Player;
 
     public void Start()
@@ -62,8 +63,9 @@ public class WaveManager : MonoBehaviour
             completeWave();
             if (!EnemyIsAlive())
             {
-                //Debug.Log("HEJHOPP");
-                Player.SetActive(false);
+                waveComplete = true;
+                Debug.Log("HEJHOPP");
+
                 spawnState = SpawnState.Night;
             }
             else
