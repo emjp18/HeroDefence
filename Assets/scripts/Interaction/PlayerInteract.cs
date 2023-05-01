@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey.Utils;
+using UnityEngine.UI;
+
 
 
 public class PlayerInteract : MonoBehaviour, IShopCustomer
@@ -11,9 +13,21 @@ public class PlayerInteract : MonoBehaviour, IShopCustomer
     /// <summary>
     /// flytta senare
     /// </summary>
-    public int goldAmount = 100;
-    public int healthPotionAmount = 0;
+    /// 
 
+    public static PlayerInteract Instance { get; private set; }
+
+    public int goldAmount;
+    public int healthPotionAmount;
+
+
+    private void Awake()
+    {
+        Instance = this; 
+        goldAmount = 100;
+        healthPotionAmount = 1;
+
+    }
     public int GetGoldAmount()
     {
         return goldAmount;
@@ -35,7 +49,7 @@ public class PlayerInteract : MonoBehaviour, IShopCustomer
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.F))
         {
 
             GetInteractableObject();
@@ -53,7 +67,7 @@ public class PlayerInteract : MonoBehaviour, IShopCustomer
             if (collider.TryGetComponent(out NPCInteractable npcInteractable))
             {
                 npcInteractableList.Add(npcInteractable);
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.F))
                 {
 
                     npcInteractable.Interact();

@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             TakeDamage(5);
         }
