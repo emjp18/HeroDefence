@@ -138,8 +138,9 @@ public class Boss : EnemyBase
             }
 
         }
-        if (movementDirection.x < 0f)
+        if( player.position.x<gameObject.transform.position.x || movementDirection.x < 0f)
             spriteRend.flipX = true;
+        //if (movementDirection.x < 0f)
         else
             spriteRend.flipX = false;
 

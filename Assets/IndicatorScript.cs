@@ -23,7 +23,7 @@ public class IndicatorScript : MonoBehaviour
             if (indicator.activeSelf == false)
             {
                 indicator.SetActive(true);
-                Debug.Log("testarIndiCator");
+                Debug.Log("testarIndiCatorUPPE");
             }
             Vector2 direction = Target.transform.position - transform.position;
 
@@ -32,13 +32,14 @@ public class IndicatorScript : MonoBehaviour
             if (ray.collider != null)
             {
                 indicator.transform.position = ray.point;
+                Debug.Log("testarIndiCatorNERE");
             }
             else
             {
                 if (indicator.activeSelf == true)
                 {
                     indicator.SetActive(false);
-                    Debug.Log("testarIndiCator");
+                    Debug.Log("testarIndiCatorNERE V2");
                 }
             }
         }

@@ -28,7 +28,7 @@ public class EndMenu : MonoBehaviour
     }
     public void YouWin()
     {
-        if (!WaveManager.EnemyIsAlive() && WaveManager.waveComplete == true && script.daytime ==false)
+        if (!WaveManager.EnemyIsAlive() && WaveManager.waveComplete == true && script.daytime ==true)
         {
             Debug.Log("winSenario");
             youWinUI.SetActive(true);
