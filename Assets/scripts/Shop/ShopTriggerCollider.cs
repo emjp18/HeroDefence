@@ -22,7 +22,7 @@ public class ShopTriggerCollider : MonoBehaviour
     }
     private void Update()
     {
-            if (insideRange&& Input.GetKeyDown(KeyCode.R))
+            if (insideRange&& Input.GetKeyDown(KeyCode.F))
             {
             uiShop.Show(range);
             }
