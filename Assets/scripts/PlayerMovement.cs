@@ -10,11 +10,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Animator animatorWarrior;
     [SerializeField] private TrailRenderer tr;
     Vector2 movement;
-    int currentHealth;
+    public int currentHealth;
     public int maxHealth = 100;
 
     private bool canDash = true;
     private bool isDashing;
+    public hitIndicator hitIndi;
     private float dashingPower = 24*2f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
@@ -46,7 +47,13 @@ public class PlayerMovement : MonoBehaviour
         animatorWarrior.SetFloat("Horizontal", movement.x);
         animatorWarrior.SetFloat("Vertical", movement.y);
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            TakeDamage(5);
+            Debug.Log("TestarHp");
+            
+        }
+            if (Input.GetKeyDown(KeyCode.D))
         {
             FindObjectOfType<AudioManager>().Play("Steps");
         }
@@ -142,7 +149,8 @@ public class PlayerMovement : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-
+        hitIndi.playerHit = true;
+        hitIndi.ppv.weight = 1;
         if (currentHealth <= 0)
         {
             Die();
