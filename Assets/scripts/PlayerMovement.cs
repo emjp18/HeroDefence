@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     Vector2 movement;
     public int currentHealth;
     public int maxHealth = 100;
+    public int alive= 0;
 
     private bool canDash = true;
     private bool isDashing;
@@ -36,7 +37,18 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if(isDashing)
+        if(currentHealth<=0 && alive==0)
+        {
+            animatorWarrior.SetBool("Dead",true);
+            
+            Debug.Log("ALIVE");
+            alive++;
+            
+        //alive = false;
+        }
+
+
+        if (isDashing)
         {
             return;
         }
@@ -159,6 +171,6 @@ public class PlayerMovement : MonoBehaviour
     }
     void Die()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 }

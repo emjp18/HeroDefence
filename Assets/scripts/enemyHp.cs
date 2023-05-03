@@ -5,6 +5,8 @@ using UnityEngine;
 public class enemyHp : MonoBehaviour
 {
     public int maxHealth = 100;
+    public Boss bossScript;
+    public float timer;
     int currentHealth;
 
     void Start()
@@ -18,11 +20,9 @@ public class enemyHp : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            //bossScript.PlayDead();
             Die();
         }
-
-
-
     }
     void Die()
     {

@@ -66,10 +66,11 @@ public class Boss : EnemyBase
     private void Update()
     {
 
+       
+       
 
 
-
-        anim.SetBool("attacking", (bool)root.GetData("attacking"));
+       anim.SetBool("attacking", (bool)root.GetData("attacking"));
         anim.SetBool("moving", (bool)root.GetData("moving"));
         anim.SetBool("dead", (bool)root.GetData("dead"));
         AvoidNearbyEnemies();
@@ -165,5 +166,9 @@ public class Boss : EnemyBase
         HitObject().transform.localScale = Vector2.one * 4;
         //HitObject().GetComponent<Rigidbody2D>().mass = HitObject().GetComponent<Rigidbody2D>().mass * 4;
         HitObject().SetActive(false);
+    }
+    public void PlayDead()
+    {
+        //anim.SetBool("dead", false);
     }
 }
