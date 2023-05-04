@@ -184,6 +184,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  bossScript: {fileID: 0}
+  timer: 0
 --- !u!114 &1410060632900003375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,8 +198,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8daec054b0de5ff43bdf1e656ad7429d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  indicator: {fileID: 2980223176657828198}
-  Target: {fileID: 7998763725086788572, guid: 84415123ab92335409048d33e34ac04e, type: 3}
+  indicator: {fileID: 0}
+  Target: {fileID: 0}
+  camBox: {fileID: 0}
 --- !u!1001 &4435014589309943158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -266,10 +269,5 @@ PrefabInstance:
 --- !u!4 &2980223176657828196 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1501870713981436946, guid: 1314f80778f470c4a9a424ee328ae647, type: 3}
-  m_PrefabInstance: {fileID: 4435014589309943158}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2980223176657828198 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1501870713981436944, guid: 1314f80778f470c4a9a424ee328ae647, type: 3}
   m_PrefabInstance: {fileID: 4435014589309943158}
   m_PrefabAsset: {fileID: 0}
