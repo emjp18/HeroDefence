@@ -20,8 +20,8 @@ public class PlayerUI : MonoBehaviour
     {
         UpdateText();
 
-        PlayerInteract.Instance.OnGoldAmountChanged += Instance_OnGoldAmountChanged;
-        PlayerInteract.Instance.OnHealthPotionAmountChanged += Instance_OnHealthPotionAmountChanged;
+        PlayerMovement.Instance.OnGoldAmountChanged += Instance_OnGoldAmountChanged;
+        PlayerMovement.Instance.OnHealthPotionAmountChanged += Instance_OnHealthPotionAmountChanged;
     }
 
     private void Instance_OnHealthPotionAmountChanged(object sender, System.EventArgs e)
@@ -36,7 +36,7 @@ public class PlayerUI : MonoBehaviour
 
     private void UpdateText()
     {
-        goldText.text = PlayerInteract.Instance.GetGoldAmount().ToString();
-        healthPotionText.text = PlayerInteract.Instance.GetHealthPotionAmount().ToString();
+        goldText.text = PlayerMovement.Instance.GetGoldAmount().ToString();
+        healthPotionText.text = PlayerMovement.Instance.GetHealthPotionAmount().ToString();
     }
 }

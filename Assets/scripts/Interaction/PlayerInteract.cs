@@ -7,45 +7,8 @@ using UnityEngine.UI;
 
 
 
-public class PlayerInteract : MonoBehaviour, IShopCustomer
+public class PlayerInteract : MonoBehaviour
 {
-
-    /// <summary>
-    /// flytta senare
-    /// </summary>
-    /// 
-
-    public static PlayerInteract Instance { get; private set; }
-
-    public int goldAmount;
-    public int healthPotionAmount;
-
-
-    private void Awake()
-    {
-        Instance = this; 
-        goldAmount = 100;
-        healthPotionAmount = 1;
-
-    }
-    public int GetGoldAmount()
-    {
-        return goldAmount;
-    }
-    public event EventHandler OnGoldAmountChanged;
-    public event EventHandler OnHealthPotionAmountChanged;
-    public int GetHealthPotionAmount()
-    {
-        return healthPotionAmount;
-    }
-    private void AddHealthPotion()
-    {
-        healthPotionAmount++;
-        OnHealthPotionAmountChanged?.Invoke(this, EventArgs.Empty);
-    }
-    //
-    //
-    //
 
     private void Update()
     {
@@ -54,6 +17,7 @@ public class PlayerInteract : MonoBehaviour, IShopCustomer
 
             GetInteractableObject();
         }
+
     }
 
     public NPCInteractable GetInteractableObject()
@@ -95,37 +59,5 @@ public class PlayerInteract : MonoBehaviour, IShopCustomer
     }
 
 
-    /// <summary>
-    /// 
-    /// Player script??
-    /// </summary>
-    /// <param name="itemType"></param>
-    public void BoughtItem(Item.ItemType itemType)
-    {
-        Debug.Log("Bought item: " + itemType);
-        switch (itemType)
-        {
-            case Item.ItemType.HealthPotion: AddHealthPotion(); break;
 
-        }
-    }
-
-    public bool TrySpendGoldAmount(int spendGoldAmount)
-    {
-        if (GetGoldAmount() >= spendGoldAmount)
-        {
-            goldAmount -= spendGoldAmount;
-            OnGoldAmountChanged?.Invoke(this, EventArgs.Empty);
-            return true;
-        }
-        else
-        {
-            Debug.Log("du är fattig");
-            return false;
-        }
-    }
-
-    ///
-    ///
-    ///
 }
