@@ -11,7 +11,7 @@ using static WaveManager;
 public class WaveManager : MonoBehaviour
 {
     
-    public enum SpawnState {Day,Night,ConstantSpawn,Waiting }
+    public enum SpawnState {Day,Night,spawning,Waiting }
     public EnemySpawner spawnerScript;
     public Day_Night_Cycle dayNitCycle;
     [SerializeField] int nightphase = 0;
@@ -41,39 +41,33 @@ public class WaveManager : MonoBehaviour
     public int nextWave=0;
     public SpawnState spawnState = SpawnState.Night;
     public float timeBetweenWaves = 5f;
+    public float waveCountDown;
     public float searchCountdown=1f;
     public bool waveComplete = false;
     int rand = 0;
-    Vector3 randomTest;
-
+    int enemieNr=0;
+    Vector3 offset;
+   
     public GameObject Player;
 
     public void Start()
     {
-        //enemyCounter();
+        waveCountDown = timeBetweenWaves;
+
     }
     public void Update()
     {
-        rand = Random.Range(0, 35);
-        randomTest = new Vector3(rand, rand, rand);
+        
         Debug.Log(spawnState);
-
+        Debug.Log(waveCountDown+ " Time Between waves");
         if (!dayNitCycle.daytime && spawnState == SpawnState.Night)
         {
-            //Debug.Log(spawnerScript.enemiesBoss.Count + "Count");
+
+                //StartCoroutine(Spawner(waves[nextWave]));
+                StartCoroutine(Rounds());
             spawnState = SpawnState.Waiting;
-            StartCoroutine(Spawner(waves[nextWave]));
-            //StartNightPhase();
-            //dayNitCycle.daytime = true;
-
-
         }
-        //if (dayNitCycle.daytime && spawnState == SpawnState.Day)
-        //{
-        //    spawnerScript.ClearAll();
-           
-        //    spawnState = SpawnState.Waiting;
-        //}
+
         if (spawnState == SpawnState.Waiting)
         {
             
@@ -81,7 +75,7 @@ public class WaveManager : MonoBehaviour
             {
                 dayNitCycle.daytime= true;
                 dayNitCycle.changeTime = false;
-                completeWave();
+                
                 if (nextWave == 4)
                 {
                     waveComplete = true;
@@ -100,8 +94,7 @@ public class WaveManager : MonoBehaviour
     IEnumerator Spawner(Wave wave)
     {
         bossPerSpawn = wave.amountOfEnemies;
-       
-        //SpawnMobs();
+
         foreach (EnemyBase enemy in enemyPrefabTemplates)
         {
             for (int i = 0; i < bossPerSpawn * spawnPoints.Count; i++)
@@ -112,10 +105,23 @@ public class WaveManager : MonoBehaviour
                 enemiesBoss[enemiesBoss.Count - 1].gameObject.SetActive(false);                
             }
             hitObject.SetActive(false);
-            enemy.gameObject.SetActive(false);
+            //enemy.gameObject.SetActive(false);
         }
         StartNightPhase();
         yield break;
+    }
+    IEnumerator Rounds()
+    {
+        StartCoroutine(Spawner(waves[nextWave]));
+        completeWave();
+        yield return new WaitForSeconds(5);
+        StartCoroutine(Spawner(waves[nextWave]));
+        completeWave();
+        yield return new WaitForSeconds(5);
+        StartCoroutine(Spawner(waves[nextWave]));
+        completeWave();
+        yield return new WaitForSeconds(5);
+       
     }
     public bool EnemyIsAlive()
     {
@@ -141,10 +147,9 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-        Debug.Log("TESTING");
             nextWave++;
-            spawnState = SpawnState.Night;
-            //enemyCounter();
+            waveCountDown = 5f;
+            //spawnState = SpawnState.Night;
 
         }
        
@@ -165,13 +170,19 @@ public class WaveManager : MonoBehaviour
         Utility.UpdateStaticCollision(grid);
         Utility.UpdateStaticCollisionLarge(bossGrid);
         int sp = spawnPoints.Count;
-
+        Debug.Log(enemieNr + " enemie NR");
         for (int i = 0; i < (bossPerSpawn*sp); i++)
         {
-                enemiesBoss[i].transform.position = spawnPoints[Random.Range(0, spawnPoints.Count())].position;
-                enemiesBoss[ i ].gameObject.SetActive(true);
-                enemiesBoss[ i ].StartNightPhase(bossGrid);
-                Debug.Log(bossPerSpawn+ " BOSS PER SPAWN");
+            if (enemiesBoss[enemieNr].gameObject.activeSelf == true) continue;
+
+                rand = Random.Range(-10, 10);
+                offset = new Vector3(rand, rand, rand);
+                enemiesBoss[ enemieNr ].transform.position = spawnPoints[Random.Range(0, spawnPoints.Count())].position+ offset;
+                enemiesBoss[ enemieNr ].gameObject.SetActive(true);
+                enemiesBoss[ enemieNr ].StartNightPhase(bossGrid);
+                
+                enemieNr++;
+
         }
     }
 
