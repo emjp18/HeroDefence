@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,6 @@ public class ShopTriggerCollider : MonoBehaviour
         range = collider.GetComponent<IShopCustomer>();
         if(range != null )
         {
-            
             insideRange = true;
         }
 
@@ -26,6 +26,7 @@ public class ShopTriggerCollider : MonoBehaviour
             {
             uiShop.Show(range);
             }
+
     }
     private void OnTriggerExit2D(Collider2D collider)
     {
