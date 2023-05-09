@@ -30,7 +30,6 @@ public class LightIntensity : MonoBehaviour
         if (script.daytime== true) 
         {
             dimLights = true;
-            Debug.Log(" Testing Light");
         }
         else if (script.daytime==false && script.ppv.weight > 0.1) 
         {

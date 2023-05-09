@@ -8,36 +8,50 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed = 200f;
     [SerializeField] Rigidbody2D rb;
     [SerializeField] Animator animatorWarrior;
+    [SerializeField] private TrailRenderer tr;
     Vector2 movement;
-    public int health = 100; // ändra till maxhealth?
     public int currentHealth;
+    public int maxHealth = 100;
+    public int alive= 0;
 
-    public HealthBar healthBar;
-
-    private void Start()
-    {
-        currentHealth = health;
-        healthBar.SetMaxHealth(health);
-    }
-
-    void TakeDamage(int damage)
-    {
-        currentHealth -= damage;
-
-        healthBar.SetHealth(currentHealth);
-    }
-
+    private bool canDash = true;
+    private bool isDashing;
+    public hitIndicator hitIndi;
+    private float dashingPower = 24*2f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 1f;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag=="EnemyAttack")
         {
-            health -= 1;
+            
            
         }
     }
+
+    void Start()
+    {
+        currentHealth = maxHealth;
+    }
+
     void Update()
     {
+        if(currentHealth<=0 && alive==0)
+        {
+            animatorWarrior.SetBool("Dead",true);
+            
+            Debug.Log("ALIVE");
+            alive++;
+            
+        //alive = false;
+        }
+
+
+        if (isDashing)
+        {
+            return;
+        }
         /// player input
         Input.GetAxisRaw("Horizontal");
         movement.x = Input.GetAxisRaw("Horizontal");
@@ -45,7 +59,13 @@ public class PlayerMovement : MonoBehaviour
         animatorWarrior.SetFloat("Horizontal", movement.x);
         animatorWarrior.SetFloat("Vertical", movement.y);
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            TakeDamage(5);
+            Debug.Log("TestarHp");
+            
+        }
+            if (Input.GetKeyDown(KeyCode.D))
         {
             FindObjectOfType<AudioManager>().Play("Steps");
         }
@@ -84,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            animatorWarrior.SetBool("Attack",true);
+            //animatorWarrior.SetBool("Attack",true);
         }
         //else
         //{
@@ -93,21 +113,64 @@ public class PlayerMovement : MonoBehaviour
         //}
         if (Input.GetMouseButtonUp(0))
         {
-            animatorWarrior.SetBool("FrontAttack", false);
-            animatorWarrior.SetBool("StopAttack",true) ;
+            //animatorWarrior.SetBool("FrontAttack", false);
+            //animatorWarrior.SetBool("StopAttack",true) ;
         }
-
-
-
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
-            TakeDamage(5);
+            StartCoroutine(Dash());
         }
     }
     void FixedUpdate()
     {
+        if (isDashing)
+        {
+            return;
+        }
+            
+        
+        
         /// Movement
         rb.velocity = movement * moveSpeed * Time.fixedDeltaTime;
         //rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        if (Input.GetKey(KeyCode.W))
+        {
+            rb.velocity = new Vector2(0f, transform.localScale.y * dashingPower);
+        }
+        else if (Input.GetKey(KeyCode.S)){
+            rb.velocity = new Vector2(0f, transform.localScale.y * -dashingPower);
+        }
+        else if (Input.GetKey(KeyCode.A)){
+            rb.velocity = new Vector2(transform.localScale.x * -dashingPower, 0f);
+        }
+        else {
+            rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        }
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+        isDashing= false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash=true;
+    }
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        hitIndi.playerHit = true;
+        hitIndi.ppv.weight = 1;
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+
+    }
+    void Die()
+    {
+        //gameObject.SetActive(false);
     }
 }

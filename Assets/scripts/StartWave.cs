@@ -17,7 +17,6 @@ public class StartWave : MonoBehaviour
         if (dayNigScript.daytime && counter <1)
         {
             startWaveUI.SetActive(true);
-            Debug.Log("KNAPP TEST");
  
         }
         else
@@ -34,12 +33,12 @@ public class StartWave : MonoBehaviour
             dayNigScript.daytime = false;
             dayNigScript.changeTime = false;
             startWaveUI.SetActive(false);
-            Debug.Log("KNAPP HÄST");
             counter++;
         }
         if(counter >= 1 )
         {
             startWaveUI.SetActive(false);
+            counter=0;
         }
    
     }
