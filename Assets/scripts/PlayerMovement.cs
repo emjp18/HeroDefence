@@ -27,6 +27,9 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
 
+    private float shieldActiveTime = 5f;
+    private bool shieldActive = false;
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag=="EnemyAttack")
@@ -205,41 +208,69 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     {
         canDash = false;
         isDashing = true;
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
+        {
+            rb.velocity = new Vector2(transform.localScale.y * dashingPower, transform.localScale.y * dashingPower);
+        }
+        else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+        {
+            rb.velocity = new Vector2(transform.localScale.y * -dashingPower, transform.localScale.y * dashingPower);
+        }
+        else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+        {
+            rb.velocity = new Vector2(transform.localScale.y * dashingPower, transform.localScale.y * -dashingPower);
+        }
+        else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
+        {
+            rb.velocity = new Vector2(transform.localScale.y * -dashingPower, transform.localScale.y * -dashingPower);
+        }
+        else if (Input.GetKey(KeyCode.W))
         {
             rb.velocity = new Vector2(0f, transform.localScale.y * dashingPower);
         }
-        else if (Input.GetKey(KeyCode.S)){
+        else if (Input.GetKey(KeyCode.S))
+        {
             rb.velocity = new Vector2(0f, transform.localScale.y * -dashingPower);
         }
-        else if (Input.GetKey(KeyCode.A)){
+        else if (Input.GetKey(KeyCode.A))
+        {
             rb.velocity = new Vector2(transform.localScale.x * -dashingPower, 0f);
         }
-        else {
+        else
+        {
             rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
         }
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
-        isDashing= false;
+        isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
-        canDash=true;
+        canDash = true;
     }
     public void TakeDamage(int damage)
     {
-
-        currentHealth -= damage;
-        hitIndi.playerHit = true;
-        hitIndi.ppv.weight = 1;
+        if (shieldActive == true)
+        {
+            currentHealth -= damage / 2;
+        }
+        if (shieldActive == false)
+        {
+            currentHealth -= damage;
+        }
         if (currentHealth <= 0)
         {
             Die();
         }
 
-
     }
     void Die()
     {
-        //gameObject.SetActive(false);
+        gameObject.SetActive(false);
+    }
+    public IEnumerator ShieldAbility()
+    {
+        shieldActive = true;
+        yield return new WaitForSeconds(shieldActiveTime);
+        shieldActive = false;
     }
 }
