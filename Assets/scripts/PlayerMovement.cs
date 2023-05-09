@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     private bool canDash = true;
     private bool isDashing;
     public hitIndicator hitIndi;
+    public float dmgTakenCD;
     private float dashingPower = 24*2f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
@@ -102,6 +103,10 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
 
     void Update()
     {
+        if(dmgTakenCD>0)
+        {
+            dmgTakenCD-=Time.deltaTime;
+        }
         healthBar.SetHealth(currentHealth);
         if (Input.GetKeyUp(KeyCode.H))
         {
@@ -249,6 +254,12 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     public void TakeDamage(int damage)
     {
+        if(dmgTakenCD<=0)
+        {
+            dmgTakenCD = 0.5f;
+        //currentHealth -= damage;
+        hitIndi.playerHit = true;
+        hitIndi.ppv.weight = 1;
         if (shieldActive == true)
         {
             currentHealth -= damage / 2;
@@ -256,6 +267,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         if (shieldActive == false)
         {
             currentHealth -= damage;
+        }
         }
         if (currentHealth <= 0)
         {

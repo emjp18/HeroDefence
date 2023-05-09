@@ -13,7 +13,7 @@ public class EnemyAttack : MonoBehaviour
 
     public float enemyAttackRange = 10f;
     public LayerMask playerLayer;
-    public int enemyAttackDamage = 50;
+    public int enemyAttackDamage = 5;
 
     // Update is called once per frame
     void Update()
