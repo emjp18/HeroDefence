@@ -17,8 +17,15 @@ public class PlayerCombat : MonoBehaviour
     public int attackDamage = 40;
     public float attackRate = 1f;
     public float knockbackTime = 10f;
+    public float shieldTime = 10f;
     float nextAttackTime = 0f;
     float knockbackCD = 0f;
+    float shieldCD = 0f;
+
+    private void Start()
+    {
+        
+    }
     void Update()
     {
         if(Time.time >= nextAttackTime)
@@ -38,7 +45,17 @@ public class PlayerCombat : MonoBehaviour
             }
 
         }
-    
+        if(Time.time >= shieldCD)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                StartCoroutine(GetComponent<PlayerMovement>().ShieldAbility());
+                shieldCD = Time.time + shieldTime;
+            }
+
+        }
+
+
         void Attack()
         {
             
@@ -91,6 +108,7 @@ public class PlayerCombat : MonoBehaviour
             }
 
         }
+  
         
     }
    

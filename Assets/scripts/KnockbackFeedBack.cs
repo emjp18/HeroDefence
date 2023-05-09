@@ -14,7 +14,6 @@ public class KnockbackFeedBack : MonoBehaviour
     public UnityEvent OnBegin, OnDone;
     public void PlayFeedBack(GameObject sender)
     {
-        Debug.Log("working");
         StopAllCoroutines();
         OnBegin?.Invoke();
         Vector2 direction = (transform.position - sender.transform.position).normalized;

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -2681629935583074131}
   - component: {fileID: 4741662205554247479}
   - component: {fileID: 6521011776855831843}
+  - component: {fileID: 3462177012085860893}
   m_Layer: 6
   m_Name: Boss
   m_TagString: Enemy
@@ -100,7 +101,7 @@ Animator:
   m_GameObject: {fileID: 6366727717555014584}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9c45b46502de09a48b8bb3c4df027c4d, type: 2}
+  m_Controller: {fileID: 9100000, guid: 91e8101486d396f4ca0abd03189f1a0e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 1
   m_ApplyRootMotion: 0
@@ -228,3 +229,24 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &3462177012085860893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6366727717555014584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7f67de42b614f2429bb19844c0c3f19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5320956796881921107, guid: bd59dd66f4671cd458cdf4cf0f8339c1, type: 3}
+  detectionRange: 15
+  animator: {fileID: 2891301401115482326}
+  enemyAttackTime: 5
+  enemyAttackRange: 7.5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  enemyAttackDamage: 50
