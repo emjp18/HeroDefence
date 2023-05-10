@@ -8,7 +8,7 @@ public class EnemyAttack : MonoBehaviour
     public float detectionRange = 15f;
     public Animator animator;
 
-    public float enemyAttackTime = 2.5f;
+    public float enemyAttackTime = 3.5f;
     float enemyAttackCD = 0f;
 
     public float enemyAttackRange = 10f;
@@ -32,6 +32,7 @@ public class EnemyAttack : MonoBehaviour
 
     void enemyAttack()
     {
+
         animator.SetTrigger("attack");
         Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(transform.position, enemyAttackRange, playerLayer);
         foreach (Collider2D player in hitPlayer)

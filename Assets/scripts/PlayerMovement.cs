@@ -103,7 +103,26 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
 
     void Update()
     {
-        if(dmgTakenCD>0)
+        if (currentHealth <= 0 && alive == 0)
+        {
+            animatorWarrior.SetBool("Dead", true);
+
+            Debug.Log("ALIVE");
+            alive++;
+            //alive = false;
+        }
+        if(alive >=1)
+        {
+            movement.x = 0;
+            movement.y=0;
+            FindObjectOfType<AudioManager>().StopPlaying("Steps");
+          
+        }
+        if( alive <=0 )
+        {
+
+        
+        if (dmgTakenCD>0)
         {
             dmgTakenCD-=Time.deltaTime;
         }
@@ -118,9 +137,8 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             
             Debug.Log("ALIVE");
             alive++;
-            
-        //alive = false;
-        }
+                //alive = false;
+            }
         if (Input.GetKeyDown(KeyCode.O))
         {
             Debug.Log("TestarHp");
@@ -139,45 +157,52 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         animatorWarrior.SetFloat("Horizontal", movement.x);
         animatorWarrior.SetFloat("Vertical", movement.y);
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
-
-            if (Input.GetKeyDown(KeyCode.D))
-        {
-            FindObjectOfType<AudioManager>().Play("Steps");
-        }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            FindObjectOfType<AudioManager>().Play("Steps");
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            FindObjectOfType<AudioManager>().Play("Steps");
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            FindObjectOfType<AudioManager>().Play("Steps");
-        }
-        if (Input.GetKeyUp(KeyCode.D)) 
-        {
-            FindObjectOfType<AudioManager>().StopPlaying("Steps");
-        }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            FindObjectOfType<AudioManager>().StopPlaying("Steps");
-        }
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            FindObjectOfType<AudioManager>().StopPlaying("Steps");
-        }
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            FindObjectOfType<AudioManager>().StopPlaying("Steps");
-        }
-        //if (Input.GetKeyUp(KeyCode.A))
+        //if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.W))
         //{
-        //    FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        //        FindObjectOfType<AudioManager>().Play("Steps");
         //}
+        //else
+        //{
+        //        FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        //}
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                FindObjectOfType<AudioManager>().Play("Steps");
+            }
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                FindObjectOfType<AudioManager>().Play("Steps");
+            }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                FindObjectOfType<AudioManager>().Play("Steps");
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                FindObjectOfType<AudioManager>().Play("Steps");
+            }
+            if (Input.GetKeyUp(KeyCode.D))
+            {
+                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            }
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            }
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            }
+            if (Input.GetKeyUp(KeyCode.W))
+            {
+                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            }
+            if (moveSpeed <= 0)
+            {
+                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            }
 
-        if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
         {
             //animatorWarrior.SetBool("Attack",true);
         }
@@ -195,6 +220,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             StartCoroutine(Dash());
         }
+        }
     }
     void FixedUpdate()
     {
@@ -211,39 +237,48 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     private IEnumerator Dash()
     {
+        
         canDash = false;
         isDashing = true;
         if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
         {
             rb.velocity = new Vector2(transform.localScale.y * dashingPower, transform.localScale.y * dashingPower);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
         {
             rb.velocity = new Vector2(transform.localScale.y * -dashingPower, transform.localScale.y * dashingPower);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
         {
             rb.velocity = new Vector2(transform.localScale.y * dashingPower, transform.localScale.y * -dashingPower);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
         {
             rb.velocity = new Vector2(transform.localScale.y * -dashingPower, transform.localScale.y * -dashingPower);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else if (Input.GetKey(KeyCode.W))
         {
             rb.velocity = new Vector2(0f, transform.localScale.y * dashingPower);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else if (Input.GetKey(KeyCode.S))
         {
             rb.velocity = new Vector2(0f, transform.localScale.y * -dashingPower);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else if (Input.GetKey(KeyCode.A))
         {
             rb.velocity = new Vector2(transform.localScale.x * -dashingPower, 0f);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         else
         {
             rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
@@ -254,7 +289,8 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     public void TakeDamage(int damage)
     {
-        if(dmgTakenCD<=0)
+ 
+        if (dmgTakenCD<=0)
         {
             dmgTakenCD = 0.5f;
         //currentHealth -= damage;
@@ -277,7 +313,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     void Die()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
     public IEnumerator ShieldAbility()
     {

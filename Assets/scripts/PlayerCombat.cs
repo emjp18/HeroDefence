@@ -22,6 +22,7 @@ public class PlayerCombat : MonoBehaviour
     float knockbackCD = 0f;
     float shieldCD = 0f;
 
+
     private void Start()
     {
         
@@ -33,6 +34,7 @@ public class PlayerCombat : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Attack();
+                FindObjectOfType<AudioManager>().Play("SwordAtt");
                 nextAttackTime = Time.time + attackRate;
             }
         }
