@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,16 +21,21 @@ public class ShopTriggerCollider : MonoBehaviour
     }
     private void Update()
     {
-            if (insideRange&& Input.GetKeyDown(KeyCode.F))
+            if(insideRange && Input.GetKeyDown(KeyCode.F))
             {
-            uiShop.Show(range);
+                uiShop.Show(range);
             }
+            //if(Input.GetKeyDown(KeyCode.U))
+            //{
+            //    uiShop.Hide();
+            //}
+
 
     }
     private void OnTriggerExit2D(Collider2D collider)
     {
-        IShopCustomer shopCustomer = collider.GetComponent<IShopCustomer>();
-        if(shopCustomer != null)
+        range = collider.GetComponent<IShopCustomer>();
+        if(range != null)
         {
             uiShop.Hide();
             insideRange = false;
