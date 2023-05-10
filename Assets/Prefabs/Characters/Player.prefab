@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7998763725086788550}
   - component: {fileID: 7998763725086788551}
   - component: {fileID: 8288595077607132611}
-  - component: {fileID: 4086513254767371531}
+  - component: {fileID: 2603269159317761115}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -173,7 +173,11 @@ MonoBehaviour:
   rb: {fileID: 7998763725086788570}
   animatorWarrior: {fileID: 7998763725086788569}
   tr: {fileID: 0}
+  currentHealth: 0
   maxHealth: 100
+  alive: 0
+  healthBar: {fileID: 0}
+  hitIndi: {fileID: 0}
 --- !u!82 &8288595077607132611
 AudioSource:
   m_ObjectHideFlags: 0
@@ -270,7 +274,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4086513254767371531
+--- !u!114 &2603269159317761115
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -279,17 +283,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 7998763725086788572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5db195e99dbbc94fbd910b6a8dd431e, type: 3}
+  m_Script: {fileID: 11500000, guid: 41e7de1ba5eacee4386bc6c968c408b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  attackPointDown: {fileID: 0}
-  attackPointUp: {fileID: 0}
+  animator: {fileID: 7998763725086788569}
+  attackPointDown: {fileID: 7998763725086788568}
+  attackPointUp: {fileID: 7998763725086788568}
   attackPointRight: {fileID: 0}
   attackPointLeft: {fileID: 0}
+  player: {fileID: 0}
   attackRange: 0.5
+  knockbackRange: 10
   enemyLayers:
     serializedVersion: 2
     m_Bits: 0
   attackDamage: 40
   attackRate: 1
+  knockbackTime: 10
+  shieldTime: 10
