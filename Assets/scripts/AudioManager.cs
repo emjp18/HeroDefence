@@ -8,9 +8,11 @@ using UnityEditor;
 public class AudioManager : MonoBehaviour
 {
     public Sound[] sounds;
+    public AudioMixerGroup mixerGroup;
     public static AudioManager instance;
     void Awake()
     {
+
         if (instance == null)
         {
             instance = this;
@@ -20,22 +22,19 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
+         // Creating the AudioSource
         foreach(Sound s in sounds)
         {
+
             DontDestroyOnLoad(gameObject);
             s.source=gameObject.AddComponent<AudioSource>();
             s.source.clip = s.clip;
             s.source.loop= s.loop;
+            s.source.GetComponent<AudioSource>().outputAudioMixerGroup = mixerGroup;
+
         }
-        if (SceneManager.GetActiveScene().buildIndex == 0)
-        {
-            //Play("MenuMusic");
-        }
-        if(SceneManager.GetActiveScene().buildIndex == 1)
-        {
-            //StopPlaying("MenuMusic");
-        }
+
+        
     }
     public void StopPlaying(string sound)
     {
@@ -58,7 +57,8 @@ public class AudioManager : MonoBehaviour
     }
     private void Update()
     {
-       
+
+
     }
 
     public void Play(string Name)
