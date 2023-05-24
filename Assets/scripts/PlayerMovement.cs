@@ -99,10 +99,12 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     void Start()
     {
         currentHealth = maxHealth;
+        healthBar.SetMaxHealth(currentHealth);
     }
 
     void Update()
     {
+        healthBar.SetHealth(currentHealth);
         if (currentHealth <= 0 && alive == 0)
         {
             animatorWarrior.SetBool("Dead", true);
@@ -126,7 +128,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             dmgTakenCD-=Time.deltaTime;
         }
-        healthBar.SetHealth(currentHealth);
+
         if (Input.GetKeyUp(KeyCode.H))
         {
             TryConsumeHealthPotion();
