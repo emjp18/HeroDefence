@@ -13,7 +13,12 @@ public class StateNameController : MonoBehaviour
         {
             //script.daytime = true;
             //FindObjectOfType<AudioManager>().Play("MenuMusic");
+            Debug.Log("testingSelectingWarrior");
 
+        }
+        if(testnr == "Ranger")
+        {
+            Debug.Log("TestingSelectinRanger");
         }
     }
     private void Update()

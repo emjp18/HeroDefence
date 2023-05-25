@@ -5,7 +5,15 @@ using UnityEngine;
 public class NpcMovement : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] GameObject gameObject;
+    [SerializeField] GameObject npc6;
+    [SerializeField] GameObject npc5;
+    [SerializeField] GameObject npc4;
+    [SerializeField] GameObject npc3;
+    [SerializeField] GameObject npc2;
+    [SerializeField] GameObject npc1;
+  
+    enum introStates {MainMenu,Phase1,Phase2,Phase3 };
+
     public Rigidbody2D rb;
     float movespeed=200;
     Vector2 movement;
@@ -20,9 +28,9 @@ public class NpcMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        gameObject.transform.position -= new Vector3(1,0);
+        npc5.transform.position -= new Vector3(1,0);
         timer-= Time.fixedDeltaTime;
-        Debug.Log("timerTest" + timer);
+        //Debug.Log("timerTest" + timer);
  
         if(timer<=0)
         {

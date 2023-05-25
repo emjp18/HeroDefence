@@ -48,5 +48,6 @@ public class MainMenu : MonoBehaviour
         audioMixer.SetFloat("Volume",Mathf.Log10(volume)*20);
         Debug.Log(volume);
     }
+    
 
 }
