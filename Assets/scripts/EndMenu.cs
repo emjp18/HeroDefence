@@ -9,7 +9,7 @@ public class EndMenu : MonoBehaviour
     public WaveManager WaveManager;
     public GameObject youWinUI;
     public Day_Night_Cycle script;
-    public GameObject Player;
+    public PlayerMovement Player;
     private void Start()
     {
         youWinUI.SetActive(false);
@@ -17,6 +17,8 @@ public class EndMenu : MonoBehaviour
     public void Update()
     {
         YouWin();
+        YouLose();
+        Debug.Log(Player.alive + "player alive");
     }
     public void LoadMenu()
     {
@@ -28,12 +30,23 @@ public class EndMenu : MonoBehaviour
     }
     public void YouWin()
     {
+
         if (!WaveManager.EnemyIsAlive() && WaveManager.waveComplete == true && script.daytime ==true)
         {
+            FindObjectOfType<AudioManager>().StopPlaying("NightMusic");
             Debug.Log("winSenario");
             youWinUI.SetActive(true);
             WaveManager.nextWave = 0;
-            Player.SetActive(false);
+            //Player.SetActive(false);
+            Player.alive = 1;
+        }
+    }
+    public void YouLose()
+    {
+        if(Player.alive==1)
+        {
+            youWinUI.SetActive(true);
+            FindObjectOfType<AudioManager>().StopPlaying("NightMusic");
         }
     }
 }

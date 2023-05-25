@@ -57,3 +57,15 @@ MonoBehaviour:
     pitch: 1
     volume: 0.045
     source: {fileID: 0}
+  - name: Swosh
+    clip: {fileID: 8300000, guid: d18b9ad5735fe4249967e945ad6509fa, type: 3}
+    loop: 1
+    pitch: 1
+    volume: 1
+    source: {fileID: 0}
+  - name: Swosh
+    clip: {fileID: 8300000, guid: d18b9ad5735fe4249967e945ad6509fa, type: 3}
+    loop: 1
+    pitch: 1
+    volume: 1
+    source: {fileID: 0}
