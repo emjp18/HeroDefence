@@ -14,6 +14,7 @@ public class enemyHp : MonoBehaviour
     {
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(currentHealth);
+        healthBar.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -29,6 +30,7 @@ public class enemyHp : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        healthBar.gameObject.SetActive(true);
 
         if (currentHealth <= 0)
         {
@@ -40,6 +42,6 @@ public class enemyHp : MonoBehaviour
     {
         gameObject.SetActive(false);
         healthBar.gameObject.SetActive(false);
-        //PlayerMovement.Instance.goldAmount += 20;
+        PlayerMovement.Instance.goldAmount += 5;
     }
 }
