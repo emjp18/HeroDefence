@@ -161,8 +161,6 @@ public class Boss : EnemyBase
         rb = GetComponent<Rigidbody2D>();
         stats.AttackPlayerRange = GetComponent<BoxCollider2D>().size.y * 0.5f;
         stats.AttackBuildingRange = Utility.GRID_CELL_SIZE_LARGE * 0.65f;
-        stats.MovementSpeed = 100;
-        
         box = GetComponent<BoxCollider2D>();
         spriteRend = GetComponent<SpriteRenderer>();
         HitObject().transform.localScale = Vector2.one * 4;

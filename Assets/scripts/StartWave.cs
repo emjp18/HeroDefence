@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class StartWave : MonoBehaviour
 {
-    public PlayerMovement player;
     private void Start()
     {
 
@@ -15,19 +14,15 @@ public class StartWave : MonoBehaviour
     public GameObject startWaveUI;
     void Update()
     {
-        if(player.alive<=0) 
+        if (dayNigScript.daytime && counter <1)
         {
-            if (dayNigScript.daytime && counter < 1 && player.alive <=0)
-            {
-                startWaveUI.SetActive(true);
-
-            }
-            else
-            {
-                StartNextWave();
-            }
+            startWaveUI.SetActive(true);
+ 
         }
-
+        else
+        {
+            StartNextWave();
+        }
         //StartNextWave();
 
     }
