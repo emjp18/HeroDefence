@@ -5768,8 +5768,18 @@ MonoBehaviour:
   npc3: {fileID: 727354836}
   npc2: {fileID: 1827505783}
   npc1: {fileID: 404226220}
-  rb: {fileID: 433696783}
-  ani: {fileID: 433696780}
+  rbNpc1: {fileID: 404226224}
+  rbNpc2: {fileID: 1827505787}
+  rbNpc3: {fileID: 727354840}
+  rbNpc4: {fileID: 1331366256}
+  rbNpc5: {fileID: 433696783}
+  rbNpc6: {fileID: 524935952}
+  aniNpc1: {fileID: 404226222}
+  aniNpc2: {fileID: 1827505785}
+  aniNpc3: {fileID: 727354838}
+  aniNpc4: {fileID: 1331366254}
+  aniNpc5: {fileID: 433696780}
+  aniNpc6: {fileID: 524935950}
 --- !u!1 &800874256
 GameObject:
   m_ObjectHideFlags: 0

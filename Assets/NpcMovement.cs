@@ -13,33 +13,46 @@ public class NpcMovement : MonoBehaviour
     [SerializeField] GameObject npc1;
   
     enum introStates {MainMenu,Phase1,Phase2,Phase3 };
-
-    public Rigidbody2D rb;
-    float movespeed=200;
+    float movespeed = 200;
     Vector2 movement;
-    float timer=5;
-    [SerializeField] Animator ani;
+    float timer = 3;
+    Vector3 npc5Movement;
+    [SerializeField] Rigidbody2D rbNpc1;
+    [SerializeField] Rigidbody2D rbNpc2;
+    [SerializeField] Rigidbody2D rbNpc3;
+    [SerializeField] Rigidbody2D rbNpc4;
+    [SerializeField] Rigidbody2D rbNpc5;
+    [SerializeField] Rigidbody2D rbNpc6;
+
+    [SerializeField] Animator aniNpc1;
+    [SerializeField] Animator aniNpc2;
+    [SerializeField] Animator aniNpc3;
+    [SerializeField] Animator aniNpc4;
+    [SerializeField] Animator aniNpc5;
+    [SerializeField] Animator aniNpc6;
     void Start()
     {
-        rb.velocity = movement *movespeed *Time.fixedDeltaTime;
-
+        rbNpc5.velocity = movement *movespeed *Time.fixedDeltaTime;
+        npc5Movement = new Vector3(0.5f, 0);
+        aniNpc5.SetTrigger("SideWalk");
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        npc5.transform.position -= new Vector3(1,0);
+        npc5.transform.position -= npc5Movement;
         timer-= Time.fixedDeltaTime;
         //Debug.Log("timerTest" + timer);
  
         if(timer<=0)
         {
-            ani.SetTrigger("SideIdle");
+            aniNpc5.SetTrigger("BackWalk");
             timer = 5;
+            npc5Movement = new Vector3(0, -1);
         }
         else
         {
-            ani.SetTrigger("SideWalk");
+            
         }
     }
 }
