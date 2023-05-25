@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     Vector2 movement;
     public int currentHealth;
     public int maxHealth = 100;
-    public int alive = 0;
+    public int alive= 0;
     public int goldAmount;
     private int healthPotionAmount;
     private int mushroomAmount;
@@ -115,8 +115,6 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     void Update()
     {
-
-        
         if (Input.GetKeyUp(KeyCode.H) && currentHealth<maxHealth )
         {
             TryConsumeHealthPotion();
@@ -159,7 +157,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             Debug.Log("TestarHp");
             
         }
-        if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.D))
         {
             FindObjectOfType<AudioManager>().Play("Steps");
         }
@@ -175,7 +173,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             FindObjectOfType<AudioManager>().Play("Steps");
         }
-        if (Input.GetKeyUp(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.D)) 
         {
             FindObjectOfType<AudioManager>().StopPlaying("Steps");
         }
@@ -191,10 +189,10 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             FindObjectOfType<AudioManager>().StopPlaying("Steps");
         }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            FindObjectOfType<AudioManager>().StopPlaying("Steps");
-        }
+        //if (Input.GetKeyUp(KeyCode.A))
+        //{
+        //    FindObjectOfType<AudioManager>().StopPlaying("Steps");
+        //}
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -215,7 +213,6 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             StartCoroutine(Dash());
         }
         healthBar.SetHealth(currentHealth);
-        GetGoldAmount();
     }
     void FixedUpdate()
     {
