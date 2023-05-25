@@ -12,7 +12,7 @@ public class StateNameController : MonoBehaviour
         if (testnr == "Warrior")
         {
             //script.daytime = true;
-            FindObjectOfType<AudioManager>().Play("MenuMusic");
+            //FindObjectOfType<AudioManager>().Play("MenuMusic");
 
         }
     }
@@ -20,7 +20,7 @@ public class StateNameController : MonoBehaviour
     {
         if (script.daytime==false)
         {
-            FindObjectOfType<AudioManager>().Play("DayMusic");
+            //FindObjectOfType<AudioManager>().Play("DayMusic");
         }
 
     }
