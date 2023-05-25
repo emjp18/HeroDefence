@@ -62,6 +62,7 @@ public abstract class EnemyBase : MonoBehaviour
             if(hitTime>hitTimeDelay)
             {
                 hitTime = 0;
+                player.GetComponent<PlayerMovement>().TakeDamage(5);
                 if (!hitBody.activeSelf)
                 {
                     hitBody.SetActive(true);

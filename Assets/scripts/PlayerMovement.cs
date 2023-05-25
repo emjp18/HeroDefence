@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     public int currentHealth;
     public int maxHealth = 100;
     public int alive = 0;
-    public int goldAmount;
+    private int goldAmount;
     private int healthPotionAmount;
     private int mushroomAmount;
 
@@ -215,7 +215,6 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             StartCoroutine(Dash());
         }
         healthBar.SetHealth(currentHealth);
-        GetGoldAmount();
     }
     void FixedUpdate()
     {

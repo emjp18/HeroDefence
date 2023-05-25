@@ -30,11 +30,11 @@ public class AudioManager : MonoBehaviour
         }
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            Play("MenuMusic");
+            //Play("MenuMusic");
         }
         if(SceneManager.GetActiveScene().buildIndex == 1)
         {
-            StopPlaying("MenuMusic");
+            //StopPlaying("MenuMusic");
         }
     }
     public void StopPlaying(string sound)
