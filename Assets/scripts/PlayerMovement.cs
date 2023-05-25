@@ -1,8 +1,9 @@
+﻿using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using System;
 
 public class PlayerMovement : MonoBehaviour, IShopCustomer
 {
@@ -14,26 +15,25 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     public int currentHealth;
     public int maxHealth = 100;
     public int alive= 0;
-<<<<<<< HEAD
     public int goldAmount;
-=======
-    private int goldAmount;
->>>>>>> parent of 2f56cb75 (Revert "Merge branch 'main' into archer1")
     private int healthPotionAmount;
-    public HealthBar healthBar;
-    public static PlayerMovement Instance { get; private set; }
+    private int mushroomAmount;
+
     public event EventHandler OnGoldAmountChanged;
     public event EventHandler OnHealthPotionAmountChanged;
+
+
+    public HealthBar healthBar;
+
+    public static PlayerMovement Instance { get; private set; }
+
+    private bool haveBoots = false;
     private bool canDash = true;
     private bool isDashing;
     public hitIndicator hitIndi;
-    public float dmgTakenCD;
     private float dashingPower = 24*2f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
-
-    private float shieldActiveTime = 5f;
-    private bool shieldActive = false;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -42,6 +42,12 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             
            
         }
+    }
+
+    void Start()
+    {
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(currentHealth);
     }
     private void Awake()
     {
@@ -63,6 +69,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         healthPotionAmount++;
         OnHealthPotionAmountChanged?.Invoke(this, EventArgs.Empty);
     }
+
     public bool TrySpendGoldAmount(int spendGoldAmount)
     {
         if (GetGoldAmount() >= spendGoldAmount)
@@ -73,10 +80,12 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         }
         else
         {
-            Debug.Log("du e fattig");
+            Debug.Log("du �r fattig");
             return false;
         }
     }
+
+
 
     public void TryConsumeHealthPotion()
     {
@@ -91,53 +100,34 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             }
         }
     }
+
+
     public void BoughtItem(Item.ItemType itemType)
     {
         Debug.Log("Bought item: " + itemType);
         switch (itemType)
         {
             case Item.ItemType.HealthPotion: AddHealthPotion(); break;
+            case Item.ItemType.Boots: haveBoots = true; break;
+            case Item.ItemType.MagicMushroom: mushroomAmount = 1; break;
 
         }
     }
-    void Start()
-    {
-        currentHealth = maxHealth;
-    }
-
     void Update()
     {
-<<<<<<< HEAD
         if (Input.GetKeyUp(KeyCode.H) && currentHealth<maxHealth )
-=======
-        if (currentHealth <= 0 && alive == 0)
-        {
-            animatorWarrior.SetBool("Dead", true);
-
-            Debug.Log("ALIVE");
-            alive++;
-            //alive = false;
-        }
-        if(alive >=1)
-        {
-            movement.x = 0;
-            movement.y=0;
-            FindObjectOfType<AudioManager>().StopPlaying("Steps");
-          
-        }
-        if( alive <=0 )
-        {
-
-        
-        if (dmgTakenCD>0)
-        {
-            dmgTakenCD-=Time.deltaTime;
-        }
-        healthBar.SetHealth(currentHealth);
-        if (Input.GetKeyUp(KeyCode.H))
->>>>>>> parent of 2f56cb75 (Revert "Merge branch 'main' into archer1")
         {
             TryConsumeHealthPotion();
+        }
+        if(haveBoots)
+        {
+            moveSpeed = 300f;
+        }
+        if(mushroomAmount == 1)
+        {
+            moveSpeed = 1000f;
+            Debug.Log("du har en svamp :D");
+            mushroomAmount = 0;
         }
         if (currentHealth<=0 && alive==0)
         {
@@ -145,14 +135,10 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             
             Debug.Log("ALIVE");
             alive++;
-                //alive = false;
-            }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Debug.Log("TestarHp");
-            TakeDamage(5);
-
+            
+        //alive = false;
         }
+
 
         if (isDashing)
         {
@@ -165,7 +151,6 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         animatorWarrior.SetFloat("Horizontal", movement.x);
         animatorWarrior.SetFloat("Vertical", movement.y);
         animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
-<<<<<<< HEAD
         if (Input.GetKeyDown(KeyCode.O))
         {
             TakeDamage(1);
@@ -208,54 +193,8 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         //{
         //    FindObjectOfType<AudioManager>().StopPlaying("Steps");
         //}
-=======
-        //if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.W))
-        //{
-        //        FindObjectOfType<AudioManager>().Play("Steps");
-        //}
-        //else
-        //{
-        //        FindObjectOfType<AudioManager>().StopPlaying("Steps");
-        //}
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                FindObjectOfType<AudioManager>().Play("Steps");
-            }
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                FindObjectOfType<AudioManager>().Play("Steps");
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                FindObjectOfType<AudioManager>().Play("Steps");
-            }
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                FindObjectOfType<AudioManager>().Play("Steps");
-            }
-            if (Input.GetKeyUp(KeyCode.D))
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
-            }
-            if (Input.GetKeyUp(KeyCode.A))
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
-            }
-            if (Input.GetKeyUp(KeyCode.S))
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
-            }
-            if (Input.GetKeyUp(KeyCode.W))
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
-            }
-            if (moveSpeed <= 0)
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
-            }
->>>>>>> parent of 2f56cb75 (Revert "Merge branch 'main' into archer1")
 
-            if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             //animatorWarrior.SetBool("Attack",true);
         }
@@ -273,11 +212,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             StartCoroutine(Dash());
         }
-<<<<<<< HEAD
         healthBar.SetHealth(currentHealth);
-=======
-        }
->>>>>>> parent of 2f56cb75 (Revert "Merge branch 'main' into archer1")
     }
     void FixedUpdate()
     {
@@ -294,74 +229,33 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     private IEnumerator Dash()
     {
-        
         canDash = false;
         isDashing = true;
-        if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
-        {
-            rb.velocity = new Vector2(transform.localScale.y * dashingPower, transform.localScale.y * dashingPower);
-            FindObjectOfType<AudioManager>().Play("Swosh");
-        }
-        else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
-        {
-            rb.velocity = new Vector2(transform.localScale.y * -dashingPower, transform.localScale.y * dashingPower);
-            FindObjectOfType<AudioManager>().Play("Swosh");
-        }
-        else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
-        {
-            rb.velocity = new Vector2(transform.localScale.y * dashingPower, transform.localScale.y * -dashingPower);
-            FindObjectOfType<AudioManager>().Play("Swosh");
-        }
-        else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
-        {
-            rb.velocity = new Vector2(transform.localScale.y * -dashingPower, transform.localScale.y * -dashingPower);
-            FindObjectOfType<AudioManager>().Play("Swosh");
-        }
-        else if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W))
         {
             rb.velocity = new Vector2(0f, transform.localScale.y * dashingPower);
-            FindObjectOfType<AudioManager>().Play("Swosh");
         }
-        else if (Input.GetKey(KeyCode.S))
-        {
+        else if (Input.GetKey(KeyCode.S)){
             rb.velocity = new Vector2(0f, transform.localScale.y * -dashingPower);
-            FindObjectOfType<AudioManager>().Play("Swosh");
         }
-        else if (Input.GetKey(KeyCode.A))
-        {
+        else if (Input.GetKey(KeyCode.A)){
             rb.velocity = new Vector2(transform.localScale.x * -dashingPower, 0f);
-            FindObjectOfType<AudioManager>().Play("Swosh");
         }
-        else
-        {
+        else {
             rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
-            FindObjectOfType<AudioManager>().Play("Swosh");
         }
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
-        isDashing = false;
+        isDashing= false;
         yield return new WaitForSeconds(dashingCooldown);
-        canDash = true;
+        canDash=true;
     }
     public void TakeDamage(int damage)
-    {
- 
-        if (dmgTakenCD<=0)
-        {
-            dmgTakenCD = 0.5f;
-        //currentHealth -= damage;
+    {        
+        currentHealth -= damage;
         hitIndi.playerHit = true;
         hitIndi.ppv.weight = 1;
-        if (shieldActive == true)
-        {
-            currentHealth -= damage / 2;
-        }
-        if (shieldActive == false)
-        {
-            currentHealth -= damage;
-        }
-        }
         if (currentHealth <= 0)
         {
             Die();
@@ -371,11 +265,5 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     void Die()
     {
         //gameObject.SetActive(false);
-    }
-    public IEnumerator ShieldAbility()
-    {
-        shieldActive = true;
-        yield return new WaitForSeconds(shieldActiveTime);
-        shieldActive = false;
     }
 }
