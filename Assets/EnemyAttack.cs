@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     public GameObject player;
+    public GameObject building;
     public float detectionRange = 15f;
     public Animator animator;
 
@@ -19,11 +20,21 @@ public class EnemyAttack : MonoBehaviour
     void Update()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        float distanceToBuilding = Vector3.Distance(transform.position, building.transform.position);
         if (distanceToPlayer <= detectionRange)
         {
             if (Time.time >= enemyAttackCD)
             {
                 enemyAttack();
+                Debug.Log("Player is within range of this object!");
+                enemyAttackCD = Time.time + enemyAttackTime;
+            }
+        }
+        if (distanceToBuilding<= detectionRange)
+        {
+            if (Time.time >= enemyAttackCD)
+            {
+                enemyAttackBase();
                 Debug.Log("Player is within range of this object!");
                 enemyAttackCD = Time.time + enemyAttackTime;
             }
@@ -40,5 +51,13 @@ public class EnemyAttack : MonoBehaviour
             player.GetComponent<PlayerMovement>().TakeDamage(enemyAttackDamage);
         }
     }
-
+    void enemyAttackBase()
+    {
+        animator.SetTrigger("attack");
+        Collider2D[] hitBuilding = Physics2D.OverlapCircleAll(transform.position, enemyAttackRange, playerLayer);
+        foreach (Collider2D building in hitBuilding)
+        {
+            building.GetComponent<BuildingHp>().TakeDamage(enemyAttackDamage);
+        }
+    }
 }

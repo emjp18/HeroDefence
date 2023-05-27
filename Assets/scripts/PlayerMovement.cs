@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     private float shieldActiveTime = 5f;
     private bool shieldActive = false;
 
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag=="EnemyAttack")
@@ -126,7 +127,6 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             dmgTakenCD-=Time.deltaTime;
         }
-        healthBar.SetHealth(currentHealth);
         if (Input.GetKeyUp(KeyCode.H))
         {
             TryConsumeHealthPotion();
@@ -321,4 +321,5 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         yield return new WaitForSeconds(shieldActiveTime);
         shieldActive = false;
     }
+
 }

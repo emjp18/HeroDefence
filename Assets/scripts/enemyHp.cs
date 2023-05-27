@@ -9,6 +9,9 @@ public class enemyHp : MonoBehaviour
     public float timer;
     int currentHealth;
     public HealthBar healthBar;
+    public int xpPerKill = 10;
+    public GameObject player;
+
 
     void Start()
     {
@@ -39,7 +42,9 @@ public class enemyHp : MonoBehaviour
     void Die()
     {
         gameObject.SetActive(false);
+        player.GetComponent<LevelSystem>().RecieveXp(xpPerKill);
         healthBar.gameObject.SetActive(false);
+   
         //PlayerMovement.Instance.goldAmount += 20;
     }
 }

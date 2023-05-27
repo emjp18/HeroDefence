@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4728359791577492415
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1501870713981436944, guid: 1314f80778f470c4a9a424ee328ae647, type: 3}
+  m_PrefabInstance: {fileID: 4435014589309943158}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2980223176657828196}
+  m_Layer: 0
+  m_Name: 'Indication (Missing Prefab with guid: 1314f80778f470c4a9a424ee328ae647)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2980223176657828196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1501870713981436946, guid: 1314f80778f470c4a9a424ee328ae647, type: 3}
+  m_PrefabInstance: {fileID: 4435014589309943158}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4728359791577492415}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7482668592495820008}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6366727717555014584
 GameObject:
   m_ObjectHideFlags: 0
@@ -14,10 +45,7 @@ GameObject:
   - component: {fileID: 2873726410871320978}
   - component: {fileID: 3489797167446053723}
   - component: {fileID: -2681629935583074131}
-  - component: {fileID: 5618131617616691018}
-  - component: {fileID: 1410060632900003375}
-  - component: {fileID: 6038101055255554767}
-  - component: {fileID: 7612957431249868437}
+  - component: {fileID: 871623678606719902}
   m_Layer: 6
   m_Name: Boss
   m_TagString: Enemy
@@ -173,7 +201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
---- !u!114 &5618131617616691018
+--- !u!114 &871623678606719902
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -182,93 +210,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6366727717555014584}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a34e6764cf9905b48adec4104489702a, type: 3}
+  m_Script: {fileID: 11500000, guid: f2caf0625ead7394eb3ddd8a72f6a6f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
   bossScript: {fileID: 0}
   timer: 0
---- !u!114 &1410060632900003375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6366727717555014584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8daec054b0de5ff43bdf1e656ad7429d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicator: {fileID: 0}
-  Target: {fileID: 0}
-  camBox: {fileID: 0}
---- !u!114 &6038101055255554767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6366727717555014584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b32fd8fa73fa40142b79cfa33f87154f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb2d: {fileID: 3489797167446053723}
-  strength: 16
-  delay: 0.15
-  OnBegin:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -2681629935583074131}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  OnDone:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -2681629935583074131}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
---- !u!114 &7612957431249868437
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6366727717555014584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea089bd16160c494b919df6004e24ea7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  detectionRange: 15
-  animator: {fileID: 0}
-  enemyAttackTime: 2.5
-  enemyAttackRange: 10
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  enemyAttackDamage: 50
+  healthBar: {fileID: 0}
 --- !u!1001 &4435014589309943158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -334,8 +282,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1314f80778f470c4a9a424ee328ae647, type: 3}
---- !u!4 &2980223176657828196 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1501870713981436946, guid: 1314f80778f470c4a9a424ee328ae647, type: 3}
-  m_PrefabInstance: {fileID: 4435014589309943158}
-  m_PrefabAsset: {fileID: 0}
