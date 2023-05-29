@@ -4,12 +4,15 @@ using System;
 using UnityEngine.SceneManagement;
 using UnityEditor.SearchService;
 using UnityEditor;
+using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
     public Sound[] sounds;
     public AudioMixerGroup mixerGroup;
     public static AudioManager instance;
+    [SerializeField] public List<AudioSource> sources = new List<AudioSource>();
+    private int sourceIndex=0;
     void Awake()
     {
 
@@ -27,11 +30,12 @@ public class AudioManager : MonoBehaviour
         {
 
             DontDestroyOnLoad(gameObject);
-            s.source=gameObject.AddComponent<AudioSource>();
+            //s.source=gameObject.AddComponent<AudioSource>();
+            s.source = sources[sourceIndex];
             s.source.clip = s.clip;
             s.source.loop= s.loop;
             s.source.GetComponent<AudioSource>().outputAudioMixerGroup = mixerGroup;
-
+            sourceIndex++;
         }
 
         

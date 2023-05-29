@@ -27,6 +27,10 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     private float dashingPower = 24*2f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
+    private int musicCounter1;
+    private int musicCounter2;
+    private int musicCounter3;
+    private int musicCounter4;
 
     private float shieldActiveTime = 5f;
     private bool shieldActive = false;
@@ -170,32 +174,46 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             if (Input.GetKeyDown(KeyCode.D))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter1 = 1;
             }
             if (Input.GetKeyDown(KeyCode.A))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter2 = 1;
             }
             if (Input.GetKeyDown(KeyCode.W))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter4 = 1;
+             
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter3 = 1;
             }
             if (Input.GetKeyUp(KeyCode.D))
             {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                //FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                musicCounter1 = 0;
             }
             if (Input.GetKeyUp(KeyCode.A))
             {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                //FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                musicCounter2 = 0;
             }
             if (Input.GetKeyUp(KeyCode.S))
             {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                //FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                musicCounter3 = 0;
             }
             if (Input.GetKeyUp(KeyCode.W))
+            {
+                //FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                musicCounter4 = 0;
+            }
+            Debug.Log(musicCounter4+musicCounter3+musicCounter2+musicCounter1+ " AUDIOCOUNT");
+            if(musicCounter1+musicCounter2+musicCounter3+musicCounter4==0)
             {
                 FindObjectOfType<AudioManager>().StopPlaying("Steps");
             }
