@@ -35,6 +35,8 @@ public class ArcherWeapon : MonoBehaviour
         ShootNormal();
         SpreadshotAbility();
         UnlimitedShotsAbility();
+        Debug.Log(timerMultiShootingSkillCoolDown);
+        Debug.Log(timerUnlimitedShootingCoolDown);
     }
     private void ShootNormal()
     {
@@ -68,13 +70,13 @@ public class ArcherWeapon : MonoBehaviour
             {
                 isMultiShooting = false;
                 timerMultiShootingSkillCoolDown = 30.0f;
-                timerMultiShooting = 8.0f;
+                timerMultiShooting = 4.0f;
                 return; // skipping code
             }
             if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
             {
                 Debug.Log("DU multiskjuter");
-                fireRate = 0.6f;
+                fireRate = 1.0f;
                 nextFire = Time.time + fireRate;
                 CreateArrow(new Vector3(0, 0f, 20f));
                 CreateArrow(new Vector3(0, 0f, 10f));
