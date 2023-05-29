@@ -41,9 +41,10 @@ public class enemyHp : MonoBehaviour
     }
     void Die()
     {
+        healthBar.gameObject.SetActive(false);
         gameObject.SetActive(false);
         player.GetComponent<LevelSystem>().RecieveXp(xpPerKill);
-        healthBar.gameObject.SetActive(false);
+        
    
         //PlayerMovement.Instance.goldAmount += 20;
     }
