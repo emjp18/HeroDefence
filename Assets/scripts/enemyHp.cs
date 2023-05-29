@@ -9,12 +9,14 @@ public class enemyHp : MonoBehaviour
     public float timer;
     int currentHealth;
     public HealthBar healthBar;
+    public int xpPerKill = 10;
+    public GameObject player;
+
 
     void Start()
     {
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(currentHealth);
-        healthBar.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -30,7 +32,6 @@ public class enemyHp : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        healthBar.gameObject.SetActive(true);
 
         if (currentHealth <= 0)
         {
@@ -41,7 +42,9 @@ public class enemyHp : MonoBehaviour
     void Die()
     {
         gameObject.SetActive(false);
+        player.GetComponent<LevelSystem>().RecieveXp(xpPerKill);
         healthBar.gameObject.SetActive(false);
-        PlayerMovement.Instance.goldAmount += 5;
+   
+        //PlayerMovement.Instance.goldAmount += 20;
     }
 }
