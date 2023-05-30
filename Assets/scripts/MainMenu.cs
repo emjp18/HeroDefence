@@ -9,7 +9,7 @@ public class MainMenu : MonoBehaviour
     int musicCounter;
     public AudioMixer audioMixer;
     Sound s;
-
+    [SerializeField]private Camera cam;
     public void Update()
     {
         if(musicCounter <= 0)
@@ -21,10 +21,10 @@ public class MainMenu : MonoBehaviour
     }
     public void PlayGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        SceneManager.LoadScene("PrototypeV1");
+        NpcMovement.startIntro = true;
+        cam.gameObject.SetActive(false);
         FindObjectOfType<AudioManager>().StopPlaying("MenuMusic");
-        musicCounter= 0;
+        musicCounter = 0;
 
     }
     public void ClassSelection(string test )

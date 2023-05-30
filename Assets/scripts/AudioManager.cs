@@ -36,6 +36,7 @@ public class AudioManager : MonoBehaviour
             s.source.loop= s.loop;
             s.source.GetComponent<AudioSource>().outputAudioMixerGroup = mixerGroup;
             sourceIndex++;
+            DontDestroyOnLoad(s.source);
         }
 
         
