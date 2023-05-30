@@ -1,18 +1,4 @@
-﻿/* 
-    ------------------- Code Monkey -------------------
-
-    Thank you for downloading the Code Monkey Utilities
-    I hope you find them useful in your projects
-    If you have any questions use the contact form
-    Cheers!
-
-               unitycodemonkey.com
-    --------------------------------------------------
- */
- 
-//#define SOUND_MANAGER // Has Sound_Manager in project
-//#define CURSOR_MANAGER // Has Cursor_Manager in project
-
+﻿
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,9 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace CodeMonkey.Utils {
     
-    /*
-     * Button in the UI
-     * */
+
     public class Button_UI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler {
 
         public Action ClickFunc = null;
@@ -190,10 +174,6 @@ namespace CodeMonkey.Utils {
 
 
 
-        /*
-         * Class for temporarily intercepting a button action
-         * Useful for Tutorial disabling specific buttons
-         * */
         public class InterceptActionHandler {
 
             private Action removeInterceptFunc;

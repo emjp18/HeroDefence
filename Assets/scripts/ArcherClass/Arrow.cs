@@ -13,18 +13,14 @@ public class Arrow : MonoBehaviour
     {
         rb.velocity = transform.right * speed;
     }
-    private void Update()
-    {
 
-
-    }
     private void OnTriggerEnter2D(Collider2D hitInfo)
     {
         enemyHp enemy = hitInfo.GetComponent<enemyHp>();
         if (enemy != null)
         {
             enemy.TakeDamage(damage);
-            Debug.Log("du har blivit träffad deiger");
+            Debug.Log("du har blivit träffad");
             Destroy(gameObject);
         }
         else

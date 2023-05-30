@@ -7,7 +7,7 @@ public class enemyHp : MonoBehaviour
     public int maxHealth = 100;
     public Boss bossScript;
     public float timer;
-    int currentHealth;
+    public int currentHealth;
     public HealthBar healthBar;
     public int xpPerKill = 10;
     public GameObject player;

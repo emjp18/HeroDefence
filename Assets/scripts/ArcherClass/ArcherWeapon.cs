@@ -108,7 +108,7 @@ public class ArcherWeapon : MonoBehaviour
             {
                 isUnlimitedShooting = false;
                 timerUnlimitedShootingCoolDown = 60.0f;
-                timerUnlimitedShooting = 2.5f;
+                timerUnlimitedShooting = 3.0f;
                 return;
             }
 
