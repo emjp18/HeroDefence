@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4304232448024697254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4304232448024697248}
+  - component: {fileID: 4304232448024697255}
+  m_Layer: 0
+  m_Name: AudioManager (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4304232448024697248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4304232448024697254}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.729489, y: 0.32964653, z: 5.6128926}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4304232448024697255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4304232448024697254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd1c0be1c016b342b1f5290ed897f88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: Steps
+    clip: {fileID: 8300000, guid: f0fba75baf76a514da1e094bc11a31be, type: 3}
+    loop: 1
+    pitch: 1.46
+    volume: 0.131
+    source: {fileID: 0}
+  - name: DayMusic
+    clip: {fileID: 8300000, guid: 8e57c40f7980f674aa0191429ce1352d, type: 3}
+    loop: 1
+    pitch: 1
+    volume: 0.006
+    source: {fileID: 0}
+  - name: MenuMusic
+    clip: {fileID: 8300000, guid: ed5d4cd473a5be34e80adf8f2a6dd6c8, type: 3}
+    loop: 1
+    pitch: 1
+    volume: 0.304
+    source: {fileID: 0}
+  - name: Swosh
+    clip: {fileID: 8300000, guid: d18b9ad5735fe4249967e945ad6509fa, type: 3}
+    loop: 0
+    pitch: 1
+    volume: 0.143
+    source: {fileID: 0}
+  - name: NightMusic
+    clip: {fileID: 8300000, guid: c9632cafdb1c93a47942ef4c95f93a73, type: 3}
+    loop: 1
+    pitch: 1
+    volume: 0.247
+    source: {fileID: 0}
+  - name: SwordAtt
+    clip: {fileID: 8300000, guid: e3196d77ee630934988889e3eee6147b, type: 3}
+    loop: 0
+    pitch: 1
+    volume: 0.159
+    source: {fileID: 0}
+  - name: Button
+    clip: {fileID: 8300000, guid: bd0d5d40d23064640b71ab9bc10a3efa, type: 3}
+    loop: 0
+    pitch: 1
+    volume: 0.162
+    source: {fileID: 0}
+  - name: PlayerHit
+    clip: {fileID: 8300000, guid: 2f562f566ab62da46a4a7e2c1b96cafe, type: 3}
+    loop: 0
+    pitch: 1
+    volume: 0.44
+    source: {fileID: 0}
+  mixerGroup: {fileID: 24300002, guid: 7750e1d0576ab9f4c86e58a6875381f1, type: 2}
+  sources:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
