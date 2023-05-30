@@ -12,15 +12,20 @@ public class StateNameController : MonoBehaviour
         if (testnr == "Warrior")
         {
             //script.daytime = true;
-            FindObjectOfType<AudioManager>().Play("MenuMusic");
+            //FindObjectOfType<AudioManager>().Play("MenuMusic");
+            Debug.Log("testingSelectingWarrior");
 
+        }
+        if(testnr == "Ranger")
+        {
+            Debug.Log("TestingSelectinRanger");
         }
     }
     private void Update()
     {
         if (script.daytime==false)
         {
-            FindObjectOfType<AudioManager>().Play("DayMusic");
+            //FindObjectOfType<AudioManager>().Play("DayMusic");
         }
 
     }

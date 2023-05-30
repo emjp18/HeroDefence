@@ -4,13 +4,18 @@ using System;
 using UnityEngine.SceneManagement;
 using UnityEditor.SearchService;
 using UnityEditor;
+using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
     public Sound[] sounds;
+    public AudioMixerGroup mixerGroup;
     public static AudioManager instance;
+    [SerializeField] public List<AudioSource> sources = new List<AudioSource>();
+    private int sourceIndex=0;
     void Awake()
     {
+
         if (instance == null)
         {
             instance = this;
@@ -20,22 +25,21 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
+         // Creating the AudioSource
         foreach(Sound s in sounds)
         {
+
             DontDestroyOnLoad(gameObject);
-            s.source=gameObject.AddComponent<AudioSource>();
+            //s.source=gameObject.AddComponent<AudioSource>();
+            s.source = sources[sourceIndex];
             s.source.clip = s.clip;
             s.source.loop= s.loop;
+            s.source.GetComponent<AudioSource>().outputAudioMixerGroup = mixerGroup;
+            sourceIndex++;
+            DontDestroyOnLoad(s.source);
         }
-        if (SceneManager.GetActiveScene().buildIndex == 0)
-        {
-            Play("MenuMusic");
-        }
-        if(SceneManager.GetActiveScene().buildIndex == 1)
-        {
-            StopPlaying("MenuMusic");
-        }
+
+        
     }
     public void StopPlaying(string sound)
     {
@@ -58,7 +62,8 @@ public class AudioManager : MonoBehaviour
     }
     private void Update()
     {
-       
+
+
     }
 
     public void Play(string Name)
