@@ -32,7 +32,7 @@ public class enemyHp : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-
+        FindObjectOfType<AudioManager>().Play("Zgrunt");
         if (currentHealth <= 0)
         {
             //bossScript.PlayDead();           
@@ -41,11 +41,11 @@ public class enemyHp : MonoBehaviour
     }
     void Die()
     {
+        PlayerMovement.Instance.goldAmount += 20;
         healthBar.gameObject.SetActive(false);
         gameObject.SetActive(false);
         player.GetComponent<LevelSystem>().RecieveXp(xpPerKill);
-        
-   
-        //PlayerMovement.Instance.goldAmount += 20;
+
+
     }
 }

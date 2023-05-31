@@ -9,29 +9,34 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     [SerializeField] float moveSpeed = 200f;
     [SerializeField] Rigidbody2D rb;
     [SerializeField] Animator animatorWarrior;
+    [SerializeField] Animator animatorRanger;
     [SerializeField] private TrailRenderer tr;
     Vector2 movement;
     public int currentHealth;
     public int maxHealth = 100;
-    public int alive = 0;
-    private int goldAmount;
+    [SerializeField]public int alive = 0;
+    public int goldAmount;
     private int healthPotionAmount;
     public HealthBar healthBar;
     public static PlayerMovement Instance { get; private set; }
     public event EventHandler OnGoldAmountChanged;
     public event EventHandler OnHealthPotionAmountChanged;
-    private bool canDash = true;
+    [SerializeField] private bool canDash = true;
     private bool isDashing;
     public hitIndicator hitIndi;
     public float dmgTakenCD;
     private float dashingPower = 24 * 2f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
-
+    private Vector3 mousePos;
     private float shieldActiveTime = 5f;
     private bool shieldActive = false;
-    public int plusHealth = 10;
-    public float plusSpeed = 10;
+    public int plusHealth = 20;
+    public float plusSpeed = 20;
+    private int musicCounter1;
+    private int musicCounter2;
+    private int musicCounter3;
+    private int musicCounter4;
     public GameObject buttonCanvas;
 
 
@@ -43,6 +48,12 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
 
         }
     }
+    void Start()
+    {
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(currentHealth);
+    }
+
     private void Awake()
     {
         Instance = this;
@@ -100,17 +111,15 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
 
         }
     }
-    void Start()
-    {
-        currentHealth = maxHealth;
-    }
 
     void Update()
     {
+        healthBar.SetHealth(currentHealth);
         if (currentHealth <= 0 && alive == 0)
         {
             animatorWarrior.SetBool("Dead", true);
-
+            animatorRanger.SetBool("Die", true);
+    
             Debug.Log("ALIVE");
             alive++;
             //alive = false;
@@ -137,17 +146,13 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             if (currentHealth <= 0 && alive == 0)
             {
                 animatorWarrior.SetBool("Dead", true);
+           
 
                 Debug.Log("ALIVE");
                 alive++;
                 //alive = false;
             }
-            if (Input.GetKeyDown(KeyCode.O))
-            {
-                Debug.Log("TestarHp");
-                TakeDamage(5);
 
-            }
 
             if (isDashing)
             {
@@ -160,67 +165,53 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
             animatorWarrior.SetFloat("Horizontal", movement.x);
             animatorWarrior.SetFloat("Vertical", movement.y);
             animatorWarrior.SetFloat("Speed", movement.sqrMagnitude);
-            //if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.W))
-            //{
-            //        FindObjectOfType<AudioManager>().Play("Steps");
-            //}
-            //else
-            //{
-            //        FindObjectOfType<AudioManager>().StopPlaying("Steps");
-            //}
+            animatorRanger.SetFloat("Horizontal", movement.x);
+            animatorRanger.SetFloat("Vertical", movement.y);
+            animatorRanger.SetFloat("Speed", movement.sqrMagnitude);
             if (Input.GetKeyDown(KeyCode.D))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter1 = 1;
             }
             if (Input.GetKeyDown(KeyCode.A))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter2 = 1;
             }
             if (Input.GetKeyDown(KeyCode.W))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter3 = 1;
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
                 FindObjectOfType<AudioManager>().Play("Steps");
+                musicCounter4 = 1;
             }
             if (Input.GetKeyUp(KeyCode.D))
             {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                musicCounter1= 0;              
             }
             if (Input.GetKeyUp(KeyCode.A))
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            {          
+                musicCounter2 = 0;
             }
             if (Input.GetKeyUp(KeyCode.S))
-            {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+            {       
+                musicCounter4 = 0;
             }
             if (Input.GetKeyUp(KeyCode.W))
             {
-                FindObjectOfType<AudioManager>().StopPlaying("Steps");
+                musicCounter3= 0;
             }
-            if (moveSpeed <= 0)
+            if (musicCounter1+musicCounter2+musicCounter3+musicCounter4 ==0)
             {
                 FindObjectOfType<AudioManager>().StopPlaying("Steps");
             }
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                //animatorWarrior.SetBool("Attack",true);
-            }
-            //else
-            //{
-            //    //animatorWarrior.SetBool("StopAttack",true);
-            //    animatorWarrior.SetBool("Attack", false);
-            //}
-            if (Input.GetMouseButtonUp(0))
-            {
-                //animatorWarrior.SetBool("FrontAttack", false);
-                //animatorWarrior.SetBool("StopAttack",true) ;
-            }
             if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
             {
+                Debug.Log("Test");
                 StartCoroutine(Dash());
             }
         }
@@ -295,6 +286,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
 
         if (dmgTakenCD <= 0)
         {
+            FindObjectOfType<AudioManager>().Play("PlayerHit");
             dmgTakenCD = 0.5f;
             //currentHealth -= damage;
             hitIndi.playerHit = true;

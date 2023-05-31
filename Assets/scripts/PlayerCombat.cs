@@ -30,7 +30,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Start()
     {
-        particles.SetActive(true);
+        //particles.SetActive(true);
     }
     void Update()
     {
@@ -47,6 +47,7 @@ public class PlayerCombat : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                FindObjectOfType<AudioManager>().Play("Sbash");
                 Knockback();
                 knockbackCD = Time.time + knockbackTime;
             }

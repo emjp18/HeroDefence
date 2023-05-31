@@ -61,7 +61,7 @@ public class EnemyStats
                 }
             case ENEMY_TYPE.BOSS:
                 {
-                    movementSpeed = 50;
+                    movementSpeed = 150;
                     chasePlayerRange = Utility.GRID_CELL_SIZE_LARGE*1.5f;
                     health = 100;
                     break;

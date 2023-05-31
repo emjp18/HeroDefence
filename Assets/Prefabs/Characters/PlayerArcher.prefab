@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 140706538958661950}
-  - component: {fileID: 140706538958661939}
   m_Layer: 0
   m_Name: FirePoint
   m_TagString: Untagged
@@ -32,20 +31,6 @@ Transform:
   m_Father: {fileID: 7994648966430970504}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &140706538958661939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 140706538958661951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 046f8842b26ec0a4abc1e9f57592f102, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cam: {fileID: 0}
-  tr: {fileID: 140706538958661950}
 --- !u!1 &7994648966430970508
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,8 +47,7 @@ GameObject:
   - component: {fileID: 7994648966430970519}
   - component: {fileID: 8283494743410267283}
   - component: {fileID: 140706539069986432}
-  - component: {fileID: 140706539069986488}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerArcher
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -135,7 +119,7 @@ SpriteRenderer:
   m_Size: {x: 11, y: 11}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!50 &7994648966430970506
@@ -224,9 +208,12 @@ MonoBehaviour:
   currentHealth: 0
   maxHealth: 100
   alive: 0
-  goldAmount: 0
   healthBar: {fileID: 0}
   hitIndi: {fileID: 0}
+  dmgTakenCD: 0
+  plusHealth: 10
+  plusSpeed: 10
+  buttonCanvas: {fileID: 0}
 --- !u!82 &8283494743410267283
 AudioSource:
   m_ObjectHideFlags: 0
@@ -335,17 +322,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbcfc0e329ce0e6469c970b87f39da78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &140706539069986488
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7994648966430970508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48dcd4ddb43668449b3b5ddab7ffa20e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePoint: {fileID: 140706538958661950}
-  arrowPrefab: {fileID: 6914551422072723664, guid: f7a6f8a0f9e01704a96eeae50d1d14ae, type: 3}

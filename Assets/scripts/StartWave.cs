@@ -55,9 +55,9 @@ public class StartWave : MonoBehaviour
 
             if (player.alive<=0) 
         {
-            if (dayNigScript.daytime && counter < 1 && player.alive <=0)
+            if (dayNigScript.daytime && counter < 1 && player.alive <= 0)
             {
-                startWaveUI.SetActive(true);
+                //startWaveUI.SetActive(true);
 
             }
             else

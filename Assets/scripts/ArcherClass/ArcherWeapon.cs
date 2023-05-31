@@ -9,10 +9,14 @@ public class ArcherWeapon : MonoBehaviour
 
     public Transform firePoint;
     public GameObject arrowPrefab;
+    public GameObject buttonCanvas;
+    public Arrow arrow;
+    public Animator animator;
+    public GameObject player;
 
     private float fireRate;
     private float nextFire = 0f;
-
+    private Vector3 mousePos;
     private bool isShootingNormal = false;
 
     //Unlimted shots ability
@@ -28,15 +32,24 @@ public class ArcherWeapon : MonoBehaviour
     private float timerMultiShooting = 10.0f;
     private float timerMultiShootingSkillCoolDown;
     //
+    private int plusAD = 50;
+    private bool attacking;
 
 
     private void Update()
     {
+        attacking= false;
+        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         ShootNormal();
         SpreadshotAbility();
         UnlimitedShotsAbility();
         Debug.Log(timerMultiShootingSkillCoolDown);
         Debug.Log(timerUnlimitedShootingCoolDown);
+    }
+    public void IncreaseDMG()
+    {
+        buttonCanvas.SetActive(false);
+        arrow.IncreaseAD();
     }
     private void ShootNormal()
     {
@@ -48,6 +61,8 @@ public class ArcherWeapon : MonoBehaviour
         {
             if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
             {
+                AttackDirection();
+                FindObjectOfType<AudioManager>().Play("Arrow");
                 Debug.Log("DU skjuter normalt");
                 fireRate = 0.6f;
                 nextFire = Time.time + fireRate;
@@ -55,9 +70,24 @@ public class ArcherWeapon : MonoBehaviour
             }
         }
     }
+    private void AttackDirection()
+    {
+        if (!attacking)
+        {
+
+        animator.SetTrigger("AttackFront");
+        attacking = true;
+        }
+        else
+        {
+            attacking= false;
+            animator.SetTrigger("FrontIdle");
+        }
+
+    }
     private void SpreadshotAbility()
     {
-        if (Input.GetKey(KeyCode.Alpha1) && !isMultiShooting && timerMultiShootingSkillCoolDown <= 0 && !isUnlimitedShooting)
+        if (Input.GetKey(KeyCode.E) && !isMultiShooting && timerMultiShootingSkillCoolDown <= 0 && !isUnlimitedShooting)
         {
             isMultiShooting = true;
             isShootingNormal = false;
@@ -75,6 +105,7 @@ public class ArcherWeapon : MonoBehaviour
             }
             if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
             {
+                FindObjectOfType<AudioManager>().Play("MultiShot");
                 Debug.Log("DU multiskjuter");
                 fireRate = 1.0f;
                 nextFire = Time.time + fireRate;
@@ -95,7 +126,7 @@ public class ArcherWeapon : MonoBehaviour
     }
     private void UnlimitedShotsAbility()
     {
-        if (Input.GetKey(KeyCode.Alpha2) && !isUnlimitedShooting && timerUnlimitedShootingCoolDown <= 0 && !isMultiShooting)
+        if (Input.GetKey(KeyCode.Q) && !isUnlimitedShooting && timerUnlimitedShootingCoolDown <= 0 && !isMultiShooting)
         {
             isUnlimitedShooting = true;
             isMultiShooting = false;
@@ -114,6 +145,7 @@ public class ArcherWeapon : MonoBehaviour
 
             if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
             {
+                FindObjectOfType<AudioManager>().Play("Arrow");
                 Debug.Log("Du Unlimited skjuter");
                 fireRate = 0.1f;
                 nextFire = Time.time + fireRate;

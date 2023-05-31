@@ -66,11 +66,11 @@ public class Boss : EnemyBase
     private void Update()
     {
 
-       
-       
 
 
-       anim.SetBool("attacking", (bool)root.GetData("attacking"));
+
+
+        anim.SetBool("attacking", (bool)root.GetData("attacking"));
         anim.SetBool("moving", (bool)root.GetData("moving"));
         anim.SetBool("dead", (bool)root.GetData("dead"));
         AvoidNearbyEnemies();
@@ -170,5 +170,6 @@ public class Boss : EnemyBase
     public void PlayDead()
     {
         //anim.SetBool("dead", false);
+        //root.SetData("dead", true);
     }
 }

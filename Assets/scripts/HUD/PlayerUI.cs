@@ -28,6 +28,10 @@ public class PlayerUI : MonoBehaviour
     {
         UpdateText();
     }
+    private void Update()
+    {
+        UpdateText();
+    }
 
     private void Instance_OnGoldAmountChanged(object sender, System.EventArgs e)
     {

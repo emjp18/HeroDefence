@@ -6,6 +6,7 @@ public class UiFollowEnemy : MonoBehaviour
 {
     public Transform objectToFollow;
     RectTransform rectTransform;
+    
 
 
     private void Awake()
@@ -17,7 +18,7 @@ public class UiFollowEnemy : MonoBehaviour
     {
         if (objectToFollow != null)
         {
-            rectTransform.anchoredPosition = objectToFollow.localPosition;
+            rectTransform.position = objectToFollow.position;
         }
     }
 
