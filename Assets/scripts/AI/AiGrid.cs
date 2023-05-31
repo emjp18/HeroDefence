@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using UnityEditor.Experimental.GraphView;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
-using static Unity.VisualScripting.Metadata;
-using static UnityEditor.PlayerSettings;
+//using static Unity.VisualScripting.Metadata;
+//using static UnityEditor.PlayerSettings;
 
 
 public class AiGrid : MonoBehaviour

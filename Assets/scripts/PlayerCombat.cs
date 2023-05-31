@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class PlayerCombat : MonoBehaviour
 
     public int plusAD = 10;
     public GameObject buttonCanvas;
-    public GameObject particles;
+    //public GameObject particles;
     private float buffActiveTime = 5f;
 
 
@@ -130,9 +131,9 @@ public class PlayerCombat : MonoBehaviour
     public IEnumerator AttackBuff()
     {
         attackDamage = attackDamage * 2;
-        particles.SetActive(true);
+        //particles.SetActive(true);
         yield return new WaitForSeconds(buffActiveTime);
         attackDamage = attackDamage / 2;
-        particles.SetActive(false);
+        //particles.SetActive(false);
     }
 }

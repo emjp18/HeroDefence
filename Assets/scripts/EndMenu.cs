@@ -12,12 +12,15 @@ public class EndMenu : MonoBehaviour
     public Day_Night_Cycle script;
     public GameObject Player;
     public GameObject Player2;
+    public float testTimer = 30;
     private void Start()
     {
         youWinUI.SetActive(false);
+        testTimer = 30;
     }
     public void Update()
     {
+        testTimer-=Time.fixedDeltaTime;
         YouWin();
         YouLose();
     }
@@ -42,13 +45,13 @@ public class EndMenu : MonoBehaviour
     }
     public void YouLose()
     {
-        if(Player.gameObject.GetComponent<PlayerMovement>().currentHealth<=0 && Player.gameObject.activeSelf==true)
+        if(Player.gameObject.GetComponent<PlayerMovement>().currentHealth<=0 && Player.gameObject.activeSelf==true && testTimer <= 0)
         {
             youLoseUi.SetActive(true);
             Player.SetActive(false);
 
         }
-        if (Player2.gameObject.GetComponent<PlayerMovement>().currentHealth <= 0 && Player2.gameObject.activeSelf == true)
+        if (Player2.gameObject.GetComponent<PlayerMovement>().currentHealth <= 0 && Player2.gameObject.activeSelf == true && testTimer <= 0)
         {
             youLoseUi.SetActive(true);
             Player2.SetActive(false);
