@@ -5,7 +5,7 @@ using UnityEngine;
 public class StateNameController : MonoBehaviour
 {
 
-    public static string testnr= "Warrior";
+    public static string testnr= "Ranger";
     public Day_Night_Cycle script;
     [SerializeField] GameObject gameObject;
     [SerializeField] GameObject gameObject2;
@@ -36,7 +36,7 @@ public class StateNameController : MonoBehaviour
     {
         if (script.daytime==false)
         {
-            //FindObjectOfType<AudioManager>().Play("DayMusic");
+            FindObjectOfType<AudioManager>().Play("DayMusic");
         }
 
     }

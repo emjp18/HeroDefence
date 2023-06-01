@@ -22,7 +22,7 @@ public class ArcherWeapon : MonoBehaviour
     //Unlimted shots ability
     private bool isUnlimitedShooting = false;
     private float timerUnlimitedShooting = 3f;
-    private float timerUnlimitedShootingCoolDown;
+    public float timerUnlimitedShootingCoolDown;
     //
 
 
@@ -30,7 +30,7 @@ public class ArcherWeapon : MonoBehaviour
     // Spreadshot ability
     private bool isMultiShooting = false;
     private float timerMultiShooting = 10.0f;
-    private float timerMultiShootingSkillCoolDown;
+    public float timerMultiShootingSkillCoolDown;
     //
     private int plusAD = 50;
     private bool attacking;
@@ -43,8 +43,8 @@ public class ArcherWeapon : MonoBehaviour
         ShootNormal();
         SpreadshotAbility();
         UnlimitedShotsAbility();
-        Debug.Log(timerMultiShootingSkillCoolDown);
-        Debug.Log(timerUnlimitedShootingCoolDown);
+        //Debug.Log(timerMultiShootingSkillCoolDown);
+        //Debug.Log(timerUnlimitedShootingCoolDown);
     }
     public void IncreaseDMG()
     {
@@ -99,7 +99,7 @@ public class ArcherWeapon : MonoBehaviour
             if (timerMultiShooting <= 0)
             {
                 isMultiShooting = false;
-                timerMultiShootingSkillCoolDown = 30.0f;
+                timerMultiShootingSkillCoolDown = 20.0f;
                 timerMultiShooting = 4.0f;
                 return; // skipping code
             }
@@ -138,7 +138,7 @@ public class ArcherWeapon : MonoBehaviour
             if (timerUnlimitedShooting <= 0)
             {
                 isUnlimitedShooting = false;
-                timerUnlimitedShootingCoolDown = 60.0f;
+                timerUnlimitedShootingCoolDown = 30.0f;
                 timerUnlimitedShooting = 3.0f;
                 return;
             }

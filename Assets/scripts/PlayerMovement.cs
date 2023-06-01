@@ -16,20 +16,20 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     Vector2 movement;
     public int currentHealth;
     public int maxHealth = 100;
-    [SerializeField]public int alive = 0;
+    [SerializeField] public int alive = 0;
     public int goldAmount;
     private int healthPotionAmount;
     public HealthBar healthBar;
     public static PlayerMovement Instance { get; private set; }
     public event EventHandler OnGoldAmountChanged;
     public event EventHandler OnHealthPotionAmountChanged;
-    [SerializeField] private bool canDash = true;
+    [SerializeField] public bool canDash = true;
     private bool isDashing;
     public hitIndicator hitIndi;
     public float dmgTakenCD;
     private float dashingPower = 24 * 2f;
     private float dashingTime = 0.2f;
-    private float dashingCooldown = 1f;
+    public float dashingCooldown = 1f;
     private Vector3 mousePos;
     private float shieldActiveTime = 5f;
     private bool shieldActive = false;
@@ -76,6 +76,14 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         healthPotionAmount++;
         OnHealthPotionAmountChanged?.Invoke(this, EventArgs.Empty);
     }
+    private void AddsuperSpeed()
+    {
+        moveSpeed = moveSpeed*2;
+    }
+    private void Addspeed()
+    {
+        moveSpeed += 20;
+    }
     public bool TrySpendGoldAmount(int spendGoldAmount)
     {
         if (GetGoldAmount() >= spendGoldAmount)
@@ -110,6 +118,8 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         switch (itemType)
         {
             case Item.ItemType.HealthPotion: AddHealthPotion(); break;
+            case Item.ItemType.Boots: Addspeed(); break;
+            case Item.ItemType.MagicMushroom: AddsuperSpeed(); break;
 
         }
     }

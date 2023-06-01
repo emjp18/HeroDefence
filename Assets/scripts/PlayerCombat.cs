@@ -20,8 +20,8 @@ public class PlayerCombat : MonoBehaviour
     public float knockbackTime = 10f;
     public float shieldTime = 10f;
     float nextAttackTime = 0f;
-    float knockbackCD = 0f;
-    float shieldCD = 0f;
+    public float knockbackCD = 0f;
+    public float shieldCD = 0f;
 
     public int plusAD = 10;
     public GameObject buttonCanvas;

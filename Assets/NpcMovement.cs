@@ -92,6 +92,12 @@ public class NpcMovement : MonoBehaviour
     {
         if(startIntro)
         {
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                startIntro= false;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                SceneManager.LoadScene("PrototypeV1");
+            }
             cam.gameObject.SetActive(true);
             timer -= Time.fixedDeltaTime;
             timer2 -= Time.fixedDeltaTime;
@@ -243,7 +249,7 @@ public class NpcMovement : MonoBehaviour
             }
             if(waypointNpc3Index == 2&& timer2<=0)
             {
-                Debug.Log("!__!__!_!_!");
+           
                 animations[2].SetTrigger("BackWalk");
             }
             if(waypointNpc3Index==1 && npc3Count==1)
@@ -415,7 +421,7 @@ public class NpcMovement : MonoBehaviour
             if (introstate == INTROSTATE.Phase3)
             {
                 waypointNpc10Index = 1;
-                Debug.Log("VAHANDOR???");
+          
                 animations[9].SetTrigger("SideWalk");
 
             }
@@ -588,7 +594,7 @@ public class NpcMovement : MonoBehaviour
                 textPart2.gameObject.transform.Rotate(0, 180, 0);
                 textPart1.gameObject.SetActive(true);
                 textCount=1;
-                Debug.Log("Testsre TEXTEN" + texttimer);
+           
             }
             gameObjects[13].SetActive(true);
             gameObjects[14].SetActive(false);
@@ -604,7 +610,7 @@ public class NpcMovement : MonoBehaviour
                 textPart2.gameObject.SetActive(false);
                 gameObjects[13].SetActive(false);
                 introstate=INTROSTATE.Phase3;
-                Debug.Log("ADSODMASOINDnjiionmdasdIN");
+       
             }
         }
     }

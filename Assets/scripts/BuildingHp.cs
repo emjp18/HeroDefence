@@ -9,6 +9,7 @@ public class BuildingHp : MonoBehaviour
     public int maxHealth = 1000;
     public int currentHealth;
     public float dmgTakenCD;
+    [SerializeField] private List<GameObject> fireList=new List<GameObject>();
     void Start()
     {
         currentHealth = maxHealth;
@@ -16,6 +17,18 @@ public class BuildingHp : MonoBehaviour
     }
     void Update()
     {
+        if (currentHealth<700)
+        {
+            fireList[0].gameObject.SetActive(true);
+        }
+        if (currentHealth < 500)
+        {
+            fireList[1].gameObject.SetActive(true);
+        }
+        if (currentHealth < 300)
+        {
+            fireList[2].gameObject.SetActive(true);
+        }
         healthbar.SetHealth(currentHealth);
         if (dmgTakenCD > 0)
         {

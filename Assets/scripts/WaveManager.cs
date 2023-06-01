@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using static Unity.Burst.Intrinsics.X86;
 using static WaveManager;
@@ -12,9 +13,11 @@ public class WaveManager : MonoBehaviour
 {
     
     public enum SpawnState {Day,Night,spawning,Waiting }
+    public enum ROUNDSTATE { START,PAUSE}
+    private enum ROUNDS {R1,R2,R3,R4,R5 }
     public EnemySpawner spawnerScript;
+    [SerializeField]private EnemyAttack enemyAttStat;
     public Day_Night_Cycle dayNitCycle;
-    [SerializeField] int nightphase = 0;
     public bool startNight = false;
     public bool endNight = false;
     public List<EnemyBase> enemiesBoss = new List<EnemyBase>();
@@ -26,6 +29,11 @@ public class WaveManager : MonoBehaviour
     [SerializeField] AiGrid bossGrid;
     [SerializeField] List<Transform> spawnPoints;
     [SerializeField] GameObject hitObject;
+    [SerializeField] StartWave startScript;
+    [SerializeField] Boss bossStats;
+    [SerializeField] enemyHp hpStats;
+   
+    
  
     [System.Serializable]
     
@@ -40,10 +48,13 @@ public class WaveManager : MonoBehaviour
     public Wave[] waves;
     public int nextWave=0;
     public SpawnState spawnState = SpawnState.Night;
+    public ROUNDSTATE rState = ROUNDSTATE.START;
     public float timeBetweenWaves = 5f;
     public float waveCountDown;
     public float searchCountdown=1f;
     public bool waveComplete = false;
+    [SerializeField]public int roundCount;
+    [SerializeField]public int currentRoundCount;
     int rand = 0;
     int enemieNr=0;
     Vector3 offset;
@@ -52,20 +63,55 @@ public class WaveManager : MonoBehaviour
 
     public void Start()
     {
+        //enemyAttStat.enemyAttackDamage = 5;
+        //bossStats.statChange(1500);
         waveCountDown = timeBetweenWaves;
+        roundCount = 1;
+        currentRoundCount = 1;
 
     }
     public void Update()
     {
-        
-        Debug.Log(spawnState);
-        Debug.Log(waveCountDown+ " Time Between waves");
+        if (currentRoundCount == 1)
+        {
+            hpStats.hpChange = true;
+            hpStats.maxHealth = 100;
+       
+        }
+        if (currentRoundCount == 2)
+        {
+            hpStats.hpChange = true;
+            enemyAttStat.enemyAttackDamage = 5;
+            hpStats.maxHealth = 100;
+        }
+        if (currentRoundCount == 3)
+        {
+            hpStats.hpChange = true;
+            enemyAttStat.enemyAttackDamage = 10;
+            hpStats.maxHealth = 150;
+        }
+        if (currentRoundCount == 4)
+        {
+            hpStats.hpChange = true;
+
+            hpStats.maxHealth = 200;
+        }
+        if (currentRoundCount == 5)
+        {
+            hpStats.hpChange = true;
+            enemyAttStat.enemyAttackDamage = 15;
+            hpStats.maxHealth = 250;
+        }
         if (!dayNitCycle.daytime && spawnState == SpawnState.Night)
         {
 
                 //StartCoroutine(Spawner(waves[nextWave]));
+                if(rState==ROUNDSTATE.START)
+                {
+                rState= ROUNDSTATE.PAUSE;
                 StartCoroutine(Rounds());
-            spawnState = SpawnState.Waiting;
+                spawnState = SpawnState.Waiting;
+                }
         }
 
         if (spawnState == SpawnState.Waiting)
@@ -75,11 +121,14 @@ public class WaveManager : MonoBehaviour
             {
                 dayNitCycle.daytime= true;
                 dayNitCycle.changeTime = false;
-                
-                if (nextWave == 4)
+                roundCount++;
+                if(currentRoundCount <= 4)
                 {
-                    waveComplete = true;
+                startScript.states = StartWave.STARTSTATES.START;
                 }
+                rState = ROUNDSTATE.START;
+                spawnState = SpawnState.Night;
+                startScript.counter = 0;
             }
             else
             {
@@ -87,7 +136,6 @@ public class WaveManager : MonoBehaviour
             }
            
         }
-
         Debug.Log(nextWave + " Next wave");
 
     }
@@ -121,7 +169,7 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(Spawner(waves[nextWave]));
         completeWave();
         yield return new WaitForSeconds(5);
-       
+
     }
     public bool EnemyIsAlive()
     {
@@ -149,18 +197,16 @@ public class WaveManager : MonoBehaviour
         {
             nextWave++;
             waveCountDown = 5f;
-            //spawnState = SpawnState.Night;
-
         }
        
     }
-    public void EndNightPhase()
-    {
-        foreach (EnemyBase enemy in enemiesBoss)
-        {
-            enemy.gameObject.SetActive(false);
-        }
-    }
+    //public void EndNightPhase()
+    //{
+    //    foreach (EnemyBase enemy in enemiesBoss)
+    //    {
+    //        enemy.gameObject.SetActive(false);
+    //    }
+    //}
     public void StartNightPhase()
     {
 
@@ -170,7 +216,10 @@ public class WaveManager : MonoBehaviour
         Utility.UpdateStaticCollision(grid);
         Utility.UpdateStaticCollisionLarge(bossGrid);
         int sp = spawnPoints.Count;
+
         Debug.Log(enemieNr + " enemie NR");
+        //  for (int i = 0; i < (bossPerSpawn*sp); i++)
+
         for (int i = 0; i < (bossPerSpawn*sp); i++)
         {
             if (enemiesBoss[enemieNr].gameObject.activeSelf == true) continue;
@@ -185,5 +234,4 @@ public class WaveManager : MonoBehaviour
 
         }
     }
-
 }

@@ -2,24 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static UnityEditor.VersionControl.Asset;
 
 public class StartWave : MonoBehaviour
 {
     public Day_Night_Cycle dayNigScript;
     [SerializeField] TextMeshProUGUI textPart1;
     [SerializeField] GameObject labelBoard;
-    [SerializeField] private PlayerMovement movescript;
     [SerializeField] private Vector3 offset;
     [SerializeField] private Vector3 pulseSpeedText;
     [SerializeField] private Vector3 pulseSpeedLabel;
-    [SerializeField] private Camera cam;
-    private int counter = 0;
+    [SerializeField] private WaveManager waveScript;
+    public int counter = 0;
     public GameObject startWaveUI;
     public PlayerMovement player;
     private bool grow;
     private bool shrink;
+    [SerializeField]public enum STARTSTATES {START,NIGHT}
+    public STARTSTATES states;
     private void Start()
     {
+        states = STARTSTATES.START;
         shrink = false;
         grow= true;
     }
@@ -38,9 +41,6 @@ public class StartWave : MonoBehaviour
     }
     void Update()
     {
-        Debug.Log(labelBoard.transform.position);
-        //labelBoard.transform.position = movescript.transform.position + offset;
-        //labelBoard.transform.position = cam.transform.position + offset;
 
         if (labelBoard.transform.localScale.y >= 1.2f && textPart1.transform.localScale.y >= 1.2f && labelBoard.transform.localScale.x >= 1.2f && textPart1.transform.localScale.x >= 1.2f)
         {
@@ -53,36 +53,28 @@ public class StartWave : MonoBehaviour
             shrink = false;
         }
 
-            if (player.alive<=0) 
+   
+        if (states == STARTSTATES.START)
         {
-            if (dayNigScript.daytime && counter < 1 && player.alive <= 0)
-            {
-                //startWaveUI.SetActive(true);
-
-            }
-            else
-            {
-                StartNextWave();
-            }
+            startWaveUI.SetActive(true);
         }
-
-        //StartNextWave();
-
     }
     public void StartNextWave()
     {
-        if(counter == 0 )
+        if (counter == 0&& waveScript.currentRoundCount <= 4)
         {
-            dayNigScript.daytime = false;
+            states= STARTSTATES.NIGHT;
             dayNigScript.changeTime = false;
+            dayNigScript.daytime = false;
             startWaveUI.SetActive(false);
+            waveScript.currentRoundCount++;
             counter++;
         }
-        if(counter >= 1 )
+        if (counter >= 1)
         {
             startWaveUI.SetActive(false);
-            counter=0;
+
         }
-   
+
     }
 }

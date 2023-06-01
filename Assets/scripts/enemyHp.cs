@@ -4,30 +4,36 @@ using UnityEngine;
 
 public class enemyHp : MonoBehaviour
 {
-    public int maxHealth = 100;
+    public int maxHealth;
     public Boss bossScript;
+    [SerializeField]WaveManager waveScript;
     public float timer;
     public int currentHealth;
     public HealthBar healthBar;
     public int xpPerKill = 10;
     public GameObject player;
+    public bool hpChange;
 
 
     void Start()
     {
-        currentHealth = maxHealth;
-        healthBar.SetMaxHealth(currentHealth);
+        hpChange= true;
+        //maxHealth = 100;
+       
+  
     }
 
     private void Update()
     {
+        healthBar.SetMaxHealth(maxHealth);
         healthBar.SetHealth(currentHealth);
-        //if (Input.GetKeyDown(KeyCode.I))
-        //{
-        //    TakeDamage(20);
-        //    Debug.Log("TestarHp");
+        if (hpChange)
+        {
+            hpChange = false;
+            currentHealth = maxHealth;
+        }
+   
 
-        //}
     }
     public void TakeDamage(int damage)
     {
