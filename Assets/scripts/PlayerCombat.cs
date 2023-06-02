@@ -76,7 +76,7 @@ public class PlayerCombat : MonoBehaviour
             }
 
         }
-        if(shieldCD<=0) 
+        if(shieldCD<=5) 
         {
             particles.SetActive(false);
             particles2.SetActive(false);
