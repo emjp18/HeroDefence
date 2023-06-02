@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     private bool shieldActive = false;
     public int plusHealth = 20;
     public float plusSpeed = 20;
+    private float mushroomCD;
     private int musicCounter1;
     private int musicCounter2;
     private int musicCounter3;
@@ -52,6 +53,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     void Start()
     {
+        mushroomCD= 0;
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(currentHealth);
     }
@@ -78,7 +80,9 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     }
     private void AddsuperSpeed()
     {
+
         moveSpeed = moveSpeed*2;
+
     }
     private void Addspeed()
     {

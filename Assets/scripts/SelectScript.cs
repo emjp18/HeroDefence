@@ -6,7 +6,9 @@ using UnityEngine;
 
 public class SelectScript : MonoBehaviour
 {
-
+    /// <summary>
+    /// Activates text/icon/panel for abilitys in character menu when hovering over them with mouse.
+    /// </summary>
     [SerializeField]Collider2D hitBox;
     [SerializeField] TextMeshProUGUI text;
     [SerializeField] GameObject gameObject1;

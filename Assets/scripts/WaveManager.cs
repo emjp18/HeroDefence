@@ -11,7 +11,9 @@ using static WaveManager;
 
 public class WaveManager : MonoBehaviour
 {
-    
+    /// <summary>
+    /// Creates the rounds and the waves within each round to make a more natural effect.
+    /// </summary>
     public enum SpawnState {Day,Night,spawning,Waiting }
     public enum ROUNDSTATE { START,PAUSE}
     private enum ROUNDS {R1,R2,R3,R4,R5 }
@@ -63,8 +65,6 @@ public class WaveManager : MonoBehaviour
 
     public void Start()
     {
-        //enemyAttStat.enemyAttackDamage = 5;
-        //bossStats.statChange(1500);
         waveCountDown = timeBetweenWaves;
         roundCount = 1;
         currentRoundCount = 1;
@@ -72,6 +72,7 @@ public class WaveManager : MonoBehaviour
     }
     public void Update()
     {
+        // changes stats of enemies depening on round.
         if (currentRoundCount == 1)
         {
             hpStats.hpChange = true;
@@ -104,8 +105,6 @@ public class WaveManager : MonoBehaviour
         }
         if (!dayNitCycle.daytime && spawnState == SpawnState.Night)
         {
-
-                //StartCoroutine(Spawner(waves[nextWave]));
                 if(rState==ROUNDSTATE.START)
                 {
                 rState= ROUNDSTATE.PAUSE;
@@ -116,7 +115,7 @@ public class WaveManager : MonoBehaviour
 
         if (spawnState == SpawnState.Waiting)
         {
-            
+            // Checks if enemies are alive, if not, resets everything to be able to start next round.
             if (!EnemyIsAlive())
             {
                 dayNitCycle.daytime= true;
@@ -141,6 +140,7 @@ public class WaveManager : MonoBehaviour
     }
     IEnumerator Spawner(Wave wave)
     {
+        // creates all the enemies.
         bossPerSpawn = wave.amountOfEnemies;
 
         foreach (EnemyBase enemy in enemyPrefabTemplates)
@@ -153,13 +153,13 @@ public class WaveManager : MonoBehaviour
                 enemiesBoss[enemiesBoss.Count - 1].gameObject.SetActive(false);                
             }
             hitObject.SetActive(false);
-            //enemy.gameObject.SetActive(false);
         }
         StartNightPhase();
         yield break;
     }
     IEnumerator Rounds()
     {
+        // Creates the waves within a round.
         StartCoroutine(Spawner(waves[nextWave]));
         completeWave();
         yield return new WaitForSeconds(5);
@@ -173,6 +173,7 @@ public class WaveManager : MonoBehaviour
     }
     public bool EnemyIsAlive()
     {
+        // Searches for enemies
         searchCountdown-=Time.deltaTime;
         if(searchCountdown<= 0f)
         {
@@ -200,31 +201,23 @@ public class WaveManager : MonoBehaviour
         }
        
     }
-    //public void EndNightPhase()
-    //{
-    //    foreach (EnemyBase enemy in enemiesBoss)
-    //    {
-    //        enemy.gameObject.SetActive(false);
-    //    }
-    //}
     public void StartNightPhase()
     {
 
         bossPerSpawn = waves[nextWave].amountOfEnemies;
+        
         grid.RegenerateGrid();
         bossGrid.RegenerateGrid();
         Utility.UpdateStaticCollision(grid);
         Utility.UpdateStaticCollisionLarge(bossGrid);
         int sp = spawnPoints.Count;
 
-        Debug.Log(enemieNr + " enemie NR");
-        //  for (int i = 0; i < (bossPerSpawn*sp); i++)
-
+        // Activates all enemies
         for (int i = 0; i < (bossPerSpawn*sp); i++)
         {
             if (enemiesBoss[enemieNr].gameObject.activeSelf == true) continue;
 
-                rand = Random.Range(-10, 10);
+                rand = Random.Range(-5, 5);
                 offset = new Vector3(rand, rand, rand);
                 enemiesBoss[ enemieNr ].transform.position = spawnPoints[Random.Range(0, spawnPoints.Count())].position+ offset;
                 enemiesBoss[ enemieNr ].gameObject.SetActive(true);

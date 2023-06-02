@@ -4,17 +4,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 
+/// <summary>
+/// 
+// Basic MainMenu
+/// </summary>
 public class MainMenu : MonoBehaviour
 {
     int musicCounter;
     public AudioMixer audioMixer;
-    Sound s;
     [SerializeField]private Camera cam;
     public void Update()
     {
         if(musicCounter <= 0)
         {
-        FindObjectOfType<AudioManager>().Play("MenuMusic");
+            FindObjectOfType<AudioManager>().Play("MenuMusic");
+
             musicCounter++;
         }
 
@@ -24,12 +28,14 @@ public class MainMenu : MonoBehaviour
         NpcMovement.startIntro = true;
         cam.gameObject.SetActive(false);
         FindObjectOfType<AudioManager>().StopPlaying("MenuMusic");
+        FindObjectOfType<AudioManager>().Play("crow");
         musicCounter = 0;
 
     }
+    // changes the string to the class that gets picked and sets to StateNameController Script.
     public void ClassSelection(string test )
     {
-        StateNameController.testnr = test;
+        global::StateNameController.ClassName = test;
         
     }
     public void Pressed()
@@ -44,7 +50,7 @@ public class MainMenu : MonoBehaviour
     }
     public void VolumeSlider(float volume)
     {
-
+        // Increases or decreases volume
         audioMixer.SetFloat("Volume",Mathf.Log10(volume)*20);
         Debug.Log(volume);
     }

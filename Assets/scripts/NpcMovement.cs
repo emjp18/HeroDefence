@@ -9,7 +9,9 @@ using UnityEngine.UIElements;
 
 public class NpcMovement : MonoBehaviour
 {
-
+    /// <summary>
+    /// This is where the small cutsceen happens. Bunch of waypoints and animation changes.
+    /// </summary>
   
     enum INTROSTATE {MainMenu,Phase1,Phase2,Phase3 };
     [SerializeField]INTROSTATE introstate;
@@ -29,6 +31,7 @@ public class NpcMovement : MonoBehaviour
     private int npc11Count=0;
     private int textCount;
     public static bool startIntro;
+    private bool stepsstart;
     [SerializeField] private int npc8Count = 0;
     [SerializeField] private List<GameObject> gameObjects = new List<GameObject>();
 
@@ -69,7 +72,7 @@ public class NpcMovement : MonoBehaviour
     [SerializeField] private Camera cam;
     void Start()
     {
-      
+        stepsstart = true; 
         startIntro = false;
         npc5Count = 0;
         introstate = INTROSTATE.MainMenu;
@@ -92,8 +95,10 @@ public class NpcMovement : MonoBehaviour
     {
         if(startIntro)
         {
-            if(Input.GetKeyDown(KeyCode.Escape))
+          // Lets you skip Cutsceen and stops the music.
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
+                FindObjectOfType<AudioManager>().Play("DayMusic");
                 startIntro= false;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                 SceneManager.LoadScene("PrototypeV1");
@@ -140,8 +145,11 @@ public class NpcMovement : MonoBehaviour
     }
     private void MoveBird()
     {
-        if(waypointBirdIndex<=waypointBird.Length-1 )
+        if (waypointBirdIndex<=waypointBird.Length-1 )
         {
+
+           // moves the targets towards the waypointnumber given in waypointindex;
+           // if the target reaches a waypoint it increases the number by 1 and keeps walking untill its done.
             gameObjects[7].transform.position = Vector2.MoveTowards(gameObjects[7].transform.position, waypointBird[waypointBirdIndex].transform.position, movespeed * Time.deltaTime);
             if (gameObjects[7].transform.position == waypointBird[waypointBirdIndex].transform.position)
             {
@@ -159,8 +167,6 @@ public class NpcMovement : MonoBehaviour
     {
         if (waypointNpc1Index <= waypointNpc1.Length - 1)
         {
-            //Debug.Log("Index pos" + waypointNpc1[waypointNpc1Index].transform.position);
-            //Debug.Log("ObjectPos " + gameObjects[0].transform.position);
             gameObjects[0].transform.position = Vector2.MoveTowards(gameObjects[0].transform.position, waypointNpc1[waypointNpc1Index].transform.position, movespeed * Time.deltaTime);
 
            
@@ -186,6 +192,7 @@ public class NpcMovement : MonoBehaviour
             }
             if(waypointNpc1Index==1 && gameObjects[0].transform.position == waypointNpc1[waypointNpc1Index].transform.position)
             {
+                FindObjectOfType<AudioManager>().Play("DayMusic");
                 gameObjects[0].SetActive(false);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                 SceneManager.LoadScene("PrototypeV1");
@@ -532,13 +539,19 @@ public class NpcMovement : MonoBehaviour
     }
     private void MoveNpc7()
     {
+        if(stepsstart)
+        {
+            FindObjectOfType<AudioManager>().Play("Steps");
+            stepsstart = false;
+        }
         if(waypointNpc7Index<=waypointNpc7.Length - 1)
         {
             gameObjects[6].transform.position = Vector2.MoveTowards(gameObjects[6].transform.position, waypointNpc7[waypointNpc7Index].transform.position, movespeed * Time.deltaTime);
-
-            if(gameObjects[6].transform.position == waypointNpc7[waypointNpc7Index].transform.position && waypointNpc7Index<9)
+            
+            if (gameObjects[6].transform.position == waypointNpc7[waypointNpc7Index].transform.position && waypointNpc7Index<9)
             {
                 waypointNpc7Index++;
+          
             }
             if (introstate==INTROSTATE.Phase3)
             {
@@ -575,6 +588,7 @@ public class NpcMovement : MonoBehaviour
             if(waypointNpc7Index==9 && npc7Count == 4)
             {
                 introstate = INTROSTATE.Phase1;
+             
                 npc7Count++;
             }
             if(gameObjects[6].transform.position == waypointNpc7[waypointNpc7Index].transform.position && waypointNpc7Index ==9)
@@ -589,17 +603,19 @@ public class NpcMovement : MonoBehaviour
         {
             if(textCount==0)
             {
-
+                FindObjectOfType<AudioManager>().StopPlaying("Steps");
                 textPart1.gameObject.transform.Rotate(0, 180, 0);
                 textPart2.gameObject.transform.Rotate(0, 180, 0);
                 textPart1.gameObject.SetActive(true);
-                textCount=1;
+                FindObjectOfType<AudioManager>().Play("gibb");
+                textCount =1;
            
             }
             gameObjects[13].SetActive(true);
             gameObjects[14].SetActive(false);
             if (texttimer<=0 && textCount==1)
             {
+                FindObjectOfType<AudioManager>().Play("gibb2");
                 textPart2.gameObject.SetActive(true);
                 textPart1.gameObject.SetActive(false);
                 textCount=2;

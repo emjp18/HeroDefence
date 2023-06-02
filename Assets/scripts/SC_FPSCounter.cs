@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SC_FPSCounter : MonoBehaviour
 {
-    /* Assign this script to any object in the Scene to display frames per second */
+
 
     public float updateInterval = 0.5f; //How often should the number update
   

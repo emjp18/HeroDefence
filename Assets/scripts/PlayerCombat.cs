@@ -41,16 +41,16 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {
 
-        nextAttackTime -= Time.deltaTime;
+        nextAttackTime -= Time.deltaTime;//counts dowwn the cooldown
         knockbackCD-= Time.deltaTime;
         shieldCD-= Time.deltaTime;
-        if (nextAttackTime<=0)
+        if (nextAttackTime<=0)//checks for cooldown
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))//checks for key pressed
             {
                 Attack();
                 FindObjectOfType<AudioManager>().Play("SwordAtt");
-                nextAttackTime =  1;
+                nextAttackTime =  1;//adds cooldowwn
             }
         }
 
@@ -76,7 +76,7 @@ public class PlayerCombat : MonoBehaviour
             }
 
         }
-        if(shieldCD<=0) 
+        if(shieldCD<=5) 
         {
             particles.SetActive(false);
             particles2.SetActive(false);
@@ -86,10 +86,10 @@ public class PlayerCombat : MonoBehaviour
         void Attack()
         {
 
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.A))//checks  for direction
             {
                 animator.SetTrigger("attackLeft");
-                Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPointLeft.position, attackRange, enemyLayers);
+                Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPointLeft.position, attackRange, enemyLayers);//checks for enemies  hit on enemylayers withing attackrange
                 foreach (Collider2D enemy in hitEnemies)
                 {
                     enemy.GetComponent<enemyHp>().TakeDamage(attackDamage);

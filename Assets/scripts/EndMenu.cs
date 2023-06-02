@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class EndMenu : MonoBehaviour
 {
+    /// <summary>
+    /// EndMenu, Activating the correct image and deactivating player,music etc.
+    /// </summary>
     public WaveManager WaveManager;
     public GameObject youWinUI;
     public GameObject youLoseUi;
@@ -14,15 +17,15 @@ public class EndMenu : MonoBehaviour
     public GameObject Player2;
     public GameObject lvlupScreen;
     public BuildingHp buildingHp;
-    public float testTimer = 30;
+    public float EndTimer = 30;
     private void Start()
     {
         youWinUI.SetActive(false);
-        testTimer = 30;
+        EndTimer = 30;
     }
     public void Update()
     {
-        testTimer-=Time.fixedDeltaTime;
+        EndTimer-=Time.fixedDeltaTime;
         YouWin();
         YouLose();
     }
@@ -49,15 +52,16 @@ public class EndMenu : MonoBehaviour
     }
     public void YouLose()
     {
-        if(Player.gameObject.GetComponent<PlayerMovement>().currentHealth<=0 && Player.gameObject.activeSelf==true && testTimer <= 0)
+        if(Player.gameObject.GetComponent<PlayerMovement>().currentHealth<=0 && Player.gameObject.activeSelf==true && EndTimer <= 0)
         {
             youLoseUi.SetActive(true);
             Player.SetActive(false);
             lvlupScreen.SetActive(false);
+            FindObjectOfType<AudioManager>().StopPlaying("NightMusic");
             FindObjectOfType<AudioManager>().StopPlaying("DayMusic");
             FindObjectOfType<AudioManager>().StopPlaying("Steps");
         }
-        if (Player2.gameObject.GetComponent<PlayerMovement>().currentHealth <= 0 && Player2.gameObject.activeSelf == true && testTimer <= 0)
+        if (Player2.gameObject.GetComponent<PlayerMovement>().currentHealth <= 0 && Player2.gameObject.activeSelf == true && EndTimer <= 0)
         {
             youLoseUi.SetActive(true);
             Player2.SetActive(false);
