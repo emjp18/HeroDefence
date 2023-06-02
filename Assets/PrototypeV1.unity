@@ -2379,7 +2379,7 @@ MonoBehaviour:
   Player2: {fileID: 1421396506}
   lvlupScreen: {fileID: 2125385598}
   buildingHp: {fileID: 1317064336}
-  testTimer: 30
+  EndTimer: 30
 --- !u!114 &212732637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17878,8 +17878,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   script: {fileID: 490447419}
-  gameObject: {fileID: 1421396506}
-  gameObject2: {fileID: 1529068918}
+  Ranger: {fileID: 1421396506}
+  Warrior: {fileID: 1529068918}
   cam: {fileID: 896370467}
   cam2: {fileID: 1262170710}
   fireObjects:
@@ -96410,7 +96410,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2732277531505492089, guid: b3fa9349d0f2a6d4a91fdd3317baf253, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3fa9349d0f2a6d4a91fdd3317baf253, type: 3}

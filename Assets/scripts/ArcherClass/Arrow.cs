@@ -9,11 +9,12 @@ public class Arrow : MonoBehaviour
     public float speed = 20f;
     public static int damage = 30;
     public Rigidbody2D rb;
-    public int increaseDMG=20;
+    public int increaseDMG=0;
 
 
     void Start()
     {
+        increaseDMG = 20;
         rb.velocity = transform.right * speed;
         
     }

@@ -31,6 +31,9 @@ public class EndMenu : MonoBehaviour
     }
     public void LoadMenu()
     {
+        FindObjectOfType<AudioManager>().StopPlaying("NightMusic");
+        FindObjectOfType<AudioManager>().StopPlaying("DayMusic");
+        FindObjectOfType<AudioManager>().StopPlaying("Steps");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
     public void QuitGame()

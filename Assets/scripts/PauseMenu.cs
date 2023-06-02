@@ -41,6 +41,9 @@ public class PauseMenu : MonoBehaviour
     public void LoadMenu()
     {
         //Loads mainmenu
+        FindObjectOfType<AudioManager>().StopPlaying("NightMusic");
+        FindObjectOfType<AudioManager>().StopPlaying("DayMusic");
+        FindObjectOfType<AudioManager>().StopPlaying("Steps");
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
