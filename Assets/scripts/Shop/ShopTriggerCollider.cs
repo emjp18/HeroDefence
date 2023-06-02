@@ -25,17 +25,18 @@ public class ShopTriggerCollider : MonoBehaviour
             {
                 uiShop.Show(range);
             }
-            //if(Input.GetKeyDown(KeyCode.U))
-            //{
-            //    uiShop.Hide();
-            //}
+
+        //if(Input.GetKeyDown(KeyCode.U))
+        //{
+        //    uiShop.Hide();
+        //}
 
 
     }
     private void OnTriggerExit2D(Collider2D collider)
     {
         range = collider.GetComponent<IShopCustomer>();
-        if(range != null)
+        if(range != null )
         {
             uiShop.Hide();
             insideRange = false;

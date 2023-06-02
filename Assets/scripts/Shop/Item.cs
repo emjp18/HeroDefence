@@ -17,8 +17,8 @@ public class Item
         switch (itemType)
         {
             default:
-                case ItemType.Boots: return 50;
-                case ItemType.HealthPotion: return 30;
+                case ItemType.Boots: return 300;
+                case ItemType.HealthPotion: return 50;
                 case ItemType.MagicMushroom: return 999;
         }
     }

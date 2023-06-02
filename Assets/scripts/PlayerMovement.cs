@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
     [SerializeField] Animator animatorRanger;
     [SerializeField] private TrailRenderer tr;
     Vector2 movement;
-    public int currentHealth;
+    public float currentHealth;
     public int maxHealth = 100;
     [SerializeField] public int alive = 0;
     public int goldAmount;
@@ -105,7 +105,7 @@ public class PlayerMovement : MonoBehaviour, IShopCustomer
         {
             healthPotionAmount--;
             OnHealthPotionAmountChanged?.Invoke(this, EventArgs.Empty);
-            currentHealth += 20;
+            currentHealth += (float)maxHealth*0.2f;
             if (currentHealth > maxHealth)
             {
                 currentHealth = maxHealth;

@@ -25,44 +25,61 @@ public class PlayerCombat : MonoBehaviour
 
     public int plusAD = 10;
     public GameObject buttonCanvas;
-    //public GameObject particles;
+    public GameObject particles;
+    public GameObject particles2;
     private float buffActiveTime = 5f;
 
 
     private void Start()
     {
-        //particles.SetActive(true);
+        knockbackCD = 0;
+        knockbackTime = 10f;
+        shieldCD = 0f;
+
+      
     }
     void Update()
     {
-        if (Time.time >= nextAttackTime)
+
+        nextAttackTime -= Time.deltaTime;
+        knockbackCD-= Time.deltaTime;
+        shieldCD-= Time.deltaTime;
+        if (nextAttackTime<=0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Attack();
                 FindObjectOfType<AudioManager>().Play("SwordAtt");
-                nextAttackTime = Time.time + attackRate;
+                nextAttackTime =  1;
             }
         }
-        if (Time.time >= knockbackCD)
+
+        if (knockbackCD<=0)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                knockbackCD =10;
                 FindObjectOfType<AudioManager>().Play("Sbash");
                 Knockback();
-                knockbackCD = Time.time + knockbackTime;
             }
 
         }
-        if (Time.time >= shieldCD)
+        if (shieldCD<=0)
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
                 StartCoroutine(GetComponent<PlayerMovement>().ShieldAbility());
                 StartCoroutine(AttackBuff());
-                shieldCD = Time.time + shieldTime;
+                shieldCD = 10;
+                particles.SetActive(true);
+                particles2.SetActive(true);
             }
 
+        }
+        if(shieldCD<=0) 
+        {
+            particles.SetActive(false);
+            particles2.SetActive(false);
         }
 
 
@@ -116,6 +133,7 @@ public class PlayerCombat : MonoBehaviour
             {
 
                 enemy.GetComponent<KnockbackFeedBack>().PlayFeedBack(player);
+                enemy.GetComponent<enemyHp>().TakeDamage(20);
             }
 
         }

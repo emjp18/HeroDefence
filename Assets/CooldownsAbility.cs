@@ -7,10 +7,10 @@ public class CooldownsAbility : MonoBehaviour
 {
     [SerializeField]List<GameObject> CDlist = new List<GameObject>();
     [SerializeField]ArcherWeapon archerScript;
-    [SerializeField]PlayerMovement moveScript;
+    [SerializeField] PlayerMovement archerMoveScript;
+    [SerializeField] PlayerMovement warriorMoveScript;
     [SerializeField] PlayerCombat warriorCombat;
-    
-    [SerializeField]private float currentcdSpeed=0.01f;
+
 
     void Start()
     {
@@ -21,30 +21,31 @@ public class CooldownsAbility : MonoBehaviour
         // warrior cds
         if (CDlist[7].gameObject.activeSelf)
         {
-            //if (warriorCombat.shieldCD > 0)
-            //{
-            //    CDlist[4].SetActive(true);
-            //}
-            //else
-            //{
-            //    CDlist[4].SetActive(false);
-            //}
-            //if (warriorCombat.knockbackCD > 0)
-            //{
-            //    CDlist[3].SetActive(true);
-            //}
-            //else
-            //{
-            //    CDlist[3].SetActive(false);
-            //}
-            //if (moveScript.canDash == false)
-            //{
-            //    CDlist[5].SetActive(true);
-            //}
-            //else
-            //{
-            //    CDlist[5].SetActive(false);
-            //}
+            archerMoveScript.gameObject.SetActive(false);
+            if (warriorCombat.shieldCD > 0)
+            {
+                CDlist[4].SetActive(true);
+            }
+            else
+            {
+                CDlist[4].SetActive(false);
+            }
+            if (warriorCombat.knockbackCD > 0)
+            {
+                CDlist[3].SetActive(true);
+            }
+            else
+            {
+                CDlist[3].SetActive(false);
+            }
+            if (warriorMoveScript.canDash == false)
+            {
+                CDlist[5].SetActive(true);
+            }
+            else
+            {
+                CDlist[5].SetActive(false);
+            }
         }
         else
         {
@@ -60,6 +61,7 @@ public class CooldownsAbility : MonoBehaviour
         // ArcherCDS
         if (CDlist[6].gameObject.activeSelf==true)
         {
+            warriorMoveScript.gameObject.SetActive(false);
             if (archerScript.timerMultiShootingSkillCoolDown > 0)
             {
                 CDlist[1].SetActive(true);
@@ -77,7 +79,7 @@ public class CooldownsAbility : MonoBehaviour
             {
                 CDlist[0].SetActive(false);
             }
-            if (moveScript.canDash == false)
+            if (archerMoveScript.canDash == false)
             {
                 CDlist[2].SetActive(true);
             }

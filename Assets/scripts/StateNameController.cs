@@ -5,7 +5,7 @@ using UnityEngine;
 public class StateNameController : MonoBehaviour
 {
 
-    public static string testnr= "Ranger";
+    public static string testnr= "Warrior";
     public Day_Night_Cycle script;
     [SerializeField] GameObject gameObject;
     [SerializeField] GameObject gameObject2;
