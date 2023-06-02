@@ -9,7 +9,6 @@ public class Arrow : MonoBehaviour
     public float speed = 20f;
     public static int damage = 30;
     public Rigidbody2D rb;
-    ArcherWeapon dmg;
     public int increaseDMG=20;
 
 

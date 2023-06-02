@@ -43,8 +43,6 @@ public class ArcherWeapon : MonoBehaviour
         ShootNormal();
         SpreadshotAbility();
         UnlimitedShotsAbility();
-        //Debug.Log(timerMultiShootingSkillCoolDown);
-        //Debug.Log(timerUnlimitedShootingCoolDown);
     }
     public void IncreaseDMG()
     {
@@ -57,16 +55,15 @@ public class ArcherWeapon : MonoBehaviour
         {
             isShootingNormal = true;
         }
-        if (isShootingNormal && !isMultiShooting && !isUnlimitedShooting)
+        if (isShootingNormal && !isMultiShooting && !isUnlimitedShooting) 
         {
             if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
             {
                 AttackDirection();
                 FindObjectOfType<AudioManager>().Play("Arrow");
-                Debug.Log("DU skjuter normalt");
                 fireRate = 0.6f;
-                nextFire = Time.time + fireRate;
-                CreateArrow(new Vector3(0, 0f, 0f));
+                nextFire = Time.time + fireRate; // cooldown on shooting, otherwise could shoot infinite arrows
+                CreateArrow(new Vector3(0, 0f, 0f));  // if you havent used abilities, shoot normal arrows. 
             }
         }
     }
@@ -81,7 +78,7 @@ public class ArcherWeapon : MonoBehaviour
         else
         {
             attacking= false;
-            animator.SetTrigger("FrontIdle");
+            animator.SetTrigger("FrontIdle"); // animations for if shooting or not
         }
 
     }
@@ -91,7 +88,7 @@ public class ArcherWeapon : MonoBehaviour
         {
             isMultiShooting = true;
             isShootingNormal = false;
-            isUnlimitedShooting = false;
+            isUnlimitedShooting = false; // when ability is used and available, make sure you cant use other ability or shoot normal
         }
         if (isMultiShooting)
         {
@@ -99,28 +96,26 @@ public class ArcherWeapon : MonoBehaviour
             if (timerMultiShooting <= 0)
             {
                 isMultiShooting = false;
-                timerMultiShootingSkillCoolDown = 20.0f;
+                timerMultiShootingSkillCoolDown = 20.0f; // ability info
                 timerMultiShooting = 4.0f;
                 return; // skipping code
             }
             if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
             {
                 FindObjectOfType<AudioManager>().Play("MultiShot");
-                Debug.Log("DU multiskjuter");
                 fireRate = 1.0f;
                 nextFire = Time.time + fireRate;
                 CreateArrow(new Vector3(0, 0f, 20f));
                 CreateArrow(new Vector3(0, 0f, 10f));
                 CreateArrow(new Vector3(0, 0f, 0f));
                 CreateArrow(new Vector3(0f, 0f, -10f));
-                CreateArrow(new Vector3(0, 0f, -20f));
+                CreateArrow(new Vector3(0, 0f, -20f)); //creates 5 arrows in at different angles
             }
         }
         else
         {
             if (timerMultiShootingSkillCoolDown <= 0) return; // skip since we don't want to have -1 timer. 
             timerMultiShootingSkillCoolDown -= Time.deltaTime;
-            // Update UI or something...
         }
 
     }
@@ -130,7 +125,7 @@ public class ArcherWeapon : MonoBehaviour
         {
             isUnlimitedShooting = true;
             isMultiShooting = false;
-            isShootingNormal = false;
+            isShootingNormal = false; // same thing as above
         }
         if (isUnlimitedShooting)
         {
@@ -138,7 +133,7 @@ public class ArcherWeapon : MonoBehaviour
             if (timerUnlimitedShooting <= 0)
             {
                 isUnlimitedShooting = false;
-                timerUnlimitedShootingCoolDown = 30.0f;
+                timerUnlimitedShootingCoolDown = 30.0f; //ability info
                 timerUnlimitedShooting = 3.0f;
                 return;
             }
@@ -147,20 +142,20 @@ public class ArcherWeapon : MonoBehaviour
             {
                 FindObjectOfType<AudioManager>().Play("Arrow");
                 Debug.Log("Du Unlimited skjuter");
-                fireRate = 0.1f;
+                fireRate = 0.1f; //fire rate is very low so more bullets can be shot
                 nextFire = Time.time + fireRate;
                 CreateArrow(new Vector3(0f, 0f, 0f));
             }
         }
         else
         {
-            if (timerUnlimitedShootingCoolDown <= 0) return;
+            if (timerUnlimitedShootingCoolDown <= 0) return; // same here, timer shouldnt be -1
             timerUnlimitedShootingCoolDown -= Time.deltaTime;
         }
     }
     void CreateArrow(Vector3 offsetRotation)
     {
-        var obj = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation);
+        var obj = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation); //creating the arrow
         obj.transform.Rotate(offsetRotation);
     }
 }

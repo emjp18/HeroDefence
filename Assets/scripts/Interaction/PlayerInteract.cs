@@ -25,7 +25,7 @@ public class PlayerInteract : MonoBehaviour
     {
         List<NPCInteractable> npcInteractableList = new List<NPCInteractable>();
         float interactRange = 1f;
-        Collider2D[] colliderArray = Physics2D.OverlapCircleAll(transform.position, interactRange);
+        Collider2D[] colliderArray = Physics2D.OverlapCircleAll(transform.position, interactRange); //check for interactable colliders within player collider
         foreach (Collider2D collider in colliderArray)
         {
 
@@ -35,7 +35,7 @@ public class PlayerInteract : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.F))
                 {
 
-                    npcInteractable.Interact();
+                    npcInteractable.Interact();  //if player is within other interactable collider, call for interact method. 
                 }
 
             }
@@ -52,7 +52,7 @@ public class PlayerInteract : MonoBehaviour
             {
                 if (Vector2.Distance(transform.position, npcInteractable.transform.position) < Vector2.Distance(transform.position, closestNPCInteractable.transform.position))
                 {
-                    closestNPCInteractable = npcInteractable;
+                    closestNPCInteractable = npcInteractable; //check to see the closest interactable collider, for example if you are talking with someone, and walk to a new "closest" npc, change who you can talk to
                 }
             }
         }

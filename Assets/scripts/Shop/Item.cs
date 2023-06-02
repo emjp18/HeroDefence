@@ -19,7 +19,7 @@ public class Item
             default:
                 case ItemType.Boots: return 300;
                 case ItemType.HealthPotion: return 50;
-                case ItemType.MagicMushroom: return 999;
+                case ItemType.MagicMushroom: return 999; //declare all items and item cost
         }
     }
 
@@ -30,7 +30,7 @@ public class Item
             default:
             case ItemType.Boots: return GameAssets.i.bootsSprite;
             case ItemType.HealthPotion: return GameAssets.i.healthPotionSprite;
-            case ItemType.MagicMushroom: return GameAssets.i.magicMushroomSprite;
+            case ItemType.MagicMushroom: return GameAssets.i.magicMushroomSprite; //itemsprite for each item
         }
     }
 }

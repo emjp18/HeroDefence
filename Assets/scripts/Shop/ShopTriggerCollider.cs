@@ -39,7 +39,7 @@ public class ShopTriggerCollider : MonoBehaviour
         if(range != null )
         {
             uiShop.Hide();
-            insideRange = false;
+            insideRange = false; //when you leave the shop, the ui dissappears.
         }
     }
 

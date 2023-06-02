@@ -22,7 +22,7 @@ public class UI_Shop : MonoBehaviour
     {
         CreateItemButton(Item.ItemType.Boots, Item.GetSprite(Item.ItemType.Boots), "Boots", Item.GetCost(Item.ItemType.Boots), 0);
         CreateItemButton(Item.ItemType.HealthPotion, Item.GetSprite(Item.ItemType.HealthPotion), "Health Potion", Item.GetCost(Item.ItemType.HealthPotion), 1);
-        CreateItemButton(Item.ItemType.MagicMushroom, Item.GetSprite(Item.ItemType.MagicMushroom), "Magic Mushroom!!", Item.GetCost(Item.ItemType.MagicMushroom), 2);
+        CreateItemButton(Item.ItemType.MagicMushroom, Item.GetSprite(Item.ItemType.MagicMushroom), "Magic Mushroom!!", Item.GetCost(Item.ItemType.MagicMushroom), 2); //creating UI buttons
 
         Hide();
 
@@ -42,16 +42,16 @@ public class UI_Shop : MonoBehaviour
 
         shopItemTransform.GetComponent<Button_UI>().ClickFunc = () =>
         {
-            //Klicka på items i shopen
+            //Being able to press the button and get reaction
             TryBuyItem(itemType);
         };
     }
 
     private void TryBuyItem(Item.ItemType itemType)
     {
-        if (shopCustomer.TrySpendGoldAmount(Item.GetCost(itemType)))
+        if (shopCustomer.TrySpendGoldAmount(Item.GetCost(itemType))) // Checks if you have the balance to buy item
         {      
-            // Kollar om du har råd
+            
             shopCustomer.BoughtItem(itemType);
         }
     }

@@ -21,7 +21,7 @@ public class PlayerUI : MonoBehaviour
         UpdateText();
 
         PlayerMovement.Instance.OnGoldAmountChanged += Instance_OnGoldAmountChanged;
-        PlayerMovement.Instance.OnHealthPotionAmountChanged += Instance_OnHealthPotionAmountChanged;
+        PlayerMovement.Instance.OnHealthPotionAmountChanged += Instance_OnHealthPotionAmountChanged; // set everything to what the player has, 0 gold, 0 healthpots etc...
     }
 
     private void Instance_OnHealthPotionAmountChanged(object sender, System.EventArgs e)
@@ -41,6 +41,6 @@ public class PlayerUI : MonoBehaviour
     private void UpdateText()
     {
         goldText.text = PlayerMovement.Instance.GetGoldAmount().ToString();
-        healthPotionText.text = PlayerMovement.Instance.GetHealthPotionAmount().ToString();
+        healthPotionText.text = PlayerMovement.Instance.GetHealthPotionAmount().ToString(); //update the text if healthpots or gold is acquired 
     }
 }

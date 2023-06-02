@@ -12,13 +12,13 @@ public class PlayerInteractUI : MonoBehaviour
 
     private void Update()
     {
-        if(playerInteract.GetInteractableObject() != null)
+        if(playerInteract.GetInteractableObject() != null) //if close to npc, show interact UI
         {
             Show(playerInteract.GetInteractableObject());
         }
         else
         {
-            Hide();
+            Hide(); //if not...
         }
     }
     private void Show(NPCInteractable npcInteractable)

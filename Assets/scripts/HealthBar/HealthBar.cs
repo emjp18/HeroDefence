@@ -12,17 +12,17 @@ public class HealthBar : MonoBehaviour
 
     public void SetMaxHealth(float health)
     {
-        slider.maxValue = health;
-        slider.value = health;
+        slider.maxValue = health; // set max healthbar health to max health
+        slider.value = health; // set current health on healthbar to max health aswell
 
-        fill.color = gradient.Evaluate(1f);
+        fill.color = gradient.Evaluate(1f); //fill in with colour
     }
 
     public void SetHealth(float health)
     {
-        slider.value = health;
+        slider.value = health; //set healthbar to current health
 
-        fill.color = gradient.Evaluate(slider.normalizedValue);
+        fill.color = gradient.Evaluate(slider.normalizedValue); //adjust fill
     }
 
 }
