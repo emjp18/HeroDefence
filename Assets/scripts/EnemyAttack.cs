@@ -17,20 +17,19 @@ public class EnemyAttack : MonoBehaviour
     public LayerMask playerLayer;
     public int enemyAttackDamage;
 
-    // Update is called once per frame
     void Update()
     {
-        if(player.gameObject.activeSelf==true)
+        if(player.gameObject.activeSelf==true)//checks  which class  is active, archer  or  warrior
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);  //checks distance between player  and enemy
             float distanceToBuilding = Vector3.Distance(transform.position, building.transform.position);
             if (distanceToPlayer <= detectionRange)
             {
-                if (Time.time >= enemyAttackCD)
+                if (Time.time >= enemyAttackCD)//checks for cooldowwn
                 {
                     enemyAttack();
                     Debug.Log("Player is within range of this object!");
-                    enemyAttackCD = Time.time + enemyAttackTime;
+                    enemyAttackCD = Time.time + enemyAttackTime;//adds  cooldown
                 }
             }
             if (distanceToBuilding <= detectionRange)
