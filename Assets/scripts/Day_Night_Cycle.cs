@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-
 using UnityEngine.Rendering; 
 using UnityEngine.Rendering.Universal;
 
 public class Day_Night_Cycle : MonoBehaviour
 {   
-
+    /// <summary>
+    /// Controlls a global volume with color adjustments override. 
+    /// Creates the effect of night and day.
+    /// </summary>
     public Volume ppv; 
     [SerializeField] float dawnLight;
     [SerializeField] float eveningLight;
@@ -21,8 +23,11 @@ public class Day_Night_Cycle : MonoBehaviour
         ppv = gameObject.GetComponent<Volume>();
         changeTime = true;
     }
+
     private void Update()
     {
+
+
 
         if (changeTime== false )
         {

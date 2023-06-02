@@ -6,6 +6,9 @@ using static UnityEditor.VersionControl.Asset;
 
 public class StartWave : MonoBehaviour
 {
+    /// <summary>
+    /// Button to start the Waves. Creates the button and gives a pulsing effect of growing and shrinking.
+    /// </summary>
     public Day_Night_Cycle dayNigScript;
     [SerializeField] TextMeshProUGUI textPart1;
     [SerializeField] GameObject labelBoard;
@@ -28,6 +31,7 @@ public class StartWave : MonoBehaviour
     }
     private void FixedUpdate()
     {
+
         if (grow)
         {
             textPart1.transform.localScale += pulseSpeedText;
@@ -41,7 +45,7 @@ public class StartWave : MonoBehaviour
     }
     void Update()
     {
-
+        // Controlls the pulse effect to make sure it does not get to big/small.
         if (labelBoard.transform.localScale.y >= 1.2f && textPart1.transform.localScale.y >= 1.2f && labelBoard.transform.localScale.x >= 1.2f && textPart1.transform.localScale.x >= 1.2f)
         {
             grow = false;
@@ -61,6 +65,7 @@ public class StartWave : MonoBehaviour
     }
     public void StartNextWave()
     {
+        // Activates the night, removes the start button and starts the wave.
         if (counter == 0&& waveScript.currentRoundCount <= 4)
         {
             states= STARTSTATES.NIGHT;

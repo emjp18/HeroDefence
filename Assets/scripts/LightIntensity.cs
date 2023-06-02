@@ -7,6 +7,10 @@ using UnityEngine.Rendering.Universal;
 
 public class LightIntensity : MonoBehaviour
 {
+    /// <summary>
+    /// Increases/Decreases light intensity at same rate as global volume, depending on day/night.
+    /// 
+    /// </summary>
     [SerializeField] Light2D lightIntensity;
     [SerializeField] float lowerSpeed;  // 0.005
     [SerializeField] float increaseSpeed; // 0.002
@@ -16,11 +20,6 @@ public class LightIntensity : MonoBehaviour
     {
         lightIntensity  = gameObject.GetComponent<Light2D>();
     }
-
-
-
-
-    // Update is called once per frame
     private void FixedUpdate()
     {
 

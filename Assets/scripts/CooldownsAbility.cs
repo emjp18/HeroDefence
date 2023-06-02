@@ -5,11 +5,15 @@ using UnityEngine.Rendering;
 
 public class CooldownsAbility : MonoBehaviour
 {
+    /// <summary>
+    /// Shows icon for the class abilitys and their cooldowns. Activates a black screen over the icons during cooldown.
+    /// </summary>
     [SerializeField]List<GameObject> CDlist = new List<GameObject>();
     [SerializeField]ArcherWeapon archerScript;
     [SerializeField] PlayerMovement archerMoveScript;
     [SerializeField] PlayerMovement warriorMoveScript;
     [SerializeField] PlayerCombat warriorCombat;
+
 
 
     void Start()
@@ -69,6 +73,7 @@ public class CooldownsAbility : MonoBehaviour
             }
             else
             {
+    
                 CDlist[1].SetActive(false);
             }
             if (archerScript.timerUnlimitedShootingCoolDown > 0)

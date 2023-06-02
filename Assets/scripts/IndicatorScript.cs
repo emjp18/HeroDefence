@@ -3,18 +3,20 @@ using UnityEngine.EventSystems;
 
 public class IndicatorScript : MonoBehaviour
 {
-
+    /// <summary>
+    /// Enemy indicator. Creates rays from the enemy and sends it towards the player to check for collsion, if collision happens
+    /// and enemy is not inside cambox a circle pops up to indicate where the ray comes from.
+    /// </summary>
     public GameObject indicator;
     public GameObject Target;
     public GameObject Target2;
     public GameObject camBox;
     Renderer rd;
     int number;
-    //Ray2D rays;
     void Start()
     {
         rd = GetComponent<Renderer>();
-        //rays= new Ray2D(transform.position, transform.forward);
+
     }
 
 
@@ -35,15 +37,13 @@ public class IndicatorScript : MonoBehaviour
                 if (indicator.activeSelf == false)
                 {
                     indicator.SetActive(true);
-                    Debug.Log("testarIndiCatorUPPE");
                 }
                 Vector2 direction = Target.transform.position - transform.position;
-
+                // creates ray from enemie and aims towards the player but on a specific camboxlayer.
                 RaycastHit2D ray = Physics2D.Raycast(transform.position, direction, (direction.x + 1000 + direction.y + 1000), 1 << 11);
                 if (ray.collider != null)
                 {
                     indicator.transform.position = ray.point;
-                    Debug.Log("testar RAY");
                 }
             }
             else
@@ -51,7 +51,6 @@ public class IndicatorScript : MonoBehaviour
                 if (indicator.activeSelf == true)
                 {
                     indicator.SetActive(false);
-                    Debug.Log("testarIndiCatorNERE");
 
                 }
             }
@@ -65,7 +64,6 @@ public class IndicatorScript : MonoBehaviour
                 if (indicator.activeSelf == false)
                 {
                     indicator.SetActive(true);
-                    Debug.Log("testarIndiCatorUPPE");
                 }
                 Vector2 direction = Target2.transform.position - transform.position;
 
@@ -73,7 +71,6 @@ public class IndicatorScript : MonoBehaviour
                 if (ray.collider != null)
                 {
                     indicator.transform.position = ray.point;
-                    Debug.Log("testar RAY");
                 }
             }
             else
@@ -81,8 +78,6 @@ public class IndicatorScript : MonoBehaviour
                 if (indicator.activeSelf == true)
                 {
                     indicator.SetActive(false);
-                    Debug.Log("testarIndiCatorNERE");
-
                 }
             }
             //Debug.Log(ray.collider.gameObject.name + " was hit!");

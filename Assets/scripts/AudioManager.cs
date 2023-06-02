@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
+    /// <summary>
+    /// 
+    // AudioManger, Controlls all the different sounds i add.
+    /// </summary>
     public Sound[] sounds;
     public AudioMixerGroup mixerGroup;
     public static AudioManager instance;
@@ -25,12 +29,11 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-         // Creating the AudioSource
+         // Creating the AudioSource, Changing output to mixergroup, Making sure they dont destroy on load to persist through screens.
         foreach(Sound s in sounds)
         {
 
             DontDestroyOnLoad(gameObject);
-            //s.source=gameObject.AddComponent<AudioSource>();
             s.source = sources[sourceIndex];
             s.source.clip = s.clip;
             s.source.loop= s.loop;
@@ -55,19 +58,9 @@ public class AudioManager : MonoBehaviour
 
         s.source.Stop();
     }
-
-    void Start()
-    {
-      
-    }
-    private void Update()
-    {
-
-
-    }
-
     public void Play(string Name)
     {
+        // searches the sound array to find the sound with the correct name and plays it.
         Sound s = Array.Find(sounds, sound => sound.name == Name);
         
         if (s==null)
